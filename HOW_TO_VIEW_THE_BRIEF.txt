@@ -1,0 +1,35 @@
+HOW TO VIEW THE RESEARCH BRIEF WEBPAGE
+======================================
+
+The research brief is a single, self-contained HTML file.
+
+BEST & SIMPLEST METHOD (Recommended)
+-------------------------------------
+1. Open Finder.
+2. Go to your home folder (or /Users/jarvis).
+3. Double-click the file named:
+   vance-task-force-fraud-research-brief.html
+
+It will open directly in your default web browser (Safari, Chrome, etc.) with a working file:// URL.
+
+ALTERNATIVE: Run Your Own Local Server
+--------------------------------------
+Open Terminal (or iTerm) and run this one command:
+
+    cd /Users/jarvis && python3 -m http.server 8000
+
+Then open your browser and go to:
+
+    http://localhost:8000/vance-task-force-fraud-research-brief.html
+
+To stop the server later, press Ctrl + C in the Terminal window.
+
+FILE LOCATION
+-------------
+/Users/jarvis/vance-task-force-fraud-research-brief.html
+
+The page is fully self-contained (uses CDN for Tailwind + Font Awesome only when online; core content works offline).
+
+You can also print it to PDF directly from the browser using the "Print / PDF" button on the page.
+
+If you have any trouble, just double-click the .html file — that is the most reliable method on macOS.
