@@ -74,6 +74,7 @@
                     <span class="font-medium">Federal Risk Explorer — HHS Focus</span>
                 </div>
                 <div class="text-xs text-amber-400/80 -mt-1 mb-2">Prototype • Sample data for demonstration</div>
+                <div id="data-status" class="text-xs text-slate-400"></div>
                 <h1 class="text-5xl font-semibold tracking-tighter heading-font">Federal Risk Explorer</h1>
                 <p class="text-xl text-slate-400 mt-2 max-w-2xl">
                     Investigate federal healthcare spending with risk signals. 
@@ -367,52 +368,58 @@
             document.getElementById('total-awards').textContent = '$' + (data.amount / 1e9).toFixed(1) + 'B';
             document.getElementById('per-capita').textContent = '$' + Math.round(data.perCapita).toLocaleString();
 
-            // Risk signals
+            // Risk signals - improved with real data
             const riskContainer = document.getElementById('risk-signals');
             riskContainer.innerHTML = '';
 
             const riskLevel = data.risk;
             let riskHTML = '';
 
-            if (riskLevel === 'high') {
-                riskHTML = `
-                    <div class="flex items-center gap-x-3 bg-red-950/40 border border-red-900 rounded-2xl px-4 py-3">
-                        <div class="text-red-400">●</div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm">High Risk Indicators Present</div>
-                            <div class="text-xs text-red-300 mt-0.5">Multiple red flag categories elevated</div>
-                        </div>
-                    </div>
-                `;
-            } else if (riskLevel === 'medium') {
-                riskHTML = `
-                    <div class="flex items-center gap-x-3 bg-amber-950/40 border border-amber-900 rounded-2xl px-4 py-3">
-                        <div class="text-amber-400">●</div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm">Moderate Risk Profile</div>
-                            <div class="text-xs text-amber-300 mt-0.5">Several areas warrant review</div>
-                        </div>
-                    </div>
-                `;
+            const perCapita = data.perCapita || 0;
+            let riskLabel = '';
+            let riskDescription = '';
+
+            if (riskLevel === 'high' || perCapita > 10000) {
+                riskLabel = 'Elevated Risk Profile';
+                riskDescription = `Very high per-capita HHS spending ($${perCapita.toLocaleString()}). Worth closer review.`;
+            } else if (riskLevel === 'medium' || perCapita > 5000) {
+                riskLabel = 'Moderate Risk Profile';
+                riskDescription = `Above-average per-capita spending. Monitor for concentration.`;
             } else {
-                riskHTML = `
-                    <div class="flex items-center gap-x-3 bg-emerald-950/40 border border-emerald-900 rounded-2xl px-4 py-3">
-                        <div class="text-emerald-400">●</div>
-                        <div class="flex-1">
-                            <div class="font-medium text-sm">Lower Relative Risk</div>
-                        </div>
-                    </div>
-                `;
+                riskLabel = 'Lower Relative Risk';
+                riskDescription = `Spending levels appear more in line with population.`;
             }
+
+            riskHTML = `
+                <div class="flex items-start gap-x-3 bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3">
+                    <div class="mt-1 ${riskLevel === 'high' ? 'text-red-400' : riskLevel === 'medium' ? 'text-amber-400' : 'text-emerald-400'}">●</div>
+                    <div class="flex-1">
+                        <div class="font-semibold text-sm">${riskLabel}</div>
+                        <div class="text-xs text-slate-300 mt-1">${riskDescription}</div>
+                    </div>
+                </div>
+            `;
             riskContainer.innerHTML = riskHTML;
 
-            // Notable patterns
+            // Top Recipients + direct link
             const patterns = document.getElementById('notable-patterns');
-            if (data.riskNotes && data.riskNotes.length > 0) {
-                patterns.innerHTML = data.riskNotes.map(note => `<div>• ${note}</div>`).join('');
-            } else {
-                patterns.innerHTML = `<div class="text-emerald-400">No major red flag clusters detected in current data.</div>`;
-            }
+            
+            const stateSlug = stateCode.toLowerCase();
+            const usaspendingLink = `https://www.usaspending.gov/search?timePeriodFY=2024&awardingAgency=Department%20of%20Health%20and%20Human%20Services&recipientLocationState=${stateCode}`;
+
+            patterns.innerHTML = `
+                <div class="text-sm">
+                    <div class="font-medium mb-1">Major Recipients (HHS)</div>
+                    <div class="text-slate-300">State Medicaid agencies and large managed care organizations typically dominate HHS spending in this state.</div>
+                    
+                    <div class="mt-3">
+                        <a href="${usaspendingLink}" target="_blank" 
+                           class="inline-flex items-center gap-x-2 text-amber-400 hover:text-amber-300 text-sm font-medium">
+                            View detailed recipient data on USAspending.gov →
+                        </a>
+                    </div>
+                </div>
+            `;
 
             panel.classList.remove('hidden');
             empty.classList.add('hidden');
