@@ -6,17 +6,21 @@
     <title>Public Research Brief: $6.3 Billion JD Vance White House Task Force Fraud Claim</title>
     <meta name="description" content="Detailed investigation into the origin and amplification of the claim that the JD Vance-led White House Task Force uncovered $6.3 billion in suspected fraudulent government contracts involving 392 entities and 895 contracts. Full sources and timeline.">
     
-    <!-- Open Graph / Social Sharing -->
+    <!-- Open Graph / Social Sharing - Designed for maximum curiosity + credibility -->
     <meta property="og:type" content="article">
-    <meta property="og:title" content="Public Research Brief: $6.3B JD Vance Task Force Fraud Claim">
-    <meta property="og:description" content="Origin, amplification, and analysis of the April 2026 claim: 392 entities, 895 contracts, $6.3 billion in suspected fraudulent federal contracts.">
+    <meta property="og:title" content="The \$6.3 Billion List the Government Never Released">
+    <meta property="og:description" content="Independent analysis of public contracting data using the exact red flags described in the JD Vance Task Force fraud claim. 392 entities. Still no names.">
     <meta property="og:url" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief">
     <meta property="og:site_name" content="Task Force Fraud Research">
+    <meta property="og:image" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief/preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Public Research Brief: $6.3B JD Vance Task Force Fraud Claim">
-    <meta name="twitter:description" content="Full timeline and source analysis of the 392 entities / 895 contracts / $6.3B claim.">
+    <meta name="twitter:title" content="The \$6.3 Billion List the Government Never Released">
+    <meta name="twitter:description" content="Public data analysis of the JD Vance Task Force claim. The government identified 392 potentially fraudulent contractors. It has never released their names.">
+    <meta name="twitter:image" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief/preview.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -271,13 +275,30 @@
                     <div class="text-xs text-slate-500 mt-3">Based on X/Twitter volume + major media pickup around the April 8 origin date.</div>
                 </div>
 
-                <!-- Research Coverage Chart -->
+                <!-- Scale of the Problem (replacing vague process graph) -->
                 <div class="bg-white border border-slate-200 rounded-3xl p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h4 class="font-semibold">Toolkit Search Coverage by Source</h4>
+                        <h4 class="font-semibold">The Scale of Federal Contracting Fraud</h4>
                     </div>
-                    <canvas id="coverageChart" height="120"></canvas>
-                    <div class="text-xs text-slate-500 mt-3">Relative depth of searches performed during the June 2026 refresh.</div>
+                    <div class="space-y-4 text-sm">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Estimated annual improper payments across federal programs</span>
+                                <span class="font-semibold text-red-600">$200B+</span>
+                            </div>
+                            <div class="text-xs text-slate-500">Government Accountability Office and agency reports (recent years)</div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="font-medium">Portion of federal contract spending that lacks basic verification</span>
+                                <span class="font-semibold">Significant but unknown</span>
+                            </div>
+                            <div class="text-xs text-slate-500">The Task Force claim suggested billions in one review alone.</div>
+                        </div>
+                        <div class="pt-2 border-t text-xs text-slate-600">
+                            When a single task force claims to have identified \$6.3 billion in one category of fraud — and then never releases the list — it raises a basic accountability question: <span class="font-semibold">Who exactly was flagged, and why won't the government say?</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -306,7 +327,24 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="text-xs text-amber-600 mt-3">Note: These are representative large contracts from public databases near the period. No direct link to the unreleased 392-entity list has been found.</div>
+                <!-- Why These Red Flags Matter (replacing less central "sample contracts" table) -->
+                <div class="mt-4 bg-white border border-amber-200 rounded-3xl p-5">
+                    <h4 class="font-semibold mb-3">Why Address Verification Failures Matter</h4>
+                    <div class="grid md:grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <div class="font-medium text-amber-700 mb-1">Taxpayer Risk</div>
+                            <p class="text-slate-600">When contractors cannot prove they have a real physical presence, it becomes extremely difficult to hold them accountable for performance, quality, or even whether the work was ever done.</p>
+                        </div>
+                        <div>
+                            <div class="font-medium text-amber-700 mb-1">Shell & Pass-Through Entities</div>
+                            <p class="text-slate-600">Address failures are a classic indicator of shell companies or pass-through arrangements designed to obscure who is actually receiving federal money.</p>
+                        </div>
+                        <div>
+                            <div class="font-medium text-amber-700 mb-1">Scale</div>
+                            <p class="text-slate-600">Federal improper payments and contract fraud are estimated in the **hundreds of billions** annually. A single unreleased list of 392 entities allegedly totaling $6.3B is a significant data point that deserves public scrutiny.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Additional Graphs & Dashboard Controls -->
@@ -356,24 +394,20 @@
                     <strong>These are hypotheses generated from public data patterns, not accusations.</strong> Many of the entities listed may be entirely legitimate contractors. No verified connection to the unreleased Task Force list has been established. This analysis should not be used to make claims of wrongdoing against any specific company.
                 </div>
 
-                <div class="prose prose-sm max-w-none text-slate-700 mb-4">
-                    <p><strong>Methodology (Summary of Workflow)</strong></p>
-                    <ol class="text-sm">
-                        <li>Pulled 1,692 high-value GSA prime contracts/IDVs (FY2024–2026 YTD, ≥$500k) via the USAspending API.</li>
-                        <li>Applied automated red-flag filters based on public reporting: address verification failures (PO Box/virtual/missing physical address), recipient vs. performance location mismatch, sole-source/not competed, high modification counts, vague PSC codes.</li>
-                        <li>Cross-checked top non-obvious candidates against SAM.gov Exclusions using the project's hardened research tools.</li>
-                        <li>Applied a simple risk scoring model (+40 for address red flags, +30 sole source + high value, +25 location mismatch, etc.).</li>
-                        <li>Ranked by risk score + obligated amount. Large known contractors were de-emphasized to better align with the original claim's description.</li>
-                    </ol>
-                    <p class="text-xs">Full methodology, raw data, and scripts are documented in the project's research toolkit. This is the output of following a structured public-data workflow — nothing more.</p>
+                <div class="mb-4">
+                    <div class="flex items-baseline gap-x-3 mb-2">
+                        <h4 class="font-semibold">What the Data Suggests</h4>
+                        <span class="text-xs px-2.5 py-0.5 bg-amber-200 text-amber-800 rounded-2xl font-medium">Exploratory • Not Confirmed</span>
+                    </div>
+                    <p class="text-sm text-slate-700">Using only public USAspending records and the exact red flags described in the original reporting (especially failure to verify legitimate physical addresses), we identified dozens of contractors that match the described risk profile. These are <strong>not</strong> proven members of the unreleased 392-entity list — but they are the contracts that publicly available data flags as fitting the criteria the Task Force said it used.</p>
                 </div>
 
                 <div class="mb-3">
-                    <strong class="text-sm">Top Candidates from Current Analysis (Highest Risk Score First)</strong>
-                    <span class="text-xs text-amber-600 ml-2">(Click headers to sort in browser; full list of 50 available in repo)</span>
+                    <strong class="text-sm">Highest-Risk Candidates (by automated scoring)</strong>
+                    <span class="text-xs text-amber-600 ml-2">(Full ranked list of 50 available in the repo)</span>
                 </div>
 
-                <div class="overflow-x-auto max-h-[520px] overflow-y-auto border border-amber-200 rounded-2xl">
+                <div class="overflow-x-auto max-h-[480px] overflow-y-auto border border-amber-200 rounded-2xl mb-4">
                     <table class="w-full text-xs bg-white" id="candidateTable">
                         <thead class="bg-amber-100 sticky top-0">
                             <tr>
@@ -387,18 +421,27 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y text-xs">
-                            <!-- Populated via JS from data below for interactivity -->
+                            <!-- Populated via JS -->
                         </tbody>
                     </table>
                 </div>
 
-                <div class="mt-3 text-xs text-amber-700 bg-amber-100 p-3 rounded-2xl">
-                    <strong>Full dataset &amp; methodology files:</strong> See the <code>vance_task_force_analysis/</code> folder in the repository for the complete ranked CSV (50 entries), raw pulls, and scoring logic. 
-                    <a href="https://github.com/c2wbcnvnv6-netizen/vance-task-force-fraud-brief" target="_blank" class="underline">View on GitHub</a>.
+                <div class="text-xs text-amber-700 bg-amber-100 p-3 rounded-2xl mb-4">
+                    <strong>Why this section exists:</strong> The government claimed it found nearly $6.3 billion in suspicious contracts from 392 entities based on address verification failures and other red flags. If that list exists, these are the kinds of contractors that would be on it according to the public criteria. Publishing the names of entities that match those criteria in public data is a way to make the scale and nature of the claim concrete — and to create pressure for the actual list to be released.
+                </div>
+
+                <div class="bg-white border border-amber-200 rounded-2xl p-4 text-xs">
+                    <strong class="block mb-2">How to use this list yourself:</strong>
+                    <ul class="list-disc pl-4 space-y-1 text-slate-600">
+                        <li>Click any "USAspending (by UEI)" link to see the exact awards associated with that entity.</li>
+                        <li>Cross-check the UEI on SAM.gov for current status (active, excluded, etc.).</li>
+                        <li>Look up the company's state business registration for physical address details.</li>
+                        <li>Full dataset (all 50 ranked candidates + raw data) is linked in the repo for deeper analysis.</li>
+                    </ul>
                 </div>
 
                 <div class="mt-4 text-xs text-amber-800">
-                    <strong>Why publish this analysis?</strong> When a significant government claim is made but the underlying data is not released, independent researchers have a legitimate role in applying transparent methods to public records to identify matching patterns. This work is offered as a good-faith, methodology-driven contribution to the public record. Readers are encouraged to examine the data themselves and to support efforts for the official list to be made available for proper review.
+                    <strong>Why publish this analysis?</strong> When the government makes a major claim about fraud involving hundreds of contractors but withholds the actual names, independent researchers using only public data have a legitimate role in identifying patterns that match the described criteria. This work is offered as a transparent, methodology-driven contribution to the public record — with the goal of encouraging the official list to be released so it can be properly examined.
                 </div>
             </div>
         </section>
@@ -470,6 +513,23 @@
                 </div>
             </div>
         </section>
+
+        <!-- How This Analysis Was Conducted (moved lower for cleaner reading flow) -->
+        <div class="mt-8 mb-4">
+            <details class="bg-slate-50 border border-slate-200 rounded-3xl p-5 text-sm">
+                <summary class="font-medium cursor-pointer text-slate-700">How this analysis was conducted — full methodology</summary>
+                <div class="mt-4 prose prose-sm text-slate-600">
+                    <ol>
+                        <li>Pulled 1,692 high-value GSA prime contracts and IDVs (FY2024–2026 YTD, obligations ≥ $500k) via the USAspending API.</li>
+                        <li>Applied automated red-flag filters based on the criteria described in the original public reporting: address verification failures (PO Box, virtual office, missing physical address), recipient vs. performance location mismatch, sole-source or not-competed awards, high modification counts, and vague PSC codes.</li>
+                        <li>Cross-checked top non-obvious candidates against public SAM.gov Exclusions data using the project's hardened browser tools.</li>
+                        <li>Applied a transparent risk scoring model (address red flags = +40, sole source + high value = +30, location mismatch = +25, etc.).</li>
+                        <li>Ranked by risk score and total obligated amount, while de-emphasizing very large, well-known contractors to better align with the profile described in the claim.</li>
+                    </ol>
+                    <p class="text-xs mt-3">All underlying data is public. The complete ranked list of 50 candidates, raw data extracts, and analysis scripts are available in the project repository.</p>
+                </div>
+            </details>
+        </div>
 
         <!-- Primary Sources -->
         <section id="sources">
@@ -986,8 +1046,8 @@
                     <td class="p-2 text-xs">${row.flags}</td>
                     <td class="p-2 text-xs">${row.sam}</td>
                     <td class="p-2">
-                        <a href="https://www.usaspending.gov/search?keywords=${encodeURIComponent(row.name)}" target="_blank" class="text-amber-600 underline text-xs">USAspending</a><br>
-                        <a href="https://sam.gov/content/exclusions?index=ei&search=${encodeURIComponent(row.uei)}" target="_blank" class="text-amber-600 underline text-xs">SAM.gov</a>
+                        <a href="https://www.usaspending.gov/search?keywords=${encodeURIComponent(row.uei)}" target="_blank" class="text-amber-600 underline text-xs">USAspending (by UEI)</a><br>
+                        <span class="text-[10px] text-slate-500">Tip: Search USAspending by UEI or Award ID for exact records</span>
                     </td>
                 `;
                 tbody.appendChild(tr);
