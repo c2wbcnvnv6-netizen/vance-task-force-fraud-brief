@@ -18,8 +18,8 @@ The easiest way for a permanent, nice public GitHub URL:
 
 This will create the repo, push everything, and enable GitHub Pages for you.
 
-Your site will live at:
-`https://YOUR_USERNAME.github.io/vance-task-force-fraud-brief`
+Your site is live at:
+`https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief`
 
 ---
 

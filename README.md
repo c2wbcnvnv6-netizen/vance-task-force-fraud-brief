@@ -33,8 +33,8 @@ The script will automatically:
 - Push the research brief
 - Enable GitHub Pages
 
-Your live public URL will be:
-`https://YOUR_USERNAME.github.io/vance-task-force-fraud-brief`
+Your live public URL is:
+`https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief`
 
 ### Alternative Methods
 See `QUICK_DEPLOY.md` for:
