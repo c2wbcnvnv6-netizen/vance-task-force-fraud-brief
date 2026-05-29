@@ -2,17 +2,35 @@
 
 This folder is 100% ready to become a live public website.
 
-## Fastest Method (Recommended Right Now)
+## Recommended: GitHub Pages (What You Asked For)
+
+The easiest way for a permanent, nice public GitHub URL:
+
+1. Make sure you're logged into GitHub CLI:
+   ```bash
+   gh auth login
+   ```
+
+2. Run the automated setup script:
+   ```bash
+   ./setup-github.sh
+   ```
+
+This will create the repo, push everything, and enable GitHub Pages for you.
+
+Your site will live at:
+`https://YOUR_USERNAME.github.io/vance-task-force-fraud-brief`
+
+---
+
+## Fast Alternative (if you just want any public URL quickly)
 
 1. Open this link in your browser:  
    **https://app.netlify.com/drop**
 
 2. Drag the entire folder `public-task-force-brief` (or just the `index.html` file) onto the page.
 
-3. Done. You will immediately get a real public URL like:
-   `https://beautiful-name-12345.netlify.app`
-
-You can send that URL to anyone.
+3. Done. You will immediately get a real public URL.
 
 ---
 

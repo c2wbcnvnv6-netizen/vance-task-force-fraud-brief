@@ -14,32 +14,33 @@ A detailed investigation into the origin, development, and amplification of the 
 - No public companies have made SEC disclosures related to these specific flags.
 - The claim has been widely amplified across conservative media and official channels.
 
-## How to Deploy This Site Publicly
+## How to Deploy This Site Publicly (GitHub Pages Preferred)
 
-### Option 1: Netlify Drop (Fastest — 30 seconds)
-1. Go to https://app.netlify.com/drop
-2. Drag the entire `public-task-force-brief` folder (or just the `index.html`) onto the page.
-3. You will instantly get a public `https://` URL.
+### Recommended: Use the Automated Setup Script
 
-### Option 2: GitHub Pages (Recommended for permanence)
-1. Create a new public repository on GitHub (name it something like `task-force-fraud-brief`).
-2. In this folder, run:
+1. Authenticate with GitHub (one-time):
    ```bash
-   git init
-   git add .
-   git commit -m "Initial public research brief"
-   git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
-   git branch -M main
-   git push -u origin main
+   gh auth login
    ```
-3. Go to your repo → **Settings** → **Pages**
-4. Set Source to "Deploy from a branch" → `main` branch → `/ (root)`
-5. Save. Your site will be live at:
-   `https://YOUR_USERNAME.github.io/YOUR_REPO_NAME`
 
-### Option 3: Vercel
-1. Go to https://vercel.com/new
-2. Import the GitHub repo (after pushing), or drag the folder.
+2. Run the setup script:
+   ```bash
+   ./setup-github.sh
+   ```
+
+The script will automatically:
+- Create a new public GitHub repository
+- Push the research brief
+- Enable GitHub Pages
+
+Your live public URL will be:
+`https://YOUR_USERNAME.github.io/vance-task-force-fraud-brief`
+
+### Alternative Methods
+See `QUICK_DEPLOY.md` for:
+- Netlify Drop (fastest manual option)
+- Manual GitHub Pages steps
+- Vercel instructions
 
 ## Files
 - `index.html` — The complete interactive research brief
