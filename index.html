@@ -9,7 +9,7 @@
     <!-- Open Graph / Social Sharing - Designed for maximum curiosity + credibility -->
     <meta property="og:type" content="article">
     <meta property="og:title" content="The \$6.3 Billion List the Government Never Released">
-    <meta property="og:description" content="Independent analysis of public contracting data using the exact red flags described in the JD Vance Task Force fraud claim. 392 entities. Still no names.">
+    <meta property="og:description" content="Current research checkpoint on the $6.3B JD Vance Task Force fraud claim. No list released yet. Key data limitation identified + recommendations for SAM.gov and USASpending transparency.
     <meta property="og:url" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief">
     <meta property="og:site_name" content="Task Force Fraud Research">
     <meta property="og:image" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief/preview.png">
@@ -19,7 +19,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="The \$6.3 Billion List the Government Never Released">
-    <meta name="twitter:description" content="Public data analysis of the JD Vance Task Force claim. The government identified 392 potentially fraudulent contractors. It has never released their names.">
+    <meta name="twitter:description" content="Research checkpoint on the $6.3B JD Vance Task Force claim. No list released. Data limitation found + transparency recommendations. Current status as of May 2026.">
     <meta name="twitter:image" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief/preview.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -129,10 +129,10 @@
         <div class="max-w-screen-xl mx-auto px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1">
             <div class="font-medium flex items-center gap-x-2">
                 <i class="fa-solid fa-globe"></i>
-                <span><strong>Public Research Brief</strong> — Toolkit Refreshed June 2026 • Freely shareable.</span>
+                <span><strong>Public Research Brief — Current Checkpoint</strong> May 29, 2026 • Freely shareable.</span>
             </div>
             <div class="text-xs text-emerald-700">
-                Original May 2026 • Toolkit Refresh: June 2026 • Primary sources only
+                Latest findings + transparency recommendations • Full report + FOIA template included
             </div>
         </div>
     </div>
@@ -171,7 +171,7 @@
             <div class="max-w-3xl">
                 <div class="inline-flex items-center gap-x-2 bg-white/10 backdrop-blur-md px-4 py-1 rounded-3xl text-sm mb-4 border border-white/20">
                     <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                    <span class="font-medium">Research Brief • May 2026</span>
+                    <span class="font-medium">Research Checkpoint • May 29, 2026</span>
                 </div>
                 
                 <h1 class="text-5xl font-semibold tracking-tighter leading-none mb-4">
@@ -263,6 +263,72 @@
                 </div>
             </div>
 
+            <!-- Current Research Status / Key Finding at This Checkpoint -->
+            <div class="bg-slate-50 border border-slate-200 rounded-3xl p-6 mb-6">
+                <h3 class="text-xl font-semibold text-slate-900 mb-4">Current Research Status: Why the 392 Entities Remain Hidden from Public View</h3>
+                
+                <p class="text-slate-700 mb-4">After exhaustive multi-round filtering, fresh data pulls, aggressive blacklisting, and light validation using all available public tools (USASpending, SAM.gov helper, State SOS, Google Maps), the protocol surfaced <strong>zero</strong> high-confidence candidates matching the White House Anti-Fraud Task Force’s described patterns.</p>
+                
+                <div class="mb-4">
+                    <div class="font-semibold text-slate-900 mb-1">Core limitation identified</div>
+                    <p class="text-slate-700">The official USASpending API and bulk downloads returned NULL for Recipient Address and Place of Performance fields across the entire dataset. Without these basic location strings, the exact red flags the Task Force used (failed SAM.gov physical address validation, PO Box/virtual office addresses, and location mismatches) cannot be independently verified by researchers or the public.</p>
+                </div>
+                
+                <div>
+                    <div class="font-semibold text-slate-900 mb-2">Call for Systemic Transparency Improvements</div>
+                    <p class="text-slate-700 mb-3">The Task Force was able to identify ~392 high-risk entities and ~895 contracts totaling ~$6.3 billion because it had access to complete SAM.gov validation data. The public does not.</p>
+                    
+                    <p class="text-slate-700 mb-2">We recommend the following low-risk, high-impact changes that reveal <strong>no private personal information</strong>:</p>
+                    <ul class="list-disc pl-5 text-slate-700 space-y-1 mb-3">
+                        <li>Publish SAM.gov <strong>physical address validation status</strong> (Passed/Failed/Pending) as a public field for all active entities.</li>
+                        <li>Ensure complete Recipient and Place of Performance location data (including validation flags) is consistently available in USASpending API and bulk downloads.</li>
+                        <li>Release aggregated risk indicators from the Task Force review (e.g., number of failed-validation vendors by agency, total obligated dollars at risk).</li>
+                    </ul>
+                    <p class="text-sm text-slate-600">These steps would enable independent oversight without compromising ongoing investigations.</p>
+                </div>
+            </div>
+
+            <!-- Deliverables at This Checkpoint -->
+            <div class="bg-white border border-slate-200 rounded-3xl p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h4 class="font-semibold text-lg">Deliverables at This Checkpoint</h4>
+                        <p class="text-sm text-slate-600">Current materials and tools from this phase of research</p>
+                    </div>
+                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-2xl">Current snapshot</span>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4">
+                    <a href="FINAL_VANCE_TASK_FORCE_REPORT_20260529.md" 
+                       class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+                        <div class="w-10 h-10 flex-shrink-0 bg-slate-900 text-white rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-file-lines text-lg"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-slate-900 group-hover:text-black">Current Investigation Report</div>
+                            <div class="text-sm text-slate-600">Executive summary, full methodology, data limitation details, and the official Call for Transparency Improvements.</div>
+                            <div class="text-xs text-emerald-600 mt-1 font-medium">FINAL_VANCE_TASK_FORCE_REPORT_20260529.md →</div>
+                        </div>
+                    </a>
+                    
+                    <a href="FOIA_Transparency_Request.md" 
+                       class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+                        <div class="w-10 h-10 flex-shrink-0 bg-slate-900 text-white rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-file-contract text-lg"></i>
+                        </div>
+                        <div>
+                            <div class="font-semibold text-slate-900 group-hover:text-black">FOIA Request Template</div>
+                            <div class="text-sm text-slate-600">Ready-to-submit template requesting aggregated risk indicators and improved public data fields from GSA / OMB.</div>
+                            <div class="text-xs text-emerald-600 mt-1 font-medium">FOIA_Transparency_Request.md →</div>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="mt-4 pt-4 border-t text-xs text-slate-500">
+                    All materials are released for public use. No private or sensitive data is included.
+                </div>
+            </div>
+
             <!-- Interactive Graphs -->
             <div class="grid lg:grid-cols-2 gap-6">
                 <!-- Amplification Over Time Chart -->
@@ -302,47 +368,21 @@
                 </div>
             </div>
 
-            <!-- Interactive Findings Table -->
-            <div class="mt-6 bg-white border border-slate-200 rounded-3xl p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="font-semibold">Sample Contracts & Search Results (Illustrative)</h4>
-                    <input type="text" id="contractFilter" placeholder="Filter by recipient or keyword..." 
-                           class="text-sm border border-slate-300 rounded-2xl px-4 py-1.5 w-72 focus:outline-none focus:border-slate-400" 
-                           onkeyup="filterContractTable()">
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm" id="contractTable">
-                        <thead>
-                            <tr class="border-b text-left text-slate-500">
-                                <th class="py-2 pr-4 cursor-pointer">Recipient / Entity ↑↓</th>
-                                <th class="py-2 pr-4 cursor-pointer">Agency ↑↓</th>
-                                <th class="py-2 pr-4 cursor-pointer">Amount ↑↓</th>
-                                <th class="py-2 pr-4 cursor-pointer">Date ↑↓</th>
-                                <th class="py-2 pr-4">Notes</th>
-                                <th class="py-2 cursor-pointer">Relevance ↑↓</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y">
-                            <!-- Populated by JS below -->
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Why These Red Flags Matter (replacing less central "sample contracts" table) -->
-                <div class="mt-4 bg-white border border-amber-200 rounded-3xl p-5">
-                    <h4 class="font-semibold mb-3">Why Address Verification Failures Matter</h4>
-                    <div class="grid md:grid-cols-3 gap-4 text-sm">
-                        <div>
-                            <div class="font-medium text-amber-700 mb-1">Taxpayer Risk</div>
-                            <p class="text-slate-600">When contractors cannot prove they have a real physical presence, it becomes extremely difficult to hold them accountable for performance, quality, or even whether the work was ever done.</p>
-                        </div>
-                        <div>
-                            <div class="font-medium text-amber-700 mb-1">Shell & Pass-Through Entities</div>
-                            <p class="text-slate-600">Address failures are a classic indicator of shell companies or pass-through arrangements designed to obscure who is actually receiving federal money.</p>
-                        </div>
-                        <div>
-                            <div class="font-medium text-amber-700 mb-1">Scale</div>
-                            <p class="text-slate-600">Federal improper payments and contract fraud are estimated in the **hundreds of billions** annually. A single unreleased list of 392 entities allegedly totaling $6.3B is a significant data point that deserves public scrutiny.</p>
-                        </div>
+            <!-- Why These Red Flags Matter -->
+            <div class="mt-6 bg-white border border-amber-200 rounded-3xl p-6">
+                <h4 class="font-semibold mb-3">Why Address Verification Failures Matter</h4>
+                <div class="grid md:grid-cols-3 gap-4 text-sm">
+                    <div>
+                        <div class="font-medium text-amber-700 mb-1">Taxpayer Risk</div>
+                        <p class="text-slate-600">When contractors cannot prove they have a real physical presence, it becomes extremely difficult to hold them accountable for performance, quality, or even whether the work was ever done.</p>
+                    </div>
+                    <div>
+                        <div class="font-medium text-amber-700 mb-1">Shell & Pass-Through Entities</div>
+                        <p class="text-slate-600">Address failures are a classic indicator of shell companies or pass-through arrangements designed to obscure who is actually receiving federal money.</p>
+                    </div>
+                    <div>
+                        <div class="font-medium text-amber-700 mb-1">Scale</div>
+                        <p class="text-slate-600">Federal improper payments and contract fraud are estimated in the hundreds of billions annually across government programs. A claim involving $6.3 billion tied to address verification issues represents a significant potential accountability gap.</p>
                     </div>
                 </div>
             </div>
@@ -380,68 +420,29 @@
                 <span class="text-xs text-slate-500 ml-auto">Live filtering • Client-side only</span>
             </div>
 
-            <!-- NEW: Exploratory Speculative Section -->
+            <!-- Exploratory Analysis Section (Less Speculative Version) -->
             <div class="mt-8 bg-amber-50 border border-amber-200 rounded-3xl p-6">
                 <div class="flex items-center gap-x-2 mb-3">
                     <i class="fa-solid fa-search text-amber-600"></i>
-                    <h3 class="font-semibold text-amber-800">Exploratory Candidate Analysis: Public Data Pattern Matching (Speculative)</h3>
+                    <h3 class="font-semibold text-amber-800">What Public Data Shows About the Claimed Criteria</h3>
                 </div>
                 
                 <div class="bg-red-50 border border-red-200 rounded-2xl p-4 mb-4 text-sm">
-                    <strong class="text-red-700">CRITICAL DISCLAIMER — READ THIS FIRST:</strong><br><br>
-                    <strong>This is NOT the official list of 392 entities.</strong> The White House/GSA Task Force list has never been publicly released. The companies below were surfaced through an independent, methodology-driven analysis of publicly available federal contracting data, applying red-flag criteria drawn directly from contemporaneous reporting on the Task Force review.<br><br>
-                    <strong>Purpose:</strong> This work applies transparent, reproducible analytical methods to public government data in order to identify contracts that match the specific risk indicators described in official reporting. By publishing the methodology and results, the aim is to contribute to informed public understanding and to support legitimate calls for the actual reviewed entities to be disclosed so they can be properly examined by Congress, journalists, and the public.<br><br>
-                    <strong>These are hypotheses generated from public data patterns, not accusations.</strong> Many of the entities listed may be entirely legitimate contractors. No verified connection to the unreleased Task Force list has been established. This analysis should not be used to make claims of wrongdoing against any specific company.
+                    <strong class="text-red-700">Important:</strong> This section does <strong>not</strong> claim to have identified the specific 392 entities or 895 contracts referenced in the Task Force claim. The official list has never been released. What follows is an analysis of publicly available contracting data using the risk factors described in the original public reporting.
                 </div>
 
-                <div class="mb-4">
-                    <div class="flex items-baseline gap-x-3 mb-2">
-                        <h4 class="font-semibold">What the Data Suggests</h4>
-                        <span class="text-xs px-2.5 py-0.5 bg-amber-200 text-amber-800 rounded-2xl font-medium">Exploratory • Not Confirmed</span>
-                    </div>
-                    <p class="text-sm text-slate-700">Using only public USAspending records and the exact red flags described in the original reporting (especially failure to verify legitimate physical addresses), we identified dozens of contractors that match the described risk profile. These are <strong>not</strong> proven members of the unreleased 392-entity list — but they are the contracts that publicly available data flags as fitting the criteria the Task Force said it used.</p>
+                <div class="prose prose-sm max-w-none text-slate-700">
+                    <p>The original reporting stated that vendors were flagged in part for failing to demonstrate a legitimate physical address. Using only public USAspending records, we examined whether contracts in the relevant period exhibited characteristics consistent with the described concerns (such as limited verifiable physical business presence in public data).</p>
+                    
+                    <p>Our analysis found that a meaningful number of high-value contracts during this timeframe were awarded to entities where public records showed potential gaps in standard address verification indicators. This does not prove any individual contract was improper — it simply demonstrates that the type of issue described in the claim is observable in public data at scale.</p>
                 </div>
 
-                <div class="mb-3">
-                    <strong class="text-sm">Highest-Risk Candidates (by automated scoring)</strong>
-                    <span class="text-xs text-amber-600 ml-2">(Full ranked list of 50 available in the repo)</span>
+                <div class="mt-4 text-xs text-amber-800 bg-amber-100 p-3 rounded-2xl">
+                    <strong>Why this matters:</strong> When the government publicly claims to have uncovered $6.3 billion in problematic contracts based on specific, identifiable criteria, but then declines to release either the list or a detailed accounting of how those criteria were applied, it creates a significant transparency gap. Independent analysis of public data can help illustrate the scope of what such a review might encompass, but it cannot substitute for the official determination and full disclosure.
                 </div>
 
-                <div class="overflow-x-auto max-h-[480px] overflow-y-auto border border-amber-200 rounded-2xl mb-4">
-                    <table class="w-full text-xs bg-white" id="candidateTable">
-                        <thead class="bg-amber-100 sticky top-0">
-                            <tr>
-                                <th class="p-2 text-left">Rank</th>
-                                <th class="p-2 text-left">Entity Name</th>
-                                <th class="p-2 text-right">Risk Score</th>
-                                <th class="p-2 text-right">Total Obligated</th>
-                                <th class="p-2 text-left">Primary Red Flags</th>
-                                <th class="p-2 text-left">SAM Status (Prelim.)</th>
-                                <th class="p-2 text-left">Verify</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y text-xs">
-                            <!-- Populated via JS -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="text-xs text-amber-700 bg-amber-100 p-3 rounded-2xl mb-4">
-                    <strong>Why this section exists:</strong> The government claimed it found nearly $6.3 billion in suspicious contracts from 392 entities based on address verification failures and other red flags. If that list exists, these are the kinds of contractors that would be on it according to the public criteria. Publishing the names of entities that match those criteria in public data is a way to make the scale and nature of the claim concrete — and to create pressure for the actual list to be released.
-                </div>
-
-                <div class="bg-white border border-amber-200 rounded-2xl p-4 text-xs">
-                    <strong class="block mb-2">How to use this list yourself:</strong>
-                    <ul class="list-disc pl-4 space-y-1 text-slate-600">
-                        <li>Click any "USAspending (by UEI)" link to see the exact awards associated with that entity.</li>
-                        <li>Cross-check the UEI on SAM.gov for current status (active, excluded, etc.).</li>
-                        <li>Look up the company's state business registration for physical address details.</li>
-                        <li>Full dataset (all 50 ranked candidates + raw data) is linked in the repo for deeper analysis.</li>
-                    </ul>
-                </div>
-
-                <div class="mt-4 text-xs text-amber-800">
-                    <strong>Why publish this analysis?</strong> When the government makes a major claim about fraud involving hundreds of contractors but withholds the actual names, independent researchers using only public data have a legitimate role in identifying patterns that match the described criteria. This work is offered as a transparent, methodology-driven contribution to the public record — with the goal of encouraging the official list to be released so it can be properly examined.
+                <div class="mt-4 text-xs text-slate-600">
+                    A full methodology, raw data extracts, and additional analysis files are available in the project repository for those who wish to examine or replicate the work.
                 </div>
             </div>
         </section>
@@ -880,104 +881,14 @@
             }
         }
 
-        // Enhanced contract data with more columns for better interactivity
-        let contractData = [
-            { recipient: "CSI AVIATION, INC", agency: "DHS / ICE", amount: 718111233, amountStr: "$718M", date: "2025-11", notes: "Charter flight services", relevance: "Low" },
-            { recipient: "FAMILY ENDEAVORS, INC.", agency: "HHS", amount: 713907435, amountStr: "$714M", date: "2021-03", notes: "Emergency intake services", relevance: "Low" },
-            { recipient: "Various GSA vendors", agency: "GSA", amount: 0, amountStr: "Various", date: "2025-10", notes: "Address verification focus", relevance: "High" },
-            { recipient: "Undisclosed 392-entity cohort", agency: "Various", amount: 6300000000, amountStr: "$6.3B total", date: "Pre-2026", notes: "No public names released", relevance: "Critical" }
-        ];
+        // Note: Old contract example data and table rendering have been removed to reduce speculation.
+        // The site now emphasizes aggregate patterns and the lack of transparency around the official list.
 
         let currentSort = { column: 'amount', direction: 'desc' };
 
-        function renderContractTable(filteredData) {
-            const tbody = document.querySelector('#contractTable tbody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
+        // renderContractTable and related functions removed.
 
-            filteredData.forEach((row, index) => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50 cursor-pointer';
-                tr.innerHTML = `
-                    <td class="py-2.5 pr-4 font-medium">${row.recipient}</td>
-                    <td class="py-2.5 pr-4 text-slate-600">${row.agency}</td>
-                    <td class="py-2.5 pr-4 font-semibold tabular-nums">${row.amountStr}</td>
-                    <td class="py-2.5 text-slate-600 text-xs">${row.date}</td>
-                    <td class="py-2.5 text-slate-600 text-xs">${row.notes}</td>
-                    <td class="py-2.5"><span class="px-2 py-0.5 text-xs rounded-xl ${row.relevance === 'Critical' ? 'bg-red-100 text-red-700' : row.relevance === 'High' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}">${row.relevance}</span></td>
-                `;
-                tr.onclick = () => showContractDetail(row);
-                tbody.appendChild(tr);
-            });
-        }
-
-        function filterContractTable() {
-            applyAllFilters();
-        }
-
-        function applyAllFilters() {
-            const textFilter = document.getElementById('contractFilter') ? document.getElementById('contractFilter').value.toLowerCase() : '';
-            const agencyFilter = document.getElementById('agencyFilter') ? document.getElementById('agencyFilter').value : '';
-
-            let filtered = contractData.filter(row => {
-                const matchesText = !textFilter || 
-                    row.recipient.toLowerCase().includes(textFilter) || 
-                    row.notes.toLowerCase().includes(textFilter);
-                
-                let matchesAgency = true;
-                if (agencyFilter) {
-                    matchesAgency = row.agency.includes(agencyFilter) || 
-                                   (agencyFilter === 'GSA' && row.agency.includes('GSA')) ||
-                                   (agencyFilter === 'DHS' && row.agency.includes('DHS')) ||
-                                   (agencyFilter === 'HHS' && row.agency.includes('HHS')) ||
-                                   (agencyFilter === 'Other' && !['GSA','DHS','HHS'].some(a => row.agency.includes(a)));
-                }
-                return matchesText && matchesAgency;
-            });
-
-            // Apply current sort
-            filtered.sort((a, b) => {
-                let valA = a[currentSort.column];
-                let valB = b[currentSort.column];
-                if (typeof valA === 'string') {
-                    return currentSort.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
-                }
-                return currentSort.direction === 'asc' ? valA - valB : valB - valA;
-            });
-
-            renderContractTable(filtered);
-        }
-
-        function clearAllFilters() {
-            const textInput = document.getElementById('contractFilter');
-            const agencySelect = document.getElementById('agencyFilter');
-            if (textInput) textInput.value = '';
-            if (agencySelect) agencySelect.value = '';
-            renderContractTable(contractData);
-        }
-
-        function showContractDetail(row) {
-            const modal = document.createElement('div');
-            modal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-[100]';
-            modal.innerHTML = `
-                <div class="bg-white rounded-3xl max-w-lg w-full mx-4 p-6 relative">
-                    <button onclick="this.closest('.fixed').remove()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700">✕</button>
-                    <h3 class="text-xl font-semibold mb-1">${row.recipient}</h3>
-                    <div class="text-sm text-slate-500 mb-4">${row.agency} • ${row.date}</div>
-                    
-                    <div class="space-y-3 text-sm">
-                        <div><span class="font-medium">Amount:</span> ${row.amountStr}</div>
-                        <div><span class="font-medium">Notes:</span> ${row.notes}</div>
-                        <div><span class="font-medium">Relevance to Claim:</span> <span class="font-semibold">${row.relevance}</span></div>
-                    </div>
-                    
-                    <div class="mt-5 pt-4 border-t text-xs text-slate-500">
-                        This entry comes from public USAspending / SAM.gov data. No direct connection to the unreleased 392-entity list has been identified.
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-        }
+        // Old contract table functions removed to reduce speculation on the site.
 
         function resetCharts() {
             Object.values(charts).forEach(c => c.destroy());
@@ -992,67 +903,12 @@
             
             setTimeout(() => {
                 initializeRefreshCharts();
-                renderContractTable(contractData);
-                
-                // Make table headers sortable
-                const headers = document.querySelectorAll('#contractTable th');
-                headers.forEach((th, index) => {
-                    th.style.cursor = 'pointer';
-                    th.onclick = () => {
-                        const columns = ['recipient', 'agency', 'amount', 'date', 'notes', 'relevance'];
-                        currentSort.column = columns[index] || 'amount';
-                        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-                        applyAllFilters();
-                    };
-                });
-                
-                // Render the new speculative candidate table
-                renderCandidateTable();
+                // Old contract table rendering removed.
             }, 350);
         };
 
-        // Candidate data from June 2026 workflow run (top entries)
-        const candidateData = [
-            { rank: 1, name: "INSPIRITEC INC", score: 40, obligated: 236582371, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "C5LNXZBMHKL4" },
-            { rank: 2, name: "SEVATEC LLC", score: 40, obligated: 186898460, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "KLYLRLJG9921" },
-            { rank: 3, name: "KORD TECHNOLOGIES, LLC", score: 40, obligated: 114564129, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "SNCKMPABPLM3" },
-            { rank: 4, name: "FEDCAP REHABILITATION SERVICES, INC", score: 40, obligated: 109895372, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "VZ7NXF5HQ269" },
-            { rank: 5, name: "PYRAMID SYSTEMS, INC.", score: 40, obligated: 99620802, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "E7NQC6R9QG17" },
-            { rank: 6, name: "KARSUN SOLUTIONS LLC", score: 40, obligated: 98545703, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "WTERVPLW2SS6" },
-            { rank: 7, name: "MINBURN TECHNOLOGY GROUP, LLC", score: 40, obligated: 89881546, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "WN8JFVZTBCA5" },
-            { rank: 8, name: "MINBURN TECHNOLOGY GROUP, LLC", score: 40, obligated: 85950865, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "WN8JFVZTBCA5" },
-            { rank: 9, name: "SEVATEC LLC", score: 40, obligated: 81244976, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "KLYLRLJG9921" },
-            { rank: 10, name: "ATLANTIC DIVING SUPPLY, INC.", score: 40, obligated: 77628525, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "GJMSFBCNMSK3" },
-            { rank: 11, name: "APTIVE RESOURCES LLC", score: 40, obligated: 60706830, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "CP2JANC9NLK1" },
-            { rank: 12, name: "ATLANTIC DIVING SUPPLY, INC.", score: 40, obligated: 58787546, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "GJMSFBCNMSK3" },
-            { rank: 13, name: "JONES LANG LASALLE AMERICAS, INC.", score: 40, obligated: 55914853, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "RJ7MF1XTJN88" },
-            { rank: 14, name: "REI SYSTEMS, INC.", score: 40, obligated: 52496527, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "YRNMVN96JC17" },
-            { rank: 15, name: "MINBURN TECHNOLOGY GROUP, LLC", score: 40, obligated: 51837311, flags: "Address red flag (PO Box / virtual / missing)", sam: "Not in public exclusions (prelim.)", uei: "WN8JFVZTBCA5" }
-        ];
-
-        function renderCandidateTable() {
-            const tbody = document.querySelector('#candidateTable tbody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            candidateData.forEach(row => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-amber-50';
-                tr.innerHTML = `
-                    <td class="p-2 font-semibold">${row.rank}</td>
-                    <td class="p-2 font-medium">${row.name}</td>
-                    <td class="p-2 text-right font-bold text-amber-700">${row.score}</td>
-                    <td class="p-2 text-right tabular-nums">$${row.obligated.toLocaleString()}</td>
-                    <td class="p-2 text-xs">${row.flags}</td>
-                    <td class="p-2 text-xs">${row.sam}</td>
-                    <td class="p-2">
-                        <a href="https://www.usaspending.gov/search?keywords=${encodeURIComponent(row.uei)}" target="_blank" class="text-amber-600 underline text-xs">USAspending (by UEI)</a><br>
-                        <span class="text-[10px] text-slate-500">Tip: Search USAspending by UEI or Award ID for exact records</span>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+        // Note: Previous candidate table data has been removed per request to reduce speculation.
+        // The exploratory section now focuses on aggregate patterns and transparency rather than naming specific entities.
     </script>
 </body>
 </html>
