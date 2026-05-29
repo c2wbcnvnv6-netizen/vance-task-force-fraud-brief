@@ -295,6 +295,7 @@
                 className: 'map-tiles'
             }).addTo(map);
 
+            // Approximate centers for labels (used only for abbreviation markers)
             const centers = {
                 "CA": [36.7, -119.4], "NY": [42.9, -75.5], "PA": [40.9, -77.8],
                 "TX": [31.0, -99.9], "FL": [27.8, -81.6], "IL": [40.0, -89.0],
@@ -304,37 +305,89 @@
                 "NJ": [40.0, -74.5], "CT": [41.6, -72.7], "TN": [35.7, -86.8], "WI": [44.5, -89.5]
             };
 
-            Object.keys(stateData).forEach(code => {
-                const data = stateData[code];
-                const riskColor = data.risk === 'high' ? '#ef4444' : 
-                                 data.risk === 'medium' ? '#f59e0b' : '#14b8a6';
-
-                const center = centers[code];
-                if (!center) return;
-
-                const circle = L.circle(center, {
-                    color: riskColor,
-                    fillColor: riskColor,
-                    fillOpacity: 0.4,
-                    radius: Math.max(Math.sqrt(data.amount) / 220000, 80000),
-                    weight: 1.5
-                }).addTo(map);
-
-                circle.on('click', () => showStatePanel(code));
-                circle.bindTooltip(data.name, { permanent: false, direction: 'top' });
-
-                // State abbreviation label
-                const abbr = stateAbbreviations[code];
-                if (abbr) {
-                    const labelIcon = L.divIcon({
-                        className: 'state-abbr-label',
-                        html: `<span>${abbr}</span>`,
-                        iconSize: [28, 18],
-                        iconAnchor: [14, 9]
+            // Load real US states GeoJSON and render only states we have data for
+            fetch('https://raw.githubusercontent.com/PublicaMundi/DataSets/master/geojson/us-states.json')
+                .then(res => res.json())
+                .then(geojson => {
+                    const filteredFeatures = geojson.features.filter(f => {
+                        const code = f.properties?.STATE || f.properties?.state || f.properties?.name;
+                        // Try to match by name or code
+                        return Object.keys(stateData).some(ourCode => {
+                            const ourState = stateData[ourCode];
+                            return ourState.name === f.properties.name || 
+                                   ourCode === (f.properties.STATE || f.properties.state);
+                        });
                     });
-                    L.marker(center, { icon: labelIcon, interactive: false }).addTo(map);
-                }
-            });
+
+                    const filteredGeoJSON = {
+                        type: "FeatureCollection",
+                        features: filteredFeatures
+                    };
+
+                    const geoLayer = L.geoJSON(filteredGeoJSON, {
+                        style: function (feature) {
+                            // Try to find our data by name
+                            const stateName = feature.properties.name;
+                            const ourData = Object.values(stateData).find(s => s.name === stateName);
+                            
+                            let riskColor = '#14b8a6';
+                            if (ourData) {
+                                riskColor = ourData.risk === 'high' ? '#ef4444' : 
+                                           ourData.risk === 'medium' ? '#f59e0b' : '#14b8a6';
+                            }
+                            
+                            return {
+                                fillColor: riskColor,
+                                weight: 1.5,
+                                opacity: 1,
+                                color: '#1e2937',
+                                fillOpacity: 0.55
+                            };
+                        },
+                        onEachFeature: function (feature, layer) {
+                            const stateName = feature.properties.name;
+                            const ourData = Object.values(stateData).find(s => s.name === stateName);
+                            
+                            if (ourData) {
+                                const code = Object.keys(stateData).find(k => stateData[k].name === stateName);
+                                
+                                layer.on('click', () => {
+                                    if (code) showStatePanel(code);
+                                });
+                                
+                                layer.bindTooltip(stateName, { 
+                                    permanent: false, 
+                                    direction: 'top',
+                                    className: 'state-tooltip'
+                                });
+                            }
+                        }
+                    }).addTo(map);
+
+                    // Add state abbreviation labels using known centers
+                    Object.keys(stateData).forEach(code => {
+                        const center = centers[code];
+                        const abbr = stateAbbreviations[code];
+                        
+                        if (center && abbr) {
+                            const labelIcon = L.divIcon({
+                                className: 'state-abbr-label',
+                                html: `<span>${abbr}</span>`,
+                                iconSize: [28, 18],
+                                iconAnchor: [14, 9]
+                            });
+                            L.marker(center, { 
+                                icon: labelIcon, 
+                                interactive: false 
+                            }).addTo(map);
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.warn("Could not load full GeoJSON, falling back to circles", err);
+                    // Fallback to previous circle method if GeoJSON fails
+                    renderFallbackCircles(centers);
+                });
 
             // Legend
             const legend = L.control({position: 'bottomright'});
@@ -354,6 +407,39 @@
                 return div;
             };
             legend.addTo(map);
+        }
+
+        function renderFallbackCircles(centers) {
+            Object.keys(stateData).forEach(code => {
+                const data = stateData[code];
+                const riskColor = data.risk === 'high' ? '#ef4444' : 
+                                 data.risk === 'medium' ? '#f59e0b' : '#14b8a6';
+
+                const center = centers[code];
+                if (!center) return;
+
+                const circle = L.circle(center, {
+                    color: riskColor,
+                    fillColor: riskColor,
+                    fillOpacity: 0.4,
+                    radius: Math.max(Math.sqrt(data.amount) / 220000, 80000),
+                    weight: 1.5
+                }).addTo(map);
+
+                circle.on('click', () => showStatePanel(code));
+                circle.bindTooltip(data.name, { permanent: false, direction: 'top' });
+
+                const abbr = stateAbbreviations[code];
+                if (abbr) {
+                    const labelIcon = L.divIcon({
+                        className: 'state-abbr-label',
+                        html: `<span>${abbr}</span>`,
+                        iconSize: [28, 18],
+                        iconAnchor: [14, 9]
+                    });
+                    L.marker(center, { icon: labelIcon, interactive: false }).addTo(map);
+                }
+            });
         }
 
         function showStatePanel(stateCode) {
