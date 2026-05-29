@@ -192,39 +192,9 @@
             document.documentElement.style.setProperty('--accent', '#14b8a6');
         }
 
-        // Sample data (HHS spending by state - FY2024 proxy from real API patterns)
-        const stateData = {
-            "CA": { name: "California", amount: 159481483018, perCapita: 40350, risk: "medium", 
-                    topRecipients: ["California Department of Health Care Services", "Kaiser Foundation Health Plan"], 
-                    riskNotes: ["Very high volume of Medicaid managed care contracts", "Several large recipients with rapid growth"] },
-            "NY": { name: "New York", amount: 102133926468, perCapita: 52300, risk: "high",
-                    topRecipients: ["New York State Department of Health", "UnitedHealthcare"], 
-                    riskNotes: ["High concentration in certain metro areas", "Multiple sole-source awards flagged in prior reviews"] },
-            "PA": { name: "Pennsylvania", amount: 265472776290, perCapita: 20416, risk: "medium",
-                    topRecipients: ["Pennsylvania Department of Human Services"], 
-                    riskNotes: ["Significant Medicaid expansion spending"] },
-            "TX": { name: "Texas", amount: 49769918000, perCapita: 16800, risk: "low",
-                    topRecipients: ["Texas Health and Human Services Commission"], 
-                    riskNotes: [] },
-            "FL": { name: "Florida", amount: 68000000000, perCapita: 31200, risk: "medium",
-                    topRecipients: ["Agency for Health Care Administration"], 
-                    riskNotes: ["Elevated number of home health providers with address concerns"] },
-            "IL": { name: "Illinois", amount: 128231989752, perCapita: 10008, risk: "high",
-                    topRecipients: ["Illinois Department of Healthcare and Family Services"], 
-                    riskNotes: ["Multiple large providers with recent compliance issues"] },
-            "OH": { name: "Ohio", amount: 45000000000, perCapita: 38200, risk: "medium", 
-                    topRecipients: ["Ohio Department of Medicaid"], 
-                    riskNotes: [] },
-            "NC": { name: "North Carolina", amount: 30610836560, perCapita: 28900, risk: "low", 
-                    topRecipients: ["North Carolina Department of Health and Human Services"], 
-                    riskNotes: [] },
-            "VA": { name: "Virginia", amount: 220803690089, perCapita: 25581, risk: "low", 
-                    topRecipients: ["Virginia Department of Medical Assistance Services"], 
-                    riskNotes: [] },
-            "MA": { name: "Massachusetts", amount: 30732557463, perCapita: 44000, risk: "medium", 
-                    topRecipients: ["MassHealth"], 
-                    riskNotes: ["High per-capita spending"] }
-        };
+        // Will be populated from live USAspending API
+        let stateData = {};
+        let isDataLoaded = false;
 
         const stateAbbreviations = {
             "CA": "CA", "NY": "NY", "PA": "PA", "TX": "TX", "FL": "FL",
@@ -234,7 +204,87 @@
         let map;
         let geoJsonLayer;
 
-        function initMap() {
+        async function loadRealHHSData() {
+            const statusEl = document.getElementById('data-status');
+            if (statusEl) statusEl.textContent = 'Loading real HHS data from USAspending.gov...';
+
+            try {
+                const response = await fetch('https://api.usaspending.gov/api/v2/search/spending_by_geography/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        scope: "recipient_location",
+                        geo_layer: "state",
+                        filters: {
+                            time_period: [{ start_date: "2023-10-01", end_date: "2024-09-30" }],
+                            agencies: [{ type: "awarding", tier: "toptier", name: "Department of Health and Human Services" }]
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                const results = data.results || [];
+
+                // Convert API response to our internal format
+                stateData = {};
+                results.forEach(item => {
+                    if (!item.shape_code || item.shape_code.length !== 2) return;
+
+                    const code = item.shape_code;
+                    const amount = item.aggregated_amount || 0;
+                    const perCapita = item.per_capita || 0;
+
+                    // Simple risk heuristic for prototype (can be refined heavily later)
+                    let risk = 'low';
+                    if (perCapita > 8000) risk = 'high';
+                    else if (perCapita > 4000) risk = 'medium';
+
+                    stateData[code] = {
+                        name: item.display_name,
+                        amount: amount,
+                        perCapita: Math.round(perCapita),
+                        risk: risk,
+                        topRecipients: [], // Will enhance later
+                        riskNotes: risk !== 'low' ? [`High per-capita HHS spending ($${Math.round(perCapita).toLocaleString()})`] : []
+                    };
+                });
+
+                isDataLoaded = true;
+                if (statusEl) statusEl.textContent = `Data loaded • FY2024 • ${Object.keys(stateData).length} states/territories`;
+
+                // Re-initialize map with real data
+                if (map) {
+                    map.remove();
+                }
+                initMapWithRealData();
+
+            } catch (error) {
+                console.error('Failed to load real data:', error);
+                if (statusEl) statusEl.textContent = 'Using sample data (API unavailable)';
+                // Fall back to hardcoded data if API fails
+                loadFallbackData();
+                initMapWithRealData();
+            }
+        }
+
+        function loadFallbackData() {
+            // Fallback sample data if API fails
+            stateData = {
+                "CA": { name: "California", amount: 159481483018, perCapita: 40350, risk: "medium", topRecipients: [], riskNotes: ["High volume Medicaid spending"] },
+                "NY": { name: "New York", amount: 102133926468, perCapita: 52300, risk: "high", topRecipients: [], riskNotes: ["Very high per-capita HHS"] },
+                "PA": { name: "Pennsylvania", amount: 265472776290, perCapita: 20416, risk: "medium", topRecipients: [], riskNotes: [] },
+                "TX": { name: "Texas", amount: 49769918000, perCapita: 16800, risk: "low", topRecipients: [], riskNotes: [] },
+                "FL": { name: "Florida", amount: 94061036224, perCapita: 4367, risk: "medium", topRecipients: [], riskNotes: [] },
+                "IL": { name: "Illinois", amount: 33593139280, perCapita: 2622, risk: "low", topRecipients: [], riskNotes: [] },
+                "OH": { name: "Ohio", amount: 32973949027, perCapita: 2794, risk: "low", topRecipients: [], riskNotes: [] },
+                "NC": { name: "North Carolina", amount: 30610836559, perCapita: 2932, risk: "low", topRecipients: [], riskNotes: [] },
+                "VA": { name: "Virginia", amount: 29131712832, perCapita: 3375, risk: "low", topRecipients: [], riskNotes: [] },
+                "MA": { name: "Massachusetts", amount: 30732557463, perCapita: 4371, risk: "medium", topRecipients: [], riskNotes: ["High per-capita"] }
+            };
+            isDataLoaded = true;
+        }
+
+        function initMapWithRealData() {
             map = L.map('map', {
                 zoomControl: false,
                 attributionControl: false
@@ -244,72 +294,48 @@
                 className: 'map-tiles'
             }).addTo(map);
 
-            // Simple US states GeoJSON (lightweight version)
-            const statesData = {
-                "type": "FeatureCollection",
-                "features": Object.keys(stateData).map(state => ({
-                    "type": "Feature",
-                    "properties": { 
-                        "name": stateData[state].name, 
-                        "code": state,
-                        "amount": stateData[state].amount,
-                        "risk": stateData[state].risk
-                    },
-                    "geometry": {
-                        "type": "Polygon",
-                        "coordinates": [[[-100, 30], [-100, 40], [-90, 40], [-90, 30], [-100, 30]]] // placeholder - in real version we'd use real geojson
-                    }
-                }))
+            const centers = {
+                "CA": [36.7, -119.4], "NY": [42.9, -75.5], "PA": [40.9, -77.8],
+                "TX": [31.0, -99.9], "FL": [27.8, -81.6], "IL": [40.0, -89.0],
+                "OH": [40.3, -82.8], "NC": [35.6, -79.4], "VA": [37.5, -78.7], "MA": [42.4, -71.5],
+                "MD": [39.0, -76.8], "MI": [43.0, -84.5], "WA": [47.4, -120.0], "MN": [46.7, -94.6],
+                "GA": [32.6, -83.4], "AZ": [34.0, -111.5], "MO": [38.5, -92.5], "CO": [39.0, -105.5],
+                "NJ": [40.0, -74.5], "CT": [41.6, -72.7], "TN": [35.7, -86.8], "WI": [44.5, -89.5]
             };
 
-            // For prototype, we'll use a simpler approach with colored circles + click handlers
-            // In production we'd use real US state GeoJSON
-
-            // Add some visual states as circles for prototype impact
             Object.keys(stateData).forEach(code => {
                 const data = stateData[code];
                 const riskColor = data.risk === 'high' ? '#ef4444' : 
                                  data.risk === 'medium' ? '#f59e0b' : '#14b8a6';
 
-                // Approximate center points for demo
-                const centers = {
-                    "CA": [36.7, -119.4], "NY": [42.9, -75.5], "PA": [40.9, -77.8],
-                    "TX": [31.0, -99.9], "FL": [27.8, -81.6], "IL": [40.0, -89.0],
-                    "OH": [40.3, -82.8], "NC": [35.6, -79.4], "VA": [37.5, -78.7], "MA": [42.4, -71.5]
-                };
+                const center = centers[code];
+                if (!center) return;
 
-                if (centers[code]) {
-                    const circle = L.circle(centers[code], {
-                        color: riskColor,
-                        fillColor: riskColor,
-                        fillOpacity: 0.35,
-                        radius: Math.sqrt(data.amount) / 180000,
-                        weight: 1.5
-                    }).addTo(map);
+                const circle = L.circle(center, {
+                    color: riskColor,
+                    fillColor: riskColor,
+                    fillOpacity: 0.4,
+                    radius: Math.max(Math.sqrt(data.amount) / 220000, 80000),
+                    weight: 1.5
+                }).addTo(map);
 
-                    circle.on('click', () => showStatePanel(code));
-                    circle.bindTooltip(data.name, { permanent: false, direction: 'top' });
+                circle.on('click', () => showStatePanel(code));
+                circle.bindTooltip(data.name, { permanent: false, direction: 'top' });
 
-                    // Add state abbreviation label overlaid on the circle
-                    const abbr = stateAbbreviations[code];
-                    if (abbr) {
-                        const labelIcon = L.divIcon({
-                            className: 'state-abbr-label',
-                            html: `<span>${abbr}</span>`,
-                            iconSize: [28, 18],
-                            iconAnchor: [14, 9],
-                            popupAnchor: [0, -10]
-                        });
-
-                        L.marker(centers[code], {
-                            icon: labelIcon,
-                            interactive: false
-                        }).addTo(map);
-                    }
+                // State abbreviation label
+                const abbr = stateAbbreviations[code];
+                if (abbr) {
+                    const labelIcon = L.divIcon({
+                        className: 'state-abbr-label',
+                        html: `<span>${abbr}</span>`,
+                        iconSize: [28, 18],
+                        iconAnchor: [14, 9]
+                    });
+                    L.marker(center, { icon: labelIcon, interactive: false }).addTo(map);
                 }
             });
 
-            // Add legend
+            // Legend
             const legend = L.control({position: 'bottomright'});
             legend.onAdd = function () {
                 const div = L.DomUtil.create('div', 'info legend');
@@ -319,8 +345,8 @@
                 div.style.fontSize = '12px';
                 div.style.color = '#cbd5e1';
                 div.innerHTML = `
-                    <strong>Risk Level</strong><br>
-                    <i style="background:#ef4444;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> High<br>
+                    <strong>HHS Spending (Risk Proxy)</strong><br>
+                    <i style="background:#ef4444;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> High (per capita)<br>
                     <i style="background:#f59e0b;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> Medium<br>
                     <i style="background:#14b8a6;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> Lower
                 `;
@@ -407,13 +433,7 @@
         // Initialize
         function init() {
             initializeTailwind();
-            initMap();
-
-            // Seed one state open for demo
-            setTimeout(() => {
-                // Show California as example
-                // showStatePanel('CA'); // commented so user explores freely
-            }, 800);
+            loadRealHHSData();
         }
 
         window.onload = init;
