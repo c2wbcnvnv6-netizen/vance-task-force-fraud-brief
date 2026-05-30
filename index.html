@@ -145,11 +145,13 @@
     <nav class="bg-slate-950 border-b border-slate-800 sticky top-0 z-50">
         <div class="max-w-screen-xl mx-auto px-6">
             <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
                 <a href="index.html" class="flex items-center gap-x-3">
                     <img src="assets/tff-shield-logo.svg" alt="T.F.F. Shield" class="w-9 h-9">
                     <span class="font-semibold text-base tracking-tight text-white leading-none">Federal Risk Explorer</span>
                 </a>
                 
+                <!-- Desktop Navigation -->
                 <div class="hidden md:flex items-center gap-x-0.5 text-sm flex-nowrap overflow-x-auto">
                     <a href="#home" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl transition-colors whitespace-nowrap">Home</a>
                     <a href="/foia-toolkit.html" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl transition-colors whitespace-nowrap">FOIA Toolkit</a>
@@ -162,7 +164,8 @@
                     <a href="/privacy-policy.html" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl transition-colors whitespace-nowrap">Privacy</a>
                 </div>
 
-                <div class="flex items-center gap-x-3">
+                <!-- Desktop Right Side -->
+                <div class="hidden md:flex items-center gap-x-3">
                     <div class="relative hidden md:block w-64">
                         <input type="text" id="site-search" placeholder="Search research, tools, or data..." 
                                class="w-full bg-slate-900 border border-slate-700 text-white placeholder-slate-500 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-red-500">
@@ -177,6 +180,41 @@
                         <i class="fa-solid fa-print mr-1.5"></i>
                         <span>Print</span>
                     </button>
+                </div>
+
+                <!-- Mobile Hamburger Button -->
+                <button id="mobile-menu-btn" 
+                        class="md:hidden flex items-center justify-center w-10 h-10 text-slate-300 hover:text-white"
+                        aria-label="Open menu">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden bg-slate-900 border-t border-slate-800">
+                <div class="px-6 py-4 space-y-1 text-sm">
+                    <a href="#home" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">Home</a>
+                    <a href="/foia-toolkit.html" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">FOIA Toolkit</a>
+                    <a href="/state-local-data.html" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">State &amp; Local Data</a>
+                    <a href="/explorer/federal-risk-explorer.html" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">Risk Explorer</a>
+                    <a href="#research" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">Research Library</a>
+                    <a href="#tools" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">Tools</a>
+                    <a href="#submit-tip" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">Submit a Tip</a>
+                    <a href="#about" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">About</a>
+                    <a href="/privacy-policy.html" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">Privacy</a>
+                    
+                    <div class="pt-4 border-t border-slate-700 mt-2 space-y-2">
+                        <button id="mobile-install-btn" 
+                                class="w-full flex items-center justify-center gap-x-2 px-4 py-3 bg-red-600 hover:bg-red-500 text-white text-sm font-medium rounded-2xl transition-colors">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Install App</span>
+                        </button>
+                        <button onclick="window.print()" 
+                                class="w-full flex items-center justify-center gap-x-2 px-4 py-3 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-2xl transition-colors border border-slate-700">
+                            <i class="fa-solid fa-print"></i>
+                            <span>Print</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1285,6 +1323,33 @@
                 };
             }
         });
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                const isHidden = mobileMenu.classList.contains('hidden');
+                mobileMenu.classList.toggle('hidden');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-bars', !isHidden);
+                    icon.classList.toggle('fa-times', isHidden);
+                }
+            });
+
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (icon) {
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    }
+                });
+            });
+        }
     </script>
 </body>
 </html>
