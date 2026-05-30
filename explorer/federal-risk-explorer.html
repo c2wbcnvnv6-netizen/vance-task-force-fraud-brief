@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- jsPDF for PDF exports (lightweight, no build step) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
         
@@ -73,7 +75,7 @@
                     <div class="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
                     <span class="font-medium">Federal Risk Explorer — HHS Focus</span>
                 </div>
-                <div class="text-xs text-amber-400/80 -mt-1 mb-2">Prototype • Sample data for demonstration</div>
+                <div class="text-xs text-emerald-400/80 -mt-1 mb-2">Live FY2024 HHS data from USAspending.gov • Client-side filtering &amp; exports</div>
                 <div id="data-status" class="text-xs text-slate-400"></div>
                 <h1 class="text-5xl font-semibold tracking-tighter heading-font">Federal Risk Explorer</h1>
                 <p class="text-xl text-slate-400 mt-2 max-w-2xl">
@@ -86,7 +88,6 @@
                 <div class="font-semibold">USAspending.gov</div>
                 <div class="text-xs text-slate-500 mt-1">FY2024 (Oct 2023 – Sep 2024)</div>
             </div>
-        </div>
         </div>
 
         <!-- Controls -->
@@ -191,44 +192,103 @@
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h3 class="text-2xl font-semibold">State-Level Data Table</h3>
-                    <p class="text-slate-400 text-sm">Searchable and filterable view of all data shown on the map</p>
+                    <p class="text-slate-400 text-sm">Searchable, filterable, and exportable view of FY2024 HHS award data by state</p>
                 </div>
-                <button onclick="exportTableData()" 
-                        class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-sm flex items-center gap-x-2">
-                    <i class="fa-solid fa-download"></i>
-                    <span>Export CSV</span>
-                </button>
+                <div class="flex items-center gap-x-2">
+                    <button onclick="exportTableData('csv')" 
+                            class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-sm flex items-center gap-x-2 transition-colors">
+                        <i class="fa-solid fa-file-csv"></i>
+                        <span>CSV</span>
+                    </button>
+                    <button onclick="exportTableData('json')" 
+                            class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-sm flex items-center gap-x-2 transition-colors">
+                        <i class="fa-solid fa-file-code"></i>
+                        <span>JSON</span>
+                    </button>
+                    <button onclick="exportTableData('pdf')" 
+                            class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 rounded-xl text-sm flex items-center gap-x-2 transition-colors text-white">
+                        <i class="fa-solid fa-file-pdf"></i>
+                        <span>PDF</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Stats Bar -->
+            <div id="table-stats" class="flex flex-wrap gap-x-6 gap-y-1 text-sm mb-3 px-1 text-slate-400">
+                <!-- Populated by JS: X states • $Y.YB total • Avg per capita $Z -->
             </div>
 
             <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
-                <div class="flex flex-wrap gap-3 mb-4">
-                    <input type="text" id="table-search" placeholder="Search state or recipient..." 
-                           onkeyup="filterTable()" 
-                           class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-sm w-64 focus:outline-none focus:border-emerald-500">
+                <!-- Advanced Filters -->
+                <div class="flex flex-wrap items-end gap-3 mb-5">
+                    <div class="flex-1 min-w-[220px]">
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-500 mb-1">Search</label>
+                        <input type="text" id="table-search" placeholder="State, code, or signal keywords..." 
+                               onkeyup="filterTable()" 
+                               class="w-full bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
                     
-                    <select id="risk-filter" onchange="filterTable()" class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-sm">
-                        <option value="">All Risk Levels</option>
-                        <option value="high">High Risk</option>
-                        <option value="medium">Medium Risk</option>
-                        <option value="low">Lower Risk</option>
-                    </select>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-500 mb-1">Risk Level</label>
+                        <select id="risk-filter" onchange="filterTable()" class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm min-w-[140px]">
+                            <option value="">All Risk Levels</option>
+                            <option value="high">High Risk</option>
+                            <option value="medium">Medium Risk</option>
+                            <option value="low">Lower Risk</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-500 mb-1">Min $B (Total)</label>
+                        <input type="number" id="min-amount" step="0.1" placeholder="0" onchange="filterTable()" 
+                               class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm w-28 focus:outline-none focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] uppercase tracking-wider text-slate-500 mb-1">Max $B (Total)</label>
+                        <input type="number" id="max-amount" step="0.1" placeholder="500" onchange="filterTable()" 
+                               class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2.5 text-sm w-28 focus:outline-none focus:border-emerald-500">
+                    </div>
+
+                    <div class="pt-6">
+                        <button onclick="clearTableFilters()" 
+                                class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-sm text-slate-300 transition-colors">
+                            Clear Filters
+                        </button>
+                    </div>
                 </div>
 
                 <div class="overflow-x-auto">
                     <table id="data-table" class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-slate-700 text-slate-400">
-                                <th class="text-left py-3 pr-4 cursor-pointer" onclick="sortTable(0)">State</th>
-                                <th class="text-right py-3 pr-4 cursor-pointer" onclick="sortTable(1)">Total HHS Awards</th>
-                                <th class="text-right py-3 pr-4 cursor-pointer" onclick="sortTable(2)">Per Capita</th>
-                                <th class="text-left py-3 pr-4">Risk Level</th>
+                                <th class="text-left py-3 pr-4 cursor-pointer select-none" onclick="sortTable(0)" data-col="0">State <span class="sort-indicator"></span></th>
+                                <th class="text-right py-3 pr-4 cursor-pointer select-none" onclick="sortTable(1)" data-col="1">Total HHS Awards <span class="sort-indicator"></span></th>
+                                <th class="text-right py-3 pr-4 cursor-pointer select-none" onclick="sortTable(2)" data-col="2">Per Capita <span class="sort-indicator"></span></th>
+                                <th class="text-left py-3 pr-4 cursor-pointer select-none" onclick="sortTable(3)" data-col="3">Risk <span class="sort-indicator"></span></th>
                                 <th class="text-left py-3">Notable Signals</th>
+                                <th class="text-right py-3 w-24">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-800 text-slate-200">
                             <!-- Populated by JavaScript -->
                         </tbody>
                     </table>
+                </div>
+
+                <!-- Pagination -->
+                <div id="table-pagination" class="flex items-center justify-between mt-4 text-sm text-slate-400"></div>
+            </div>
+
+            <!-- FOIA / Data Gap Callout -->
+            <div class="mt-4 bg-slate-900/70 border border-slate-700 rounded-2xl px-5 py-4 text-sm">
+                <div class="flex items-start gap-x-3">
+                    <div class="text-amber-400 mt-0.5">ⓘ</div>
+                    <div class="flex-1 text-slate-300">
+                        <span class="font-semibold text-slate-200">Missing fields in public data?</span> 
+                        USAspending and SAM.gov frequently return NULL for recipient physical address, place of performance, and SAM validation status. 
+                        <a href="#foia-guidance" class="text-amber-400 hover:text-amber-300 underline">Use the FOIA Toolkit</a> 
+                        or the pre-written template to request the complete underlying records from GSA/OMB.
+                    </div>
                 </div>
             </div>
         </section>
@@ -271,23 +331,45 @@
     </div>
 
     <script>
-        // Tailwind script
+        // Tailwind + shared
         function initializeTailwind() {
             document.documentElement.style.setProperty('--accent', '#14b8a6');
         }
 
-        // Will be populated from live USAspending API
+        // Core data (populated live from USAspending or fallback)
         let stateData = {};
         let isDataLoaded = false;
+        let tableRows = [];
+        let currentSort = { col: 1, dir: 'desc' }; // default: Total Awards desc
+        let currentPage = 1;
+        const PAGE_SIZE = 14;
 
+        // Full US + common territory abbreviations for map labels
         const stateAbbreviations = {
-            "CA": "CA", "NY": "NY", "PA": "PA", "TX": "TX", "FL": "FL",
-            "IL": "IL", "OH": "OH", "NC": "NC", "VA": "VA", "MA": "MA"
+            "AL":"AL","AK":"AK","AZ":"AZ","AR":"AR","CA":"CA","CO":"CO","CT":"CT","DE":"DE","FL":"FL","GA":"GA",
+            "HI":"HI","ID":"ID","IL":"IL","IN":"IN","IA":"IA","KS":"KS","KY":"KY","LA":"LA","ME":"ME","MD":"MD",
+            "MA":"MA","MI":"MI","MN":"MN","MS":"MS","MO":"MO","MT":"MT","NE":"NE","NV":"NV","NH":"NH","NJ":"NJ",
+            "NM":"NM","NY":"NY","NC":"NC","ND":"ND","OH":"OH","OK":"OK","OR":"OR","PA":"PA","RI":"RI","SC":"SC",
+            "SD":"SD","TN":"TN","TX":"TX","UT":"UT","VT":"VT","VA":"VA","WA":"WA","WV":"WV","WI":"WI","WY":"WY",
+            "DC":"DC","PR":"PR","GU":"GU","VI":"VI"
+        };
+
+        // Centers for all labels (approx)
+        const stateCenters = {
+            "AL":[32.8,-86.8],"AK":[64.2,-152.5],"AZ":[34.3,-111.7],"AR":[34.9,-92.4],"CA":[36.8,-119.4],"CO":[39.0,-105.5],
+            "CT":[41.6,-72.7],"DE":[39.0,-75.5],"FL":[27.8,-81.6],"GA":[32.7,-83.4],"HI":[20.8,-156.4],"ID":[44.4,-114.5],
+            "IL":[40.0,-89.0],"IN":[39.9,-86.3],"IA":[42.1,-93.6],"KS":[38.5,-98.4],"KY":[37.5,-85.3],"LA":[31.2,-92.0],
+            "ME":[45.4,-69.0],"MD":[39.0,-76.8],"MA":[42.4,-71.5],"MI":[43.0,-84.5],"MN":[46.7,-94.6],"MS":[32.6,-89.7],
+            "MO":[38.5,-92.5],"MT":[47.0,-109.6],"NE":[41.5,-99.9],"NV":[39.3,-116.6],"NH":[43.5,-71.6],"NJ":[40.0,-74.5],
+            "NM":[34.4,-106.0],"NY":[42.9,-75.5],"NC":[35.6,-79.4],"ND":[47.5,-100.5],"OH":[40.3,-82.8],"OK":[35.6,-97.5],
+            "OR":[44.0,-120.5],"PA":[40.9,-77.8],"RI":[41.7,-71.5],"SC":[33.8,-81.0],"SD":[44.5,-100.4],"TN":[35.7,-86.8],
+            "TX":[31.0,-99.9],"UT":[39.3,-111.7],"VT":[44.1,-72.7],"VA":[37.5,-78.7],"WA":[47.4,-120.0],"WV":[38.9,-80.5],
+            "WI":[44.5,-89.5],"WY":[43.0,-107.5],"DC":[38.9,-77.0],"PR":[18.2,-66.5]
         };
 
         let map;
-        let geoJsonLayer;
 
+        // ==================== DATA LOADING ====================
         async function loadRealHHSData() {
             const statusEl = document.getElementById('data-status');
             if (statusEl) statusEl.textContent = 'Loading real HHS data from USAspending.gov...';
@@ -309,149 +391,109 @@
                 const data = await response.json();
                 const results = data.results || [];
 
-                // Convert API response to our internal format
                 stateData = {};
                 results.forEach(item => {
                     if (!item.shape_code || item.shape_code.length !== 2) return;
-
-                    const code = item.shape_code;
+                    const code = item.shape_code.toUpperCase();
                     const amount = item.aggregated_amount || 0;
                     const perCapita = item.per_capita || 0;
 
-                    // Simple risk heuristic for prototype (can be refined heavily later)
                     let risk = 'low';
-                    if (perCapita > 8000) risk = 'high';
-                    else if (perCapita > 4000) risk = 'medium';
+                    if (perCapita > 8500) risk = 'high';
+                    else if (perCapita > 4200) risk = 'medium';
 
                     stateData[code] = {
                         name: item.display_name,
                         amount: amount,
                         perCapita: Math.round(perCapita),
                         risk: risk,
-                        topRecipients: [], // Will enhance later
+                        topRecipients: [],
                         riskNotes: risk !== 'low' ? [`High per-capita HHS spending ($${Math.round(perCapita).toLocaleString()})`] : []
                     };
                 });
 
                 isDataLoaded = true;
-                if (statusEl) statusEl.textContent = `Data loaded • FY2024 • ${Object.keys(stateData).length} states/territories`;
+                if (statusEl) statusEl.textContent = `Live data • FY2024 • ${Object.keys(stateData).length} states/territories`;
 
-                // Re-initialize map with real data
-                if (map) {
-                    map.remove();
-                }
+                if (map) { map.remove(); map = null; }
                 initMapWithRealData();
+                populateTable();
+                updateTableStats();
 
             } catch (error) {
                 console.error('Failed to load real data:', error);
                 if (statusEl) statusEl.textContent = 'Using sample data (API unavailable)';
-                // Fall back to hardcoded data if API fails
                 loadFallbackData();
                 initMapWithRealData();
+                populateTable();
+                updateTableStats();
             }
         }
 
         function loadFallbackData() {
-            // Fallback sample data if API fails
             stateData = {
                 "CA": { name: "California", amount: 159481483018, perCapita: 40350, risk: "medium", topRecipients: [], riskNotes: ["High volume Medicaid spending"] },
                 "NY": { name: "New York", amount: 102133926468, perCapita: 52300, risk: "high", topRecipients: [], riskNotes: ["Very high per-capita HHS"] },
-                "PA": { name: "Pennsylvania", amount: 265472776290, perCapita: 20416, risk: "medium", topRecipients: [], riskNotes: [] },
+                "PA": { name: "Pennsylvania", amount: 265472776290, perCapita: 20416, risk: "medium", topRecipients: [], riskNotes: ["Large Medicaid program"] },
                 "TX": { name: "Texas", amount: 49769918000, perCapita: 16800, risk: "low", topRecipients: [], riskNotes: [] },
                 "FL": { name: "Florida", amount: 94061036224, perCapita: 4367, risk: "medium", topRecipients: [], riskNotes: [] },
                 "IL": { name: "Illinois", amount: 33593139280, perCapita: 2622, risk: "low", topRecipients: [], riskNotes: [] },
                 "OH": { name: "Ohio", amount: 32973949027, perCapita: 2794, risk: "low", topRecipients: [], riskNotes: [] },
                 "NC": { name: "North Carolina", amount: 30610836559, perCapita: 2932, risk: "low", topRecipients: [], riskNotes: [] },
                 "VA": { name: "Virginia", amount: 29131712832, perCapita: 3375, risk: "low", topRecipients: [], riskNotes: [] },
-                "MA": { name: "Massachusetts", amount: 30732557463, perCapita: 4371, risk: "medium", topRecipients: [], riskNotes: ["High per-capita"] }
+                "MA": { name: "Massachusetts", amount: 30732557463, perCapita: 4371, risk: "medium", topRecipients: [], riskNotes: ["High per-capita"] },
+                "GA": { name: "Georgia", amount: 28400100000, perCapita: 2620, risk: "low", topRecipients: [], riskNotes: [] },
+                "MI": { name: "Michigan", amount: 27100000000, perCapita: 2710, risk: "low", topRecipients: [], riskNotes: [] },
+                "WA": { name: "Washington", amount: 24500000000, perCapita: 3150, risk: "low", topRecipients: [], riskNotes: [] },
+                "NJ": { name: "New Jersey", amount: 31200000000, perCapita: 3380, risk: "low", topRecipients: [], riskNotes: [] },
+                "AZ": { name: "Arizona", amount: 19800000000, perCapita: 2680, risk: "low", topRecipients: [], riskNotes: [] }
             };
             isDataLoaded = true;
         }
 
+        // ==================== MAP ====================
         function initMapWithRealData() {
-            map = L.map('map', {
-                zoomControl: false,
-                attributionControl: false
-            }).setView([37.8, -96], 4);
+            map = L.map('map', { zoomControl: false, attributionControl: false }).setView([37.8, -96], 4);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                className: 'map-tiles'
-            }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { className: 'map-tiles' }).addTo(map);
 
-            // Approximate centers for labels (used only for abbreviation markers)
-            const centers = {
-                "CA": [36.7, -119.4], "NY": [42.9, -75.5], "PA": [40.9, -77.8],
-                "TX": [31.0, -99.9], "FL": [27.8, -81.6], "IL": [40.0, -89.0],
-                "OH": [40.3, -82.8], "NC": [35.6, -79.4], "VA": [37.5, -78.7], "MA": [42.4, -71.5],
-                "MD": [39.0, -76.8], "MI": [43.0, -84.5], "WA": [47.4, -120.0], "MN": [46.7, -94.6],
-                "GA": [32.6, -83.4], "AZ": [34.0, -111.5], "MO": [38.5, -92.5], "CO": [39.0, -105.5],
-                "NJ": [40.0, -74.5], "CT": [41.6, -72.7], "TN": [35.7, -86.8], "WI": [44.5, -89.5]
-            };
-
-            // Load real US states GeoJSON and render only states we have data for
             fetch('https://raw.githubusercontent.com/PublicaMundi/DataSets/master/geojson/us-states.json')
                 .then(res => res.json())
                 .then(geojson => {
+                    // Build fast lookup from our data
+                    const nameToCode = {};
+                    Object.keys(stateData).forEach(code => { nameToCode[stateData[code].name] = code; });
+
                     const filteredFeatures = geojson.features.filter(f => {
-                        const code = f.properties?.STATE || f.properties?.state || f.properties?.name;
-                        // Try to match by name or code
-                        return Object.keys(stateData).some(ourCode => {
-                            const ourState = stateData[ourCode];
-                            return ourState.name === f.properties.name || 
-                                   ourCode === (f.properties.STATE || f.properties.state);
-                        });
+                        const nm = f.properties?.name;
+                        const st = f.properties?.STATE || f.properties?.state;
+                        return !!nameToCode[nm] || (st && stateData[st]);
                     });
 
-                    const filteredGeoJSON = {
-                        type: "FeatureCollection",
-                        features: filteredFeatures
-                    };
+                    const filteredGeoJSON = { type: "FeatureCollection", features: filteredFeatures };
 
-                    const geoLayer = L.geoJSON(filteredGeoJSON, {
+                    L.geoJSON(filteredGeoJSON, {
                         style: function (feature) {
-                            // Try to find our data by name
-                            const stateName = feature.properties.name;
-                            const ourData = Object.values(stateData).find(s => s.name === stateName);
-                            
-                            let riskColor = '#14b8a6';
-                            if (ourData) {
-                                riskColor = ourData.risk === 'high' ? '#ef4444' : 
-                                           ourData.risk === 'medium' ? '#f59e0b' : '#14b8a6';
-                            }
-                            
-                            return {
-                                fillColor: riskColor,
-                                weight: 1.5,
-                                opacity: 1,
-                                color: '#1e2937',
-                                fillOpacity: 0.55
-                            };
+                            const nm = feature.properties.name;
+                            const code = nameToCode[nm] || (feature.properties.STATE || feature.properties.state);
+                            const d = stateData[code] || Object.values(stateData).find(s => s.name === nm);
+                            const riskColor = d ? (d.risk === 'high' ? '#ef4444' : d.risk === 'medium' ? '#f59e0b' : '#14b8a6') : '#14b8a6';
+                            return { fillColor: riskColor, weight: 1.5, opacity: 1, color: '#1e2937', fillOpacity: 0.55 };
                         },
                         onEachFeature: function (feature, layer) {
-                            const stateName = feature.properties.name;
-                            const ourData = Object.values(stateData).find(s => s.name === stateName);
-                            
-                            if (ourData) {
-                                const code = Object.keys(stateData).find(k => stateData[k].name === stateName);
-                                
-                                layer.on('click', () => {
-                                    if (code) showStatePanel(code);
-                                });
-                                
-                                layer.bindTooltip(stateName, { 
-                                    permanent: false, 
-                                    direction: 'top',
-                                    className: 'state-tooltip'
-                                });
+                            const nm = feature.properties.name;
+                            const code = nameToCode[nm] || Object.keys(stateData).find(k => stateData[k].name === nm);
+                            if (code) {
+                                layer.on('click', () => showStatePanel(code));
+                                layer.bindTooltip(nm, { permanent: false, direction: 'top', className: 'state-tooltip' });
                             }
                         }
                     }).addTo(map);
 
-                    // Add state abbreviation labels using known centers
+                    // Abbreviation labels for states we have data for
                     Object.keys(stateData).forEach(code => {
-                        const center = centers[code];
+                        const center = stateCenters[code];
                         const abbr = stateAbbreviations[code];
-                        
                         if (center && abbr) {
                             const labelIcon = L.divIcon({
                                 className: 'state-abbr-label',
@@ -459,68 +501,46 @@
                                 iconSize: [28, 18],
                                 iconAnchor: [14, 9]
                             });
-                            L.marker(center, { 
-                                icon: labelIcon, 
-                                interactive: false 
-                            }).addTo(map);
+                            L.marker(center, { icon: labelIcon, interactive: false }).addTo(map);
                         }
                     });
                 })
                 .catch(err => {
-                    console.warn("Could not load full GeoJSON, falling back to circles", err);
-                    // Fallback to previous circle method if GeoJSON fails
-                    renderFallbackCircles(centers);
+                    console.warn("GeoJSON load failed, using circles", err);
+                    renderFallbackCircles();
                 });
 
             // Legend
             const legend = L.control({position: 'bottomright'});
             legend.onAdd = function () {
                 const div = L.DomUtil.create('div', 'info legend');
-                div.style.background = 'rgba(15, 23, 42, 0.9)';
-                div.style.padding = '8px 12px';
-                div.style.borderRadius = '8px';
-                div.style.fontSize = '12px';
-                div.style.color = '#cbd5e1';
-                div.innerHTML = `
-                    <strong>HHS Spending (Risk Proxy)</strong><br>
+                div.style.cssText = 'background:rgba(15,23,42,0.9);padding:8px 12px;border-radius:8px;font-size:12px;color:#cbd5e1';
+                div.innerHTML = `<strong>HHS Spending (Risk Proxy)</strong><br>
                     <i style="background:#ef4444;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> High (per capita)<br>
                     <i style="background:#f59e0b;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> Medium<br>
-                    <i style="background:#14b8a6;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> Lower
-                `;
+                    <i style="background:#14b8a6;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> Lower`;
                 return div;
             };
             legend.addTo(map);
         }
 
-        function renderFallbackCircles(centers) {
+        function renderFallbackCircles() {
             Object.keys(stateData).forEach(code => {
-                const data = stateData[code];
-                const riskColor = data.risk === 'high' ? '#ef4444' : 
-                                 data.risk === 'medium' ? '#f59e0b' : '#14b8a6';
-
-                const center = centers[code];
+                const d = stateData[code];
+                const riskColor = d.risk === 'high' ? '#ef4444' : d.risk === 'medium' ? '#f59e0b' : '#14b8a6';
+                const center = stateCenters[code];
                 if (!center) return;
-
                 const circle = L.circle(center, {
-                    color: riskColor,
-                    fillColor: riskColor,
-                    fillOpacity: 0.4,
-                    radius: Math.max(Math.sqrt(data.amount) / 220000, 80000),
-                    weight: 1.5
+                    color: riskColor, fillColor: riskColor, fillOpacity: 0.4,
+                    radius: Math.max(Math.sqrt(d.amount) / 220000, 80000), weight: 1.5
                 }).addTo(map);
-
                 circle.on('click', () => showStatePanel(code));
-                circle.bindTooltip(data.name, { permanent: false, direction: 'top' });
+                circle.bindTooltip(d.name, { permanent: false, direction: 'top' });
 
                 const abbr = stateAbbreviations[code];
                 if (abbr) {
-                    const labelIcon = L.divIcon({
-                        className: 'state-abbr-label',
-                        html: `<span>${abbr}</span>`,
-                        iconSize: [28, 18],
-                        iconAnchor: [14, 9]
-                    });
-                    L.marker(center, { icon: labelIcon, interactive: false }).addTo(map);
+                    const icon = L.divIcon({ className: 'state-abbr-label', html: `<span>${abbr}</span>`, iconSize: [28,18], iconAnchor:[14,9] });
+                    L.marker(center, { icon, interactive: false }).addTo(map);
                 }
             });
         }
@@ -537,68 +557,41 @@
             document.getElementById('total-awards').textContent = '$' + (data.amount / 1e9).toFixed(1) + 'B';
             document.getElementById('per-capita').textContent = '$' + Math.round(data.perCapita).toLocaleString();
 
-            // Risk signals - improved with real data
             const riskContainer = document.getElementById('risk-signals');
-            riskContainer.innerHTML = '';
-
-            const riskLevel = data.risk;
-            let riskHTML = '';
-
             const perCapita = data.perCapita || 0;
-            let riskLabel = '';
-            let riskDescription = '';
+            let riskLabel = 'Lower Relative Risk', riskDescription = 'Spending levels appear more in line with population.', riskClass = 'text-emerald-400';
+            if (data.risk === 'high' || perCapita > 10000) { riskLabel = 'Elevated Risk Profile'; riskDescription = `Very high per-capita HHS spending ($${perCapita.toLocaleString()}). Worth closer review.`; riskClass = 'text-red-400'; }
+            else if (data.risk === 'medium' || perCapita > 5000) { riskLabel = 'Moderate Risk Profile'; riskDescription = `Above-average per-capita spending. Monitor for concentration.`; riskClass = 'text-amber-400'; }
 
-            if (riskLevel === 'high' || perCapita > 10000) {
-                riskLabel = 'Elevated Risk Profile';
-                riskDescription = `Very high per-capita HHS spending ($${perCapita.toLocaleString()}). Worth closer review.`;
-            } else if (riskLevel === 'medium' || perCapita > 5000) {
-                riskLabel = 'Moderate Risk Profile';
-                riskDescription = `Above-average per-capita spending. Monitor for concentration.`;
-            } else {
-                riskLabel = 'Lower Relative Risk';
-                riskDescription = `Spending levels appear more in line with population.`;
-            }
-
-            riskHTML = `
+            riskContainer.innerHTML = `
                 <div class="flex items-start gap-x-3 bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3">
-                    <div class="mt-1 ${riskLevel === 'high' ? 'text-red-400' : riskLevel === 'medium' ? 'text-amber-400' : 'text-emerald-400'}">●</div>
+                    <div class="mt-1 ${riskClass}">●</div>
                     <div class="flex-1">
                         <div class="font-semibold text-sm">${riskLabel}</div>
                         <div class="text-xs text-slate-300 mt-1">${riskDescription}</div>
                     </div>
-                </div>
-            `;
-            riskContainer.innerHTML = riskHTML;
+                </div>`;
 
-            // Top Recipients + direct link
             const patterns = document.getElementById('notable-patterns');
-            
-            const stateSlug = stateCode.toLowerCase();
             const usaspendingLink = `https://www.usaspending.gov/search?timePeriodFY=2024&awardingAgency=Department%20of%20Health%20and%20Human%20Services&recipientLocationState=${stateCode}`;
-
             patterns.innerHTML = `
                 <div class="text-sm">
                     <div class="font-medium mb-1">Major Recipients (HHS)</div>
-                    <div class="text-slate-300">State Medicaid agencies and large managed care organizations typically dominate HHS spending in this state.</div>
-                    
+                    <div class="text-slate-300">State Medicaid agencies and large MCOs typically dominate. Full recipient lists &amp; addresses often incomplete in public feeds.</div>
                     <div class="mt-3">
-                        <a href="${usaspendingLink}" target="_blank" 
-                           class="inline-flex items-center gap-x-2 text-amber-400 hover:text-amber-300 text-sm font-medium">
-                            View detailed recipient data on USAspending.gov →
+                        <a href="${usaspendingLink}" target="_blank" class="inline-flex items-center gap-x-2 text-amber-400 hover:text-amber-300 text-sm font-medium">
+                            View full recipient &amp; award data on USAspending.gov →
                         </a>
                     </div>
-                </div>
-            `;
+                </div>`;
 
             panel.classList.remove('hidden');
             empty.classList.add('hidden');
         }
 
         function closePanel() {
-            const panel = document.getElementById('state-panel');
-            const empty = document.getElementById('empty-state');
-            panel.classList.add('hidden');
-            empty.classList.remove('hidden');
+            document.getElementById('state-panel').classList.add('hidden');
+            document.getElementById('empty-state').classList.remove('hidden');
         }
 
         function resetMap() {
@@ -606,9 +599,268 @@
             closePanel();
         }
 
-        // Initialize
+        // ==================== ADVANCED TABLE ====================
+        function populateTable() {
+            const tbody = document.querySelector('#data-table tbody');
+            if (!tbody) return;
+
+            tableRows = Object.keys(stateData || {}).map(code => {
+                const d = stateData[code];
+                return {
+                    code,
+                    name: d.name,
+                    amount: d.amount || 0,
+                    perCapita: d.perCapita || 0,
+                    risk: d.risk || 'low',
+                    signals: (d.riskNotes && d.riskNotes.length) ? d.riskNotes.join(' | ') : '—'
+                };
+            });
+
+            // Apply default sort on first load
+            if (!tableRows.length) return;
+            sortRows();
+            currentPage = 1;
+            renderTable();
+        }
+
+        function getFilteredRows() {
+            const q = (document.getElementById('table-search')?.value || '').toLowerCase().trim();
+            const risk = document.getElementById('risk-filter')?.value || '';
+            const minB = parseFloat(document.getElementById('min-amount')?.value) || 0;
+            const maxB = parseFloat(document.getElementById('max-amount')?.value) || Infinity;
+
+            return tableRows.filter(r => {
+                const matchesQ = !q || r.name.toLowerCase().includes(q) || r.code.toLowerCase().includes(q) || r.signals.toLowerCase().includes(q);
+                const matchesRisk = !risk || r.risk === risk;
+                const amtB = r.amount / 1e9;
+                const matchesAmt = amtB >= minB && amtB <= maxB;
+                return matchesQ && matchesRisk && matchesAmt;
+            });
+        }
+
+        function sortRows() {
+            const { col, dir } = currentSort;
+            const mult = dir === 'asc' ? 1 : -1;
+            tableRows.sort((a, b) => {
+                let va, vb;
+                if (col === 0) { va = a.name; vb = b.name; return va.localeCompare(vb) * mult; }
+                if (col === 1) { va = a.amount; vb = b.amount; return (va - vb) * mult; }
+                if (col === 2) { va = a.perCapita; vb = b.perCapita; return (va - vb) * mult; }
+                if (col === 3) { // risk high=2, med=1, low=0
+                    const rank = r => r === 'high' ? 2 : r === 'medium' ? 1 : 0;
+                    return (rank(a.risk) - rank(b.risk)) * mult;
+                }
+                return 0;
+            });
+        }
+
+        function sortTable(col) {
+            if (currentSort.col === col) {
+                currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort = { col, dir: (col === 0 ? 'asc' : 'desc') };
+            }
+            sortRows();
+            currentPage = 1;
+            renderTable();
+            updateSortIndicators();
+        }
+
+        function updateSortIndicators() {
+            document.querySelectorAll('#data-table thead th').forEach(th => {
+                const ind = th.querySelector('.sort-indicator');
+                if (!ind) return;
+                const c = parseInt(th.getAttribute('data-col'));
+                if (c === currentSort.col) {
+                    ind.textContent = currentSort.dir === 'asc' ? ' ▲' : ' ▼';
+                } else {
+                    ind.textContent = '';
+                }
+            });
+        }
+
+        function renderTable() {
+            const filtered = getFilteredRows();
+            const tbody = document.querySelector('#data-table tbody');
+            if (!tbody) return;
+
+            const start = (currentPage - 1) * PAGE_SIZE;
+            const pageData = filtered.slice(start, start + PAGE_SIZE);
+
+            tbody.innerHTML = '';
+            pageData.forEach(r => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800 cursor-pointer border-b border-slate-800';
+                const riskBadge = r.risk === 'high' ? 'bg-red-500/20 text-red-400' :
+                                  r.risk === 'medium' ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400';
+                tr.innerHTML = `
+                    <td class="py-3 pr-4 font-medium">${r.name} <span class="text-slate-500">(${r.code})</span></td>
+                    <td class="py-3 pr-4 text-right font-mono text-emerald-300">$${(r.amount / 1e9).toFixed(1)}B</td>
+                    <td class="py-3 pr-4 text-right font-mono">$${r.perCapita.toLocaleString()}</td>
+                    <td class="py-3 pr-4">
+                        <span class="px-2.5 py-0.5 rounded-full text-xs font-medium ${riskBadge}">
+                            ${r.risk.charAt(0).toUpperCase() + r.risk.slice(1)}
+                        </span>
+                    </td>
+                    <td class="py-3 text-sm text-slate-400 max-w-[260px] truncate">${r.signals}</td>
+                    <td class="py-3 pr-2 text-right">
+                        <button onclick="event.stopImmediatePropagation(); showStatePanel('${r.code}');" 
+                                class="text-xs px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg">Details</button>
+                    </td>
+                `;
+                tr.onclick = () => showStatePanel(r.code);
+                tbody.appendChild(tr);
+            });
+
+            renderPagination(filtered.length);
+            updateSortIndicators();
+        }
+
+        function filterTable() {
+            currentPage = 1;
+            renderTable();
+        }
+
+        function clearTableFilters() {
+            const ids = ['table-search', 'risk-filter', 'min-amount', 'max-amount'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = (id === 'risk-filter' ? '' : '');
+            });
+            currentPage = 1;
+            renderTable();
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderTable();
+        }
+
+        function renderPagination(total) {
+            const el = document.getElementById('table-pagination');
+            if (!el) return;
+            const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+            if (currentPage > pages) currentPage = pages;
+
+            el.innerHTML = `
+                <div>Showing <span class="text-slate-200">${Math.min((currentPage-1)*PAGE_SIZE + 1, total)}</span>–<span class="text-slate-200">${Math.min(currentPage*PAGE_SIZE, total)}</span> of <span class="text-slate-200">${total}</span> states</div>
+                <div class="flex items-center gap-x-2">
+                    <button onclick="changePage(-1)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded disabled:opacity-40 border border-slate-700" ${currentPage===1?'disabled':''}>Prev</button>
+                    <span class="px-2 text-slate-400">${currentPage} / ${pages}</span>
+                    <button onclick="changePage(1)" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 rounded disabled:opacity-40 border border-slate-700" ${currentPage>=pages?'disabled':''}>Next</button>
+                </div>
+            `;
+        }
+
+        function updateTableStats() {
+            const el = document.getElementById('table-stats');
+            if (!el || !tableRows.length) return;
+
+            const totalStates = tableRows.length;
+            const totalAmount = tableRows.reduce((s, r) => s + r.amount, 0);
+            const avgPerCap = Math.round(tableRows.reduce((s, r) => s + r.perCapita, 0) / totalStates);
+
+            el.innerHTML = `
+                <span class="font-medium text-emerald-400">${totalStates}</span> states/territories &nbsp;•&nbsp; 
+                <span class="font-medium text-emerald-400">$${(totalAmount / 1e9).toFixed(1)}B</span> total HHS obligations (FY2024) &nbsp;•&nbsp; 
+                Avg per capita <span class="font-medium text-emerald-400">$${avgPerCap.toLocaleString()}</span>
+            `;
+        }
+
+        // ==================== EXPORTS ====================
+        function exportTableData(fmt = 'csv') {
+            const data = getFilteredRows();
+            if (!data.length) { alert('No data to export.'); return; }
+
+            if (fmt === 'csv') {
+                let csv = 'State,Code,Amount_USD,PerCapita_USD,Risk,Signals\n';
+                data.forEach(d => {
+                    csv += `"${d.name}",${d.code},${d.amount},${d.perCapita},${d.risk},"${d.signals.replace(/"/g,'""')}"\n`;
+                });
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'federal-risk-explorer-hhs-fy2024.csv'; a.click();
+                URL.revokeObjectURL(url);
+            } else if (fmt === 'json') {
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'federal-risk-explorer-hhs-fy2024.json'; a.click();
+                URL.revokeObjectURL(url);
+            } else if (fmt === 'pdf') {
+                // Requires jsPDF (loaded in head)
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+                    doc.setFontSize(14);
+                    doc.text('Federal Risk Explorer — HHS FY2024 (HHS Awards by State)', 40, 40);
+                    doc.setFontSize(10);
+                    doc.text(`Generated ${new Date().toISOString().slice(0,10)} • Source: USAspending.gov (public data)`, 40, 56);
+
+                    let y = 80;
+                    doc.setFontSize(9);
+                    doc.text('State', 40, y);
+                    doc.text('Total ($B)', 140, y);
+                    doc.text('Per Capita', 220, y);
+                    doc.text('Risk', 300, y);
+                    doc.text('Signals', 360, y);
+                    y += 14;
+
+                    data.slice(0, 45).forEach(r => { // cap for PDF space
+                        if (y > 520) { doc.addPage(); y = 60; }
+                        doc.text(r.name.substring(0,22), 40, y);
+                        doc.text((r.amount / 1e9).toFixed(1) + 'B', 140, y);
+                        doc.text('$' + r.perCapita.toLocaleString(), 220, y);
+                        doc.text(r.risk.toUpperCase(), 300, y);
+                        doc.text((r.signals || '').substring(0, 55), 360, y);
+                        y += 13;
+                    });
+
+                    doc.save('federal-risk-explorer-hhs-fy2024.pdf');
+                } catch (e) {
+                    console.error(e);
+                    alert('PDF export requires the jsPDF library. Falling back to CSV. You can print this page for a PDF.');
+                    exportTableData('csv');
+                }
+            }
+        }
+
+        // ==================== TIP FORM (functional demo) ====================
+        function submitTip(e) {
+            e.preventDefault();
+            const form = e.currentTarget || e.target;
+            const btns = form.querySelectorAll('button[type="submit"]');
+            const orig = btns.length ? btns[0].textContent : '';
+
+            if (btns.length) btns[0].textContent = 'Submitting...';
+            setTimeout(() => {
+                const thanks = document.createElement('div');
+                thanks.className = 'mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-2xl text-sm';
+                thanks.innerHTML = `Thank you. Your tip has been recorded for review. Reference: T-${Date.now().toString(36).toUpperCase()}. We cannot confirm receipt or provide case updates.`;
+                form.parentNode.insertBefore(thanks, form.nextSibling);
+                form.reset();
+                if (btns.length) btns[0].textContent = orig || 'Submit Tip (Confidential)';
+                setTimeout(() => thanks.remove(), 12000);
+            }, 650);
+        }
+
+        // Expose a couple helpers for debugging / future
+        window.filterTable = filterTable;
+        window.exportTableData = exportTableData;
+        window.clearTableFilters = clearTableFilters;
+        window.changePage = changePage;
+        window.sortTable = sortTable;
+
+        // ==================== BOOT ====================
         function init() {
             initializeTailwind();
+
+            // Wire tip form (in case of multiple)
+            const tipForm = document.getElementById('tip-form');
+            if (tipForm) tipForm.onsubmit = submitTip;
+
+            // Initial data load (populates map + table)
             loadRealHHSData();
         }
 

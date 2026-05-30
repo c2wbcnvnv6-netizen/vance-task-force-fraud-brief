@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOIA Toolkit | Federal Risk Explorer</title>
+    <meta name="description" content="Interactive FOIA request builder, templates, and step-by-step guides for requesting federal spending data, SAM.gov validation records, and Anti-Fraud Task Force materials from GSA, OMB, and HHS.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        
+        body {
+            font-family: 'Inter', system_ui, sans-serif;
+        }
+        
+        .heading-font {
+            font-family: 'Space Grotesk', 'Inter', sans-serif;
+        }
+
+        .section-card {
+            background: #1e2937;
+            border: 1px solid #334155;
+        }
+
+        .gov-input {
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: #e2e8f0;
+        }
+
+        .gov-input:focus {
+            border-color: #14b8a6;
+            outline: none;
+        }
+
+        .template-btn {
+            transition: all 0.1s ease;
+        }
+
+        .template-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
+        }
+
+        .nav-active {
+            color: #14b8a6;
+            font-weight: 600;
+        }
+
+        .foia-step {
+            counter-increment: step;
+        }
+
+        .foia-step::before {
+            content: counter(step);
+            background: #0f172a;
+            border: 1px solid #475569;
+            color: #14b8a6;
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .generated-text {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <!-- Top Nav (matches explorer + site) -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-x-3">
+                    <a href="index.html" class="flex items-center gap-x-3">
+                        <div class="w-9 h-9 bg-emerald-500 text-white rounded-xl flex items-center justify-center">
+                            <i class="fa-solid fa-shield-halved text-lg"></i>
+                        </div>
+                        <span class="font-semibold text-xl tracking-tight">Federal Risk Explorer</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center gap-x-1 text-sm">
+                    <a href="index.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Home</a>
+                    <a href="foia-toolkit.html" class="px-4 py-2 text-emerald-400 font-medium rounded-xl">FOIA Toolkit</a>
+                    <a href="explorer/federal-risk-explorer.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Risk Explorer</a>
+                    <a href="index.html#research" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Research Library</a>
+                    <a href="index.html#submit-tip" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Submit a Tip</a>
+                </div>
+                <div>
+                    <a href="explorer/federal-risk-explorer.html" 
+                       class="inline-flex items-center gap-x-2 px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-semibold rounded-2xl transition-all">
+                        <i class="fa-solid fa-map mr-1.5"></i>
+                        <span>Open Explorer</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="max-w-7xl mx-auto px-6 pt-12 pb-8">
+        <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-x-2 bg-emerald-500/10 text-emerald-400 px-4 py-1 rounded-full text-sm mb-4 border border-emerald-500/20">
+                <i class="fa-solid fa-file-lines"></i>
+                <span class="font-medium">Public Service Resource</span>
+            </div>
+            <h1 class="text-6xl font-semibold tracking-tighter heading-font">FOIA Toolkit</h1>
+            <p class="mt-4 text-2xl text-slate-300">Request the data the public deserves.</p>
+            <p class="mt-3 text-slate-400 max-w-2xl">Interactive builder, ready-to-use templates, and clear instructions for obtaining complete federal spending records, SAM.gov validation status, and Anti-Fraud Task Force source data.</p>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 pb-16 space-y-14">
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="section-card rounded-3xl p-5">
+                <div class="text-emerald-400 text-sm font-semibold">5</div>
+                <div class="font-semibold mt-1">Ready Templates</div>
+                <div class="text-xs text-slate-400 mt-1">Task Force • SAM Address Validation • State Spending • More</div>
+            </div>
+            <div class="section-card rounded-3xl p-5">
+                <div class="text-emerald-400 text-sm font-semibold">Live Builder</div>
+                <div class="font-semibold mt-1">Custom Request Generator</div>
+                <div class="text-xs text-slate-400 mt-1">Choose agency, scope, and focus — text updates instantly</div>
+            </div>
+            <div class="section-card rounded-3xl p-5">
+                <div class="text-emerald-400 text-sm font-semibold">Step-by-Step</div>
+                <div class="font-semibold mt-1">Submission Guides</div>
+                <div class="text-xs text-slate-400 mt-1">FOIA.gov, agency portals, appeals, and fee waivers</div>
+            </div>
+            <div class="section-card rounded-3xl p-5">
+                <div class="text-emerald-400 text-sm font-semibold">No Account</div>
+                <div class="font-semibold mt-1">100% Public</div>
+                <div class="text-xs text-slate-400 mt-1">Everything here works without login or payment</div>
+            </div>
+        </div>
+
+        <!-- Interactive Request Builder -->
+        <section class="section-card rounded-3xl p-8">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h2 class="text-3xl font-semibold tracking-tight">Interactive FOIA Request Builder</h2>
+                    <p class="text-slate-400 mt-1">Select options below. The request text updates automatically. Copy or download when ready.</p>
+                </div>
+                <button onclick="resetBuilder()" 
+                        class="text-sm px-4 py-2 border border-slate-600 rounded-xl hover:bg-slate-800 transition-colors">Reset</button>
+            </div>
+
+            <div class="grid lg:grid-cols-12 gap-8">
+                <!-- Controls -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div>
+                        <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1.5">Primary Agency / Recipient</label>
+                        <select id="agency" onchange="updateGeneratedRequest()" class="gov-input w-full rounded-2xl px-4 py-3 text-sm">
+                            <option value="General Services Administration (GSA)">General Services Administration (GSA) — SAM.gov &amp; USASpending custodian</option>
+                            <option value="Department of Health and Human Services (HHS)">Department of Health and Human Services (HHS) / CMS</option>
+                            <option value="Office of Management and Budget (OMB)">Office of Management and Budget (OMB)</option>
+                            <option value="White House / relevant component">White House / relevant component (Task Force coordination)</option>
+                            <option value="Multiple agencies">Multiple agencies (GSA + HHS + OMB)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1.5">Data Focus</label>
+                            <select id="focus" onchange="updateGeneratedRequest()" class="gov-input w-full rounded-2xl px-4 py-3 text-sm">
+                                <option value="SAM.gov physical address validation status and completeness">SAM.gov physical address validation status (Passed/Failed/Unknown)</option>
+                                <option value="USASpending recipient address and place of performance completeness">USASpending recipient address &amp; place of performance fields (NULL completeness)</option>
+                                <option value="Aggregated statistics from the 2026 Anti-Fraud Task Force review">Aggregated 2026 Anti-Fraud Task Force statistics ($6.3B / 392 entities / 895 contracts)</option>
+                                <option value="State-level HHS/Medicaid spending award details and recipient lists">State-level HHS/Medicaid spending + top recipient lists</option>
+                                <option value="Any internal data quality reports or roadmaps for location field completeness">Data quality reports &amp; location field improvement roadmaps</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1.5">State / Geographic Focus (optional)</label>
+                            <select id="state-focus" onchange="updateGeneratedRequest()" class="gov-input w-full rounded-2xl px-4 py-3 text-sm">
+                                <option value="">All states / nationwide</option>
+                                <option value="California">California</option>
+                                <option value="New York">New York</option>
+                                <option value="Pennsylvania">Pennsylvania</option>
+                                <option value="Texas">Texas</option>
+                                <option value="Florida">Florida</option>
+                                <option value="Ohio">Ohio</option>
+                                <option value="Illinois">Illinois</option>
+                                <option value="North Carolina">North Carolina</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Michigan">Michigan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs uppercase tracking-wider text-slate-400 block mb-1.5">Time Period</label>
+                        <input id="time-period" type="text" value="January 1, 2024 to present" onchange="updateGeneratedRequest()"
+                               class="gov-input w-full rounded-2xl px-4 py-3 text-sm">
+                    </div>
+
+                    <div class="flex items-center gap-x-3 pt-2">
+                        <label class="flex items-center gap-x-2 text-sm cursor-pointer">
+                            <input type="checkbox" id="fee-waiver" checked onchange="updateGeneratedRequest()" class="accent-emerald-500">
+                            <span>Include fee waiver request (public interest)</span>
+                        </label>
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-700">
+                        <button onclick="copyRequestToClipboard()" 
+                                class="w-full md:w-auto px-6 py-3 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold rounded-2xl flex items-center justify-center gap-x-2 text-sm transition-all">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Copy Request to Clipboard</span>
+                        </button>
+                        <button onclick="downloadRequest()" 
+                                class="ml-0 md:ml-3 mt-3 md:mt-0 w-full md:w-auto px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-2xl text-sm flex items-center justify-center gap-x-2 transition-all">
+                            <i class="fa-solid fa-download"></i>
+                            <span>Download .txt</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Preview -->
+                <div class="lg:col-span-7">
+                    <div class="text-xs uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-x-2">
+                        <span>LIVE REQUEST PREVIEW</span>
+                        <span class="text-emerald-400">(updates instantly)</span>
+                    </div>
+                    <textarea id="generated-request" rows="18" readonly
+                              class="generated-text w-full bg-slate-900 border border-slate-700 rounded-2xl p-5 text-slate-200 text-[13px] leading-relaxed resize-y"></textarea>
+                    <div class="text-[10px] text-slate-500 mt-2">This is a starting point. Customize names, contact info, and specific details before submission.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Templates -->
+        <section>
+            <h3 class="text-xl font-semibold mb-4">Ready-to-Use Templates</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <button onclick="loadTemplate(0)" class="template-btn text-left section-card rounded-2xl p-5 hover:border-emerald-500/60 border border-slate-700">
+                    <div class="font-semibold">Vance Task Force Transparency (Recommended)</div>
+                    <div class="text-xs text-slate-400 mt-2">Aggregated statistics on the $6.3B / 392 entities review, SAM physical address validation status, and USASpending location field completeness.</div>
+                </button>
+                <button onclick="loadTemplate(1)" class="template-btn text-left section-card rounded-2xl p-5 hover:border-emerald-500/60 border border-slate-700">
+                    <div class="font-semibold">SAM.gov Physical Address Validation</div>
+                    <div class="text-xs text-slate-400 mt-2">Policy, technical specs, and public availability of Passed/Failed/Unknown physical address validation flags.</div>
+                </button>
+                <button onclick="loadTemplate(2)" class="template-btn text-left section-card rounded-2xl p-5 hover:border-emerald-500/60 border border-slate-700">
+                    <div class="font-semibold">State-Level HHS Spending Detail</div>
+                    <div class="text-xs text-slate-400 mt-2">Complete award-level data for a specific state including recipient addresses and place of performance when available.</div>
+                </button>
+                <button onclick="loadTemplate(3)" class="template-btn text-left section-card rounded-2xl p-5 hover:border-emerald-500/60 border border-slate-700">
+                    <div class="font-semibold">USASpending Data Quality Report</div>
+                    <div class="text-xs text-slate-400 mt-2">Internal assessments explaining NULL values in recipient address and place of performance fields.</div>
+                </button>
+                <button onclick="loadTemplate(4)" class="template-btn text-left section-card rounded-2xl p-5 hover:border-emerald-500/60 border border-slate-700">
+                    <div class="font-semibold">Multi-Agency FOIA (GSA + HHS + OMB)</div>
+                    <div class="text-xs text-slate-400 mt-2">Broad request covering Task Force source data, validation fields, and reform recommendations.</div>
+                </button>
+            </div>
+        </section>
+
+        <!-- How to Submit -->
+        <section class="section-card rounded-3xl p-8">
+            <h3 class="text-2xl font-semibold tracking-tight mb-6">How to Submit a FOIA Request</h3>
+            
+            <div class="grid md:grid-cols-2 gap-x-10 gap-y-8 text-sm">
+                <div>
+                    <div class="foia-step flex items-start mb-5">
+                        <div>
+                            <div class="font-semibold">1. Use FOIA.gov (fastest for most agencies)</div>
+                            <div class="text-slate-300 mt-1">Go to <a href="https://www.foia.gov" target="_blank" class="text-emerald-400 underline">foia.gov</a>, select the agency, paste the generated text, and submit. You will receive a tracking number by email.</div>
+                        </div>
+                    </div>
+                    <div class="foia-step flex items-start mb-5">
+                        <div>
+                            <div class="font-semibold">2. Agency-specific portals</div>
+                            <div class="text-slate-300 mt-1">GSA: <a href="https://www.gsa.gov/reference/freedom-of-information-act-foia" target="_blank" class="text-emerald-400 underline">gsa.gov FOIA</a><br>
+                            HHS: <a href="https://www.hhs.gov/foia" target="_blank" class="text-emerald-400 underline">hhs.gov/foia</a><br>
+                            OMB: Use FOIA.gov or the White House FOIA portal.</div>
+                        </div>
+                    </div>
+                    <div class="foia-step flex items-start">
+                        <div>
+                            <div class="font-semibold">3. Keep records</div>
+                            <div class="text-slate-300 mt-1">Save the tracking number, date submitted, and a copy of your request. Follow up after 20 business days if you have not received an acknowledgment.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="font-semibold mb-3">Important Tips</div>
+                    <ul class="space-y-2 text-slate-300 text-sm">
+                        <li class="flex gap-x-2"><span class="text-emerald-400">•</span> Requests for <strong>aggregated statistics and policy documents</strong> are far less likely to be denied than requests naming specific vendors under active review.</li>
+                        <li class="flex gap-x-2"><span class="text-emerald-400">•</span> Always request a <strong>fee waiver</strong> on public-interest grounds (included by default in the builder).</li>
+                        <li class="flex gap-x-2"><span class="text-emerald-400">•</span> You can request a <strong>rolling production</strong> — ask the agency to release records as they become available.</li>
+                        <li class="flex gap-x-2"><span class="text-emerald-400">•</span> If denied or heavily redacted, you have <strong>90 days</strong> to appeal. The template language supports this.</li>
+                        <li class="flex gap-x-2"><span class="text-emerald-400">•</span> Reference the April 2026 public statements about the White House Anti-Fraud Task Force findings when relevant.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Explorer Integration + Missing Data Callout -->
+        <section id="foia-guidance" class="bg-slate-900 border border-amber-500/30 rounded-3xl p-8">
+            <div class="flex items-start gap-x-4">
+                <div class="text-2xl">⚠️</div>
+                <div class="flex-1">
+                    <div class="font-semibold text-lg">Using the Federal Risk Explorer and hitting data gaps?</div>
+                    <p class="text-slate-300 mt-2">The public USAspending API and bulk downloads frequently return NULL for Recipient Address, Place of Performance, and SAM physical address validation status. These fields are essential for independent verification of the red flags described in the 2026 Anti-Fraud Task Force announcement.</p>
+                    
+                    <div class="mt-4">
+                        <a href="explorer/federal-risk-explorer.html" class="inline-flex items-center text-emerald-400 hover:text-emerald-300 font-medium">
+                            Return to the Risk Explorer and note the gaps you want to request →
+                        </a>
+                    </div>
+                    <div class="mt-2 text-xs text-slate-400">The pre-written “Vance Task Force Transparency” template above is specifically designed to target these exact missing pieces.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Additional Resources -->
+        <div class="text-sm text-slate-400">
+            <div class="font-semibold text-slate-200 mb-2">Additional Resources</div>
+            <div class="flex flex-wrap gap-x-6 gap-y-1">
+                <a href="https://www.usaspending.gov" target="_blank" class="hover:text-white">USAspending.gov</a>
+                <a href="https://www.sam.gov" target="_blank" class="hover:text-white">SAM.gov</a>
+                <a href="https://www.foia.gov" target="_blank" class="hover:text-white">FOIA.gov</a>
+                <a href="https://www.gsa.gov/reference/freedom-of-information-act-foia" target="_blank" class="hover:text-white">GSA FOIA</a>
+                <a href="https://www.hhs.gov/foia" target="_blank" class="hover:text-white">HHS FOIA</a>
+                <a href="https://www.whitehouse.gov/omb/information-regulatory-affairs/freedom-of-information-act-foia/" target="_blank" class="hover:text-white">OMB FOIA</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer CTA -->
+    <div class="border-t border-slate-800 bg-slate-900 py-8">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row md:items-center gap-y-4 justify-between text-sm">
+            <div>
+                <span class="font-semibold">Knowledge is Power.</span> 
+                <span class="text-slate-400">This toolkit exists to help the public request records that should already be transparent.</span>
+            </div>
+            <div class="flex items-center gap-x-3">
+                <a href="index.html#submit-tip" class="px-5 py-2 rounded-2xl border border-slate-600 hover:bg-slate-800 text-sm">Submit a Tip</a>
+                <a href="explorer/federal-risk-explorer.html" class="px-5 py-2 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl text-sm font-semibold">Open Federal Risk Explorer</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tailwind
+        function initTailwind() {
+            // Already using CDN classes
+        }
+
+        // Live request builder
+        function updateGeneratedRequest() {
+            const agency = document.getElementById('agency').value;
+            const focus = document.getElementById('focus').value;
+            const state = document.getElementById('state-focus').value;
+            const time = document.getElementById('time-period').value;
+            const fee = document.getElementById('fee-waiver').checked;
+
+            let body = `Pursuant to the Freedom of Information Act, 5 U.S.C. § 552, I request the following records from ${agency}:\n\n`;
+            
+            body += `1. ${focus}.\n\n`;
+
+            if (state) {
+                body += `Focus on records and data pertaining to ${state}. Include any state-specific summaries, award-level detail, or validation status reports.\n\n`;
+            }
+
+            body += `Time period: Records created, modified, or covering the period ${time}.\n\n`;
+
+            body += `Format preference: Electronic records (PDF, CSV, or native machine-readable formats). I am happy to accept a rolling production.\n\n`;
+
+            if (fee) {
+                body += `Fee waiver request: This request is made in the public interest. The information will contribute to public understanding of federal contracting transparency, SAM.gov data quality, and oversight of healthcare spending. I am not seeking the information for commercial purposes. I request a waiver or reduction of fees.\n\n`;
+            }
+
+            body += `I request that any responsive records be provided in the most complete and usable form available, including any internal assessments, data quality reports, or policy documents addressing the completeness of location and validation fields.\n\n`;
+
+            body += `Please provide an acknowledgment of this request within the statutory timeframe and a tracking number for follow-up.\n\n`;
+
+            body += `Thank you for your assistance in furthering government transparency.\n\n`;
+            body += `[Your Full Name]\n[Your Email]\n[Your Phone — optional]\n[Optional: Organization or “Private Citizen”]\n[Date]`;
+
+            document.getElementById('generated-request').value = body;
+        }
+
+        function copyRequestToClipboard() {
+            const ta = document.getElementById('generated-request');
+            ta.select();
+            document.execCommand('copy');
+            
+            const origText = event.currentTarget ? event.currentTarget.textContent : '';
+            const btns = document.querySelectorAll('button');
+            // Simple toast
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-6 right-6 bg-emerald-500 text-white px-5 py-3 rounded-2xl text-sm shadow-xl flex items-center gap-x-2';
+            toast.innerHTML = `<i class="fa-solid fa-check"></i> <span>Copied to clipboard</span>`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2200);
+        }
+
+        function downloadRequest() {
+            const text = document.getElementById('generated-request').value;
+            if (!text.trim()) { alert('Generate a request first.'); return; }
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'FOIA_Request_Federal_Spending.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function resetBuilder() {
+            document.getElementById('agency').value = 'General Services Administration (GSA)';
+            document.getElementById('focus').value = 'SAM.gov physical address validation status and completeness';
+            document.getElementById('state-focus').value = '';
+            document.getElementById('time-period').value = 'January 1, 2024 to present';
+            document.getElementById('fee-waiver').checked = true;
+            updateGeneratedRequest();
+        }
+
+        // Templates (index matches the select options)
+        const templates = [
+            // 0 — Vance Task Force Transparency
+            `Pursuant to the Freedom of Information Act, 5 U.S.C. § 552, I request the following records from the General Services Administration (GSA), Department of Health and Human Services (HHS), and Office of Management and Budget (OMB):\n\n` +
+            `1. Aggregated, non-identifiable data from the 2026 White House Anti-Fraud Task Force review that identified approximately 392 entities and 895 contracts totaling approximately $6.3 billion, including:\n   - Number of flagged entities by awarding agency (or top-tier agency)\n   - Total obligated dollar amount associated with entities that failed SAM.gov physical address validation\n   - High-level summary statistics on the categories of red flags observed (e.g., PO Box/virtual office, location mismatch)\n\n` +
+            `2. Current or planned policy, guidance, or technical specification regarding the public release of SAM.gov entity “physical address validation” status (Passed / Failed / Pending / Unknown) as a searchable or downloadable field.\n\n` +
+            `3. Documentation explaining why Recipient Address, Place of Performance address, and related validation fields are frequently returned as NULL in the spending_by_award API and bulk downloads, plus any internal data quality reports or roadmaps.\n\n` +
+            `Time period: January 1, 2024 to present. Format: electronic (CSV, PDF, or native). Fee waiver requested on public interest grounds. I am happy to accept rolling production.\n\n` +
+            `[Your Name / Contact Info]\n[Date]`,
+
+            // 1 — SAM Address Validation
+            `Pursuant to the Freedom of Information Act, 5 U.S.C. § 552, I request from the General Services Administration (GSA):\n\n` +
+            `1. Any current or planned policy, guidance, or technical specification regarding the public release of SAM.gov entity “physical address validation” status (Passed / Failed / Pending / Unknown) as a searchable or downloadable field for active entities.\n\n` +
+            `2. Any internal assessments, data quality reports, or roadmaps addressing the completeness and public availability of recipient and place-of-performance location data.\n\n` +
+            `Time period: January 1, 2024 to present. Electronic format preferred. Fee waiver requested.\n\n[Your Name]`,
+
+            // 2 — State HHS Spending
+            `Pursuant to the Freedom of Information Act, 5 U.S.C. § 552, I request from the Department of Health and Human Services (HHS) and the General Services Administration (GSA):\n\n` +
+            `1. Complete FY2024 award-level data for [STATE NAME] under HHS awarding agencies (including CMS), including all recipient names, DUNS/UEI, obligated amounts, recipient addresses, and place of performance when available.\n\n` +
+            `2. Any available SAM.gov physical address validation status for the entities that received the largest awards in the above dataset.\n\n` +
+            `Electronic format (CSV or JSON preferred). Fee waiver requested on public-interest grounds.\n\n[Your Name]`,
+
+            // 3 — Data Quality
+            `Pursuant to the Freedom of Information Act, 5 U.S.C. § 552, I request from the General Services Administration (GSA) and Office of Management and Budget (OMB):\n\n` +
+            `1. All internal assessments, data quality reports, audits, or technical roadmaps that discuss or quantify the completeness (or lack thereof) of Recipient Address, Place of Performance, and SAM physical address validation fields in USASpending and SAM.gov.\n\n` +
+            `2. Any plans or timelines for improving the public availability and machine-readability of these fields.\n\n` +
+            `Time period: 2023 to present. Electronic records. Fee waiver requested.\n\n[Your Name]`,
+
+            // 4 — Multi-agency
+            `Pursuant to the Freedom of Information Act, 5 U.S.C. § 552, I request the following records from the General Services Administration (GSA), Department of Health and Human Services (HHS), and Office of Management and Budget (OMB):\n\n` +
+            `1. All aggregated statistics, red-flag categorizations, and source methodologies associated with the 2026 White House Anti-Fraud Task Force review of approximately 392 entities and $6.3 billion in federal awards.\n\n` +
+            `2. Documentation of SAM.gov physical address validation status for the entities reviewed, and any plans to make this status publicly queryable.\n\n` +
+            `3. Records addressing the prevalence and causes of NULL values in USASpending location fields and any reform recommendations.\n\n` +
+            `Time period: January 1, 2024 to present. Rolling production accepted. Fee waiver requested in the public interest.\n\n[Your Name]`
+        ];
+
+        function loadTemplate(index) {
+            const ta = document.getElementById('generated-request');
+            ta.value = templates[index] || templates[0];
+            
+            // Scroll to preview
+            ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            ta.focus();
+            // flash effect
+            ta.style.transition = 'box-shadow .2s';
+            ta.style.boxShadow = '0 0 0 3px rgba(16,185,129,0.3)';
+            setTimeout(() => { ta.style.boxShadow = ''; }, 1400);
+        }
+
+        // Boot
+        function initFOIA() {
+            initTailwind();
+            
+            // Seed the builder with a good default
+            const agencyEl = document.getElementById('agency');
+            const focusEl = document.getElementById('focus');
+            if (agencyEl) agencyEl.value = 'General Services Administration (GSA)';
+            if (focusEl) focusEl.value = 'SAM.gov physical address validation status and completeness';
+            
+            // Initial generation
+            setTimeout(() => {
+                updateGeneratedRequest();
+            }, 50);
+
+            // Keyboard nicety: Ctrl/Cmd+K focuses search-like (here the state selector)
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    const s = document.getElementById('state-focus');
+                    if (s) s.focus();
+                }
+            });
+
+            // Make sure any manual edits to the textarea still allow copy/download
+            console.log('%c[FOIA Toolkit] Interactive builder ready. All client-side.', 'color:#475569');
+        }
+
+        window.onload = initFOIA;
+    </script>
+</body>
+</html>
