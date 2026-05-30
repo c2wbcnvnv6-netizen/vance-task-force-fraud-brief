@@ -123,13 +123,13 @@
 </head>
 <body class="bg-slate-50 text-slate-900">
     <!-- Public Version Notice -->
-    <div class="bg-emerald-50 border-b border-emerald-200 text-emerald-800 text-sm">
+    <div class="bg-slate-900 border-b border-slate-700 text-slate-300 text-sm">
         <div class="max-w-screen-xl mx-auto px-6 py-3 flex flex-col sm:flex-row sm:items-center gap-x-4 gap-y-1">
             <div class="font-medium flex items-center gap-x-2">
                 <i class="fa-solid fa-globe"></i>
                 <span><strong>Public Research Brief — Current Checkpoint</strong> Enhanced June 2026 • Freely shareable.</span>
             </div>
-            <div class="text-xs text-emerald-700">
+            <div class="text-xs text-slate-400">
                 Structured red flag taxonomy + observability matrix added • Full report + FOIA template + verification notes
             </div>
         </div>
@@ -158,7 +158,7 @@
                 <div class="flex items-center gap-x-3">
                     <div class="relative hidden md:block w-64">
                         <input type="text" id="site-search" placeholder="Search research, tools, or data..." 
-                               class="w-full bg-slate-900 border border-slate-700 text-white placeholder-slate-500 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                               class="w-full bg-slate-900 border border-slate-700 text-white placeholder-slate-500 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-red-500">
                     </div>
                     <button onclick="window.print()" 
                             class="hidden md:flex items-center gap-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-2xl transition-colors border border-slate-700">
@@ -209,19 +209,19 @@
     <div class="bg-slate-900 border-b border-slate-800 py-6">
         <div class="max-w-screen-xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-                <div class="text-3xl font-semibold text-emerald-400">Real Data</div>
+                <div class="text-3xl font-semibold text-red-400">Real Data</div>
                 <div class="text-slate-400 text-sm mt-1">Direct from USAspending.gov</div>
             </div>
             <div>
-                <div class="text-3xl font-semibold text-emerald-400">Risk Signals</div>
+                <div class="text-3xl font-semibold text-red-400">Risk Signals</div>
                 <div class="text-slate-400 text-sm mt-1">Derived from public records</div>
             </div>
             <div>
-                <div class="text-3xl font-semibold text-emerald-400">FOIA Tools</div>
+                <div class="text-3xl font-semibold text-red-400">FOIA Tools</div>
                 <div class="text-slate-400 text-sm mt-1">Ready-to-use templates</div>
             </div>
             <div>
-                <div class="text-3xl font-semibold text-emerald-400">Public Access</div>
+                <div class="text-3xl font-semibold text-red-400">Public Access</div>
                 <div class="text-slate-400 text-sm mt-1">No account required</div>
             </div>
         </div>
@@ -237,7 +237,7 @@
                     <span class="text-[#b91c1c] text-sm font-semibold tracking-wider">CORE TOOL</span>
                     <h2 class="text-4xl font-semibold tracking-tight">Federal Risk Explorer</h2>
                 </div>
-                <a href="/explorer/federal-risk-explorer.html" class="hidden md:block text-emerald-400 hover:text-emerald-300 font-medium">Launch full explorer →</a>
+                <a href="/explorer/federal-risk-explorer.html" class="hidden md:block text-red-400 hover:text-red-300 font-medium">Launch full explorer →</a>
             </div>
             
             <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8">
@@ -253,12 +253,12 @@
                             <li class="flex items-center gap-x-2">• Direct links to detailed award data</li>
                         </ul>
                         <a href="/explorer/federal-risk-explorer.html" 
-                           class="mt-8 inline-flex items-center bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-6 py-3 rounded-2xl">
+                           class="mt-8 inline-flex items-center bg-[#b91c1c] hover:bg-red-700 text-white font-semibold px-6 py-3 rounded-2xl">
                             Open Risk Explorer
                         </a>
                     </div>
                     <div class="bg-slate-800 border border-slate-600 rounded-2xl p-6 text-center">
-                        <div class="text-6xl font-bold text-emerald-400 mb-2">50+</div>
+                        <div class="text-6xl font-bold text-red-400 mb-2">50+</div>
                         <div class="text-slate-400">States &amp; territories analyzed</div>
                         <div class="mt-4 text-sm text-slate-500">Medicaid &amp; Medicare spending patterns with risk overlays</div>
                     </div>
@@ -271,7 +271,7 @@
             <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8">
                 <div class="grid md:grid-cols-5 gap-8 items-center">
                     <div class="md:col-span-3">
-                        <span class="text-emerald-400 text-sm font-semibold">START HERE</span>
+                        <span class="text-red-400 text-sm font-semibold">START HERE</span>
                         <h3 class="text-3xl font-semibold tracking-tight mt-2">Need information from the government?</h3>
                         <p class="mt-4 text-slate-300">Use the interactive FOIA Toolkit to generate precise requests for federal spending data, SAM.gov validation status, Task Force source materials, and missing location fields.</p>
                     </div>
@@ -339,6 +339,77 @@
                     <h3 class="font-semibold text-lg mb-2">Multi-Agency Risk Explorer Now Live</h3>
                     <p class="text-sm text-slate-600 mb-4">The Federal Risk Explorer now covers all major federal agencies with interactive maps, advanced tables, and direct links to Contract Trace and Bill Analyzer.</p>
                     <a href="/explorer/federal-risk-explorer.html" class="text-sm font-medium text-[#0f172a]">Launch the Explorer →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section id="tools" class="scroll-mt-20">
+            <div class="flex items-end justify-between mb-6">
+                <div>
+                    <span class="text-sm font-semibold tracking-wider text-slate-500">POWERFUL TOOLS</span>
+                    <h2 class="text-3xl font-semibold tracking-tight">Investigation Toolkit</h2>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <a href="/explorer/federal-risk-explorer.html" class="bg-white border border-slate-200 rounded-3xl p-6 block hover:shadow-md transition-all">
+                    <div class="text-[#b91c1c] mb-3"><i class="fa-solid fa-map text-2xl"></i></div>
+                    <h3 class="font-semibold text-lg">Federal Risk Explorer</h3>
+                    <p class="text-sm text-slate-600 mt-1">Multi-agency spending map with advanced filters, risk signals, and direct tracing.</p>
+                </a>
+                
+                <a href="/contract-trace.html" class="bg-white border border-slate-200 rounded-3xl p-6 block hover:shadow-md transition-all">
+                    <div class="text-[#b91c1c] mb-3"><i class="fa-solid fa-link text-2xl"></i></div>
+                    <h3 class="font-semibold text-lg">Contract Trace Tool</h3>
+                    <p class="text-sm text-slate-600 mt-1">Follow appropriations to recipients with politician donor maps and red flag detection.</p>
+                </a>
+                
+                <a href="/bill-analyzer.html" class="bg-white border border-slate-200 rounded-3xl p-6 block hover:shadow-md transition-all">
+                    <div class="text-[#b91c1c] mb-3"><i class="fa-solid fa-file-lines text-2xl"></i></div>
+                    <h3 class="font-semibold text-lg">Bill Analyzer</h3>
+                    <p class="text-sm text-slate-600 mt-1">Clause-by-clause analysis for pork, earmarks, and special-interest provisions in legislation.</p>
+                </a>
+                
+                <a href="/foia-toolkit.html" class="bg-white border border-slate-200 rounded-3xl p-6 block hover:shadow-md transition-all">
+                    <div class="text-[#b91c1c] mb-3"><i class="fa-solid fa-file-contract text-2xl"></i></div>
+                    <h3 class="font-semibold text-lg">FOIA Toolkit</h3>
+                    <p class="text-sm text-slate-600 mt-1">Interactive request builder with federal and state-level guidance and ready templates.</p>
+                </a>
+            </div>
+        </section>
+
+        <!-- Submit a Tip Section -->
+        <section id="submit-tip" class="scroll-mt-20">
+            <div class="bg-white border border-slate-200 rounded-3xl p-8">
+                <div class="max-w-2xl">
+                    <span class="text-sm font-semibold tracking-wider text-[#b91c1c]">GET INVOLVED</span>
+                    <h2 class="text-3xl font-semibold tracking-tight mt-1">Submit a Tip about Suspected Fraud</h2>
+                    <p class="mt-3 text-slate-600">If you have information about potential waste, fraud, or abuse in federal spending, we want to hear from you. All submissions are treated confidentially.</p>
+                    
+                    <div class="mt-6">
+                        <a href="/explorer/federal-risk-explorer.html#submit-tip" 
+                           class="inline-flex items-center bg-[#b91c1c] hover:bg-red-700 text-white font-semibold px-8 py-3 rounded-2xl transition-all">
+                            Open Tip Form in Risk Explorer
+                        </a>
+                        <p class="text-xs text-slate-500 mt-3">The full confidential tip submission form is available inside the Federal Risk Explorer.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="scroll-mt-20">
+            <div class="max-w-3xl">
+                <h2 class="text-3xl font-semibold tracking-tight">About This Project</h2>
+                <div class="mt-4 text-slate-600 space-y-4 text-[15px]">
+                    <p>The Federal Risk Explorer is a public service hub dedicated to increasing transparency around federal spending, particularly in areas vulnerable to waste, fraud, and abuse.</p>
+                    
+                    <p>Using publicly available data from USAspending.gov, SAM.gov, and other sources, we build interactive tools that help researchers, journalists, and concerned citizens investigate patterns, trace contracts, analyze legislation, and submit tips.</p>
+                    
+                    <p>This project was born out of the need for independent verification of high-profile government claims about fraud — and the recognition that meaningful oversight requires better public access to the underlying data.</p>
+                    
+                    <p class="text-sm text-slate-500">All tools and research materials on this site are provided free of charge for public use. No account is required.</p>
                 </div>
             </div>
         </section>
