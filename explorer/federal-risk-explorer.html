@@ -166,12 +166,10 @@
             <div class="lg:col-span-7">
                 <div class="bg-slate-900 border border-slate-700 rounded-3xl p-4 map-container relative">
                     <div id="map" class="w-full h-[620px] rounded-2xl bg-slate-950"></div>
-                    <!-- Loading overlay (hidden by JS once map is ready) -->
-                    <div id="map-loading" class="absolute inset-4 rounded-2xl bg-slate-900/90 flex items-center justify-center z-[400]">
-                        <div class="text-center">
-                            <div class="w-8 h-8 mx-auto mb-3 border-2 border-slate-600 border-t-red-400 rounded-full animate-spin"></div>
-                            <div class="text-sm text-slate-400">Loading map &amp; FY2024 data…</div>
-                        </div>
+                    <!-- Loading overlay - becomes non-blocking quickly; base map tiles are visible underneath -->
+                    <div id="map-loading" class="absolute top-4 right-4 px-4 py-2 rounded-2xl bg-slate-900/95 border border-slate-700 flex items-center gap-x-3 z-[450] text-sm">
+                        <div class="w-4 h-4 border-2 border-slate-600 border-t-red-400 rounded-full animate-spin flex-shrink-0"></div>
+                        <div class="text-slate-300">Loading live risk data…<span class="text-slate-500 text-xs ml-1">(map is interactive below)</span></div>
                     </div>
                 </div>
                 <div class="text-xs text-slate-500 mt-3 px-1">
@@ -457,7 +455,7 @@
             const agencies = getSelectedAgencies();
             const label = agencies ? agencies.join(' + ') : 'All Agencies';
 
-            if (statusEl) statusEl.textContent = `Loading live FY2024 data from USAspending.gov… (can take 5–12s)`;
+            if (statusEl) statusEl.textContent = `Loading live FY2024 data from USAspending.gov (often slow)…`;
 
             // Start the GeoJSON fetch in parallel right now (this is the key UX improvement)
             if (!geoJSONData) {
@@ -1170,6 +1168,28 @@
             // Kick off both the slow USAspending call AND the static GeoJSON in parallel
             startParallelGeoJSONFetch();
             loadRealDataForAgencies();
+
+            // Nuclear safety net: no matter what (slow API, hanging fetch, JS edge case),
+            // after 9 seconds we force a usable map with fallback data + hide the blocking loader.
+            setTimeout(() => {
+                try {
+                    if (!isDataLoaded || Object.keys(stateData || {}).length === 0) {
+                        loadFallbackData();
+                    }
+                    if (!geoJSONData) {
+                        geoJSONData = 'failed';
+                    }
+                    refreshMapLayersNow();
+                    hideMapLoading();
+
+                    const s = document.getElementById('data-status');
+                    if (s) s.textContent = 'Showing sample data view (live source is slow or unavailable)';
+                } catch (e) {
+                    // Last-ditch: at least hide the spinner so the page isn't stuck forever
+                    hideMapLoading();
+                    console.error('Safety net failed to render map overlays', e);
+                }
+            }, 9000);
         }
 
         function onAgencyChange() {
