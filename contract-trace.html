@@ -57,7 +57,8 @@
                     <a href="index.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Home</a>
                     <a href="foia-toolkit.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">FOIA Toolkit</a>
                     <a href="explorer/federal-risk-explorer.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Risk Explorer</a>
-                    <a href="contract-trace.html" class="px-4 py-2 text-emerald-400 font-medium rounded-xl">Contract Trace Tool</a>
+                    <a href="contract-trace.html" class="px-4 py-2 text-emerald-400 font-medium rounded-xl">Contract Trace</a>
+                    <a href="bill-analyzer.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Bill Analyzer</a>
                 </div>
                 <div class="flex items-center gap-x-3">
                     <a href="explorer/federal-risk-explorer.html" class="px-4 py-2 text-sm border border-slate-700 rounded-2xl hover:bg-slate-800">Back to Explorer</a>
@@ -85,20 +86,16 @@
 
         <!-- Start Form -->
         <section class="section-card rounded-3xl p-8">
-            <h2 class="text-2xl font-semibold mb-2">Start a New Trace</h2>
-            <p class="text-slate-400 mb-6">Enter any details below or load a realistic demo based on high-risk HHS spending patterns from the Federal Risk Explorer.</p>
+            <h2 class="text-2xl font-semibold mb-2">Start a New Trace or Bill Analysis</h2>
+            <p class="text-slate-400 mb-6">Enter a bill number (e.g. 118 hr 2882), contract ID, recipient, politician, state, or keyword. The tool supports both contract tracing and deep bill analysis.</p>
             
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                    <label class="text-xs uppercase tracking-wider text-slate-400">Contract / Award ID or USAspending URL</label>
-                    <input id="input-contract" type="text" class="gov-input w-full rounded-2xl px-4 py-3 text-sm mt-1" placeholder="e.g. 12345 or https://www.usaspending.gov/award/...">
+            <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="lg:col-span-2">
+                    <label class="text-xs uppercase tracking-wider text-slate-400">Bill Number, Contract ID, Recipient, or Keyword</label>
+                    <input id="input-bill-or-contract" type="text" class="gov-input w-full rounded-2xl px-4 py-3 text-sm mt-1" placeholder="e.g. 118 hr 2882, HHS-2024-NY-MCO, Centene, or Schumer">
                 </div>
                 <div>
-                    <label class="text-xs uppercase tracking-wider text-slate-400">Recipient Name or UEI</label>
-                    <input id="input-recipient" type="text" class="gov-input w-full rounded-2xl px-4 py-3 text-sm mt-1" placeholder="e.g. Centene or large MCO">
-                </div>
-                <div>
-                    <label class="text-xs uppercase tracking-wider text-slate-400">State</label>
+                    <label class="text-xs uppercase tracking-wider text-slate-400">State (optional)</label>
                     <select id="input-state" class="gov-input w-full rounded-2xl px-4 py-3 text-sm mt-1">
                         <option value="">Any / National</option>
                         <option value="NY">New York</option>
@@ -109,9 +106,17 @@
                         <option value="OH">Ohio</option>
                     </select>
                 </div>
+                <div>
+                    <label class="text-xs uppercase tracking-wider text-slate-400">Focus</label>
+                    <select id="input-focus" class="gov-input w-full rounded-2xl px-4 py-3 text-sm mt-1">
+                        <option value="auto">Auto-detect</option>
+                        <option value="contract">Contract / Recipient Focus</option>
+                        <option value="bill">Bill Analysis Focus</option>
+                    </select>
+                </div>
                 <div class="flex items-end gap-x-3">
-                    <button onclick="runTrace()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-6 py-3 rounded-2xl text-sm transition-all">
-                        <i class="fa-solid fa-search mr-2"></i> Trace Contract
+                    <button onclick="runUnifiedTrace()" class="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-6 py-3 rounded-2xl text-sm transition-all">
+                        <i class="fa-solid fa-search mr-2"></i> Analyze / Trace
                     </button>
                     <button onclick="loadDemoTrace()" class="px-5 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-2xl text-sm">
                         Load Demo
@@ -119,7 +124,8 @@
                 </div>
             </div>
             
-            <div class="mt-4 text-xs text-slate-500">Demo traces use real public legislative patterns (FY2024 LHHS appropriations via H.R. 2882 / P.L. 118-47) and generate 100% live deep links to the three target sites.</div>
+            <div class="mt-4 text-xs text-slate-500">Supports bill numbers (Congress.gov), contract details, and politician names. Generates live deep links to OpenSecrets, FollowTheMoney, Ballotpedia. For full live bill text parsing, use the Bill Analyzer or the agent skills.</div>
+            <div class="mt-1"><a href="bill-analyzer.html" class="text-emerald-400 text-xs hover:underline">Open dedicated Bill Analyzer →</a></div>
         </section>
 
         <!-- Results Area (hidden until trace runs) -->
@@ -141,6 +147,16 @@
                     <div class="text-xs text-slate-400">All links open in new tabs</div>
                 </div>
                 <div id="timeline" class="section-card rounded-3xl p-6 space-y-6"></div>
+            </section>
+
+            <!-- Bill Text & Provisions Analysis (new for unified tool) -->
+            <section id="bill-analysis-section" class="hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-semibold">Bill Text Analysis — Flagged Provisions, Earmarks &amp; Riders</h3>
+                    <a href="bill-analyzer.html" class="text-sm text-emerald-400 hover:underline">Open full Bill Analyzer →</a>
+                </div>
+                <div id="bill-provisions" class="section-card rounded-3xl p-6"></div>
+                <div class="mt-2 text-xs text-slate-500">Highlights are illustrative based on public bill structure. For complete text parsing and deeper analysis of any bill PDF, use the dedicated Bill Analyzer or ask the agent to run document-reverse-engineer + research-orchestrator.</div>
             </section>
 
             <!-- Politicians & Financial Ties Table -->
@@ -315,7 +331,30 @@
                     "Large Medicaid MCO contracts often involve complex ownership structures; full beneficial ownership and subcontracting data frequently requires FOIA or state-level requests.",
                     "Note: No public evidence of wrongdoing in this illustrative trace — flags are directional only for further research."
                 ],
-                attribution: "Legislative data synthesized from Congress.gov and C-SPAN public records. Donor summaries and links point to live OpenSecrets and FollowTheMoney profiles (2024–2026 cycles). All external sites retain full copyright."
+                attribution: "Legislative data synthesized from Congress.gov and C-SPAN public records. Donor summaries and links point to live OpenSecrets and FollowTheMoney profiles (2024–2026 cycles). All external sites retain full copyright.",
+                billAnalysis: {
+                    bill: "H.R. 2882 (118th Congress)",
+                    title: "Further Consolidated Appropriations Act, 2024 (P.L. 118-47)",
+                    congressLink: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text",
+                    flaggedProvisions: [
+                        {
+                            section: "Division D — Labor, Health and Human Services, Education",
+                            excerpt: "For carrying out titles XI and XIX of the Social Security Act...",
+                            flagType: "Broad Formula Funding",
+                            explanation: "Large block grants to states for Medicaid managed care with limited new requirements for reporting ownership structures or administrative cost breakdowns. This structure can obscure fund flows to large national MCOs.",
+                            risk: "medium",
+                            link: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text"
+                        },
+                        {
+                            section: "General Provisions (various divisions)",
+                            excerpt: "None of the funds made available... may be used for...",
+                            flagType: "Limitation Rider",
+                            explanation: "Multiple policy riders restricting or directing agency behavior on specific programs. Common in omnibus bills; some have significant policy impact with limited debate.",
+                            risk: "low",
+                            link: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text"
+                        }
+                    ]
+                }
             };
             
             renderFullTrace();
@@ -323,19 +362,36 @@
         }
 
         function runTrace() {
-            const contract = document.getElementById('input-contract').value.trim();
-            const recipient = document.getElementById('input-recipient').value.trim() || "Recipient";
-            const state = document.getElementById('input-state').value || "NY";
+            // Legacy support
+            runUnifiedTrace();
+        }
 
-            // Generate a dynamic but realistic trace using user input + real patterns
+        function runUnifiedTrace() {
+            const rawInput = (document.getElementById('input-bill-or-contract')?.value || '').trim();
+            const state = document.getElementById('input-state')?.value || "NY";
+            const focus = document.getElementById('input-focus')?.value || "auto";
+
+            const lower = rawInput.toLowerCase();
+            const isBill = lower.includes('hr') || lower.includes('s ') || lower.includes('bill') || /\d{2,3}/.test(rawInput);
+
+            if (isBill && focus !== 'contract') {
+                // Treat as bill-focused — redirect to dedicated analyzer for best experience or render enriched contract trace
+                window.location.href = `bill-analyzer.html?bill=${encodeURIComponent(rawInput)}`;
+                return;
+            }
+
+            // Otherwise contract/recipient focused (enhanced)
+            const recipient = rawInput || "Recipient";
+            const contractId = rawInput.includes("HHS") || rawInput.includes("award") ? rawInput : "USER-" + Date.now();
+
             currentTrace = {
                 contract: {
-                    id: contract || "USER-INPUT-CONTRACT",
+                    id: contractId,
                     amount: 850000000,
                     recipient: recipient,
                     state: state,
                     program: "Medicaid / CHIP Managed Care or similar HHS program",
-                    usaspending: contract.includes("usaspending") ? contract : "https://www.usaspending.gov/search?recipient=" + encodeURIComponent(recipient),
+                    usaspending: rawInput.includes("usaspending") ? rawInput : `https://www.usaspending.gov/search?recipient=${encodeURIComponent(recipient)}`,
                     uei: "user-provided-or-unknown"
                 },
                 appropriations: {
@@ -364,7 +420,15 @@
                     "Large capitated contracts frequently involve subcontracting and ownership chains that are opaque in public data.",
                     "Always cross-check with state-level campaign finance and lobbying registries."
                 ],
-                attribution: "Generated from public legislative patterns. Verify all specific facts and donor data on the linked external sites."
+                attribution: "Generated from public legislative patterns. Verify all specific facts and donor data on the linked external sites.",
+                billAnalysis: {
+                    bill: "H.R. 2882 (118th Congress)",
+                    title: "Further Consolidated Appropriations Act, 2024 (P.L. 118-47)",
+                    congressLink: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text",
+                    flaggedProvisions: [
+                        { section: "Division D — Labor, Health and Human Services", excerpt: "For carrying out titles XI and XIX of the Social Security Act...", flagType: "Broad Formula Funding", explanation: "Large block grants to states for Medicaid managed care with limited new transparency on ownership or admin costs.", risk: "medium", link: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text" }
+                    ]
+                }
             };
 
             renderFullTrace();
@@ -457,6 +521,30 @@
             });
             flagsHTML += `</ul><div class="mt-4 text-xs text-slate-500 border-t border-slate-700 pt-4">${currentTrace.attribution}</div>`;
             document.getElementById('red-flags').innerHTML = flagsHTML;
+
+            // Bill Analysis section (new)
+            const billSection = document.getElementById('bill-analysis-section');
+            const provisionsContainer = document.getElementById('bill-provisions');
+            if (currentTrace.billAnalysis && provisionsContainer) {
+                billSection.classList.remove('hidden');
+                let provHTML = `<div class="mb-4"><strong>${currentTrace.billAnalysis.bill}</strong> — ${currentTrace.billAnalysis.title}<br><a href="${currentTrace.billAnalysis.congressLink}" target="_blank" class="external-link text-sm">View full bill text on Congress.gov →</a></div>`;
+                currentTrace.billAnalysis.flaggedProvisions.forEach(p => {
+                    const riskClass = p.risk === 'high' ? 'risk-high' : p.risk === 'medium' ? 'risk-med' : 'bg-slate-700 text-slate-300';
+                    provHTML += `
+                        <div class="mb-4 p-4 bg-slate-950 border border-slate-700 rounded-2xl">
+                            <div class="flex justify-between">
+                                <div><span class="font-semibold">${p.section}</span> — <span class="text-amber-400">${p.flagType}</span></div>
+                                <span class="risk-flag ${riskClass}">${p.risk.toUpperCase()}</span>
+                            </div>
+                            <div class="text-sm mt-2 text-slate-300">"${p.excerpt}"</div>
+                            <div class="text-sm mt-2 text-slate-400">${p.explanation}</div>
+                            <a href="${p.link}" target="_blank" class="text-xs external-link mt-2 inline-block">Source text →</a>
+                        </div>`;
+                });
+                provisionsContainer.innerHTML = provHTML;
+            } else if (billSection) {
+                billSection.classList.add('hidden');
+            }
         }
 
         function renderPoliticiansTable(data) {
