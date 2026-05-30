@@ -13,14 +13,14 @@
     <!-- jsPDF for PDF exports (lightweight, no build step) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
-        
+        /* System fonts only — eliminates external Google Fonts CSP violations and production warnings */
         body {
-            font-family: 'Inter', system_ui, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
         .heading-font {
-            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-weight: 600;
         }
 
         #map {
@@ -725,19 +725,33 @@
             if (loader) loader.style.display = 'flex';
         }
 
-        // Start fetching the static (but large) US states GeoJSON in parallel with the slow USAspending call
+        // Start fetching US states GeoJSON (with fallbacks for reliability)
         function startParallelGeoJSONFetch() {
-            fetch('https://raw.githubusercontent.com/mbostock/4090846/raw/us-states.json')
-                .then(res => res.json())
-                .then(json => {
-                    geoJSONData = json;
-                    tryRenderMapOverlays(); // will succeed only if we also have stateData
-                })
-                .catch(() => {
-                    // GeoJSON is secondary — we can still fall back to circles if needed
+            const geoUrls = [
+                'https://gist.githubusercontent.com/mbostock/4090846/raw/us-states.json',
+                'https://raw.githubusercontent.com/leaflet/leaflet-geojson/master/examples/us-states.json'
+            ];
+
+            const tryNext = (index = 0) => {
+                if (index >= geoUrls.length) {
                     geoJSONData = 'failed';
                     tryRenderMapOverlays();
-                });
+                    return;
+                }
+
+                fetch(geoUrls[index])
+                    .then(res => {
+                        if (!res.ok) throw new Error('not ok');
+                        return res.json();
+                    })
+                    .then(json => {
+                        geoJSONData = json;
+                        tryRenderMapOverlays();
+                    })
+                    .catch(() => tryNext(index + 1));
+            };
+
+            tryNext();
         }
 
         // Called whenever we get fresh stateData OR the GeoJSON finishes.
