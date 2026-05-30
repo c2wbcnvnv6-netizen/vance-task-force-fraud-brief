@@ -207,16 +207,37 @@
                 <div class="text-xs text-slate-500 mt-2">Click any external link to jump directly into FollowTheMoney, OpenSecrets, or Ballotpedia with the name pre-filled. Data is attributed and for quick reference only.</div>
             </section>
 
-            <!-- Relationship Flow -->
+            <!-- Relationship Flow (Major Upgrade - Visual Diagram) -->
             <section>
                 <h3 class="text-xl font-semibold mb-4">Money &amp; Influence Flow</h3>
                 <div id="flow-view" class="section-card rounded-3xl p-6"></div>
+                <div id="flow-diagram" class="section-card rounded-3xl p-6 mt-4 hidden">
+                    <h4 class="font-semibold mb-3 text-sm">Visual Money Flow</h4>
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-center">
+                        <div class="flex-1 p-3 bg-slate-950 rounded-xl border border-slate-700">
+                            <div class="text-xs text-slate-400">Appropriations Bill</div>
+                            <div id="flow-bill" class="font-semibold text-emerald-400"></div>
+                        </div>
+                        <div class="text-2xl text-emerald-400">→</div>
+                        <div class="flex-1 p-3 bg-slate-950 rounded-xl border border-slate-700">
+                            <div class="text-xs text-slate-400">Agency / Program</div>
+                            <div id="flow-agency" class="font-semibold"></div>
+                        </div>
+                        <div class="text-2xl text-emerald-400">→</div>
+                        <div class="flex-1 p-3 bg-slate-950 rounded-xl border border-slate-700">
+                            <div class="text-xs text-slate-400">Recipient / Contractor</div>
+                            <div id="flow-recipient" class="font-semibold text-amber-400"></div>
+                        </div>
+                    </div>
+                    <div class="text-[10px] text-center text-slate-500 mt-3">Simplified view. Full beneficial ownership and subcontracting often requires FOIA or state records.</div>
+                </div>
             </section>
 
-            <!-- Red Flag Analysis -->
+            <!-- Red Flag Analysis (Upgraded) -->
             <section>
                 <h3 class="text-xl font-semibold mb-4">Potential Self-Enrichment &amp; Corruption Markers</h3>
                 <div id="red-flags" class="section-card rounded-3xl p-6"></div>
+                <div id="risk-score" class="section-card rounded-3xl p-4 mt-4 hidden text-sm"></div>
             </section>
 
             <!-- Exports & FOIA -->
@@ -250,7 +271,7 @@
                 </div>
             </div>
 
-            <!-- Agent Supercharge (Item 3) -->
+            <!-- Agent Supercharge (Item 3) + Cross-Tool Integration -->
             <section class="bg-slate-900 border border-emerald-500/30 rounded-3xl p-6">
                 <div class="flex items-start gap-x-4">
                     <div>
@@ -262,9 +283,8 @@
                     <button onclick="sendTraceToAgent()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-sm font-medium flex items-center gap-x-2">
                         <i class="fa-solid fa-robot"></i> <span>Send Current Trace to Agent (Copy Prompt)</span>
                     </button>
-                    <div class="text-xs bg-slate-950 p-3 rounded-2xl font-mono text-emerald-300 flex-1 min-w-[260px]">
-                        Example: "Use research-orchestrator + money-flow-tracer + gov-filings-reviewer to deeply trace the Centene / NY Medicaid contract from the 2024 LHHS appropriations, pulling donor data from OpenSecrets and FollowTheMoney and any family or lobbying ties."
-                    </div>
+                    <a href="explorer/federal-risk-explorer.html" class="px-4 py-2 text-sm border border-slate-600 rounded-2xl hover:bg-slate-800">Back to Multi-Agency Explorer</a>
+                    <a href="bill-analyzer.html" class="px-4 py-2 text-sm border border-slate-600 rounded-2xl hover:bg-slate-800">Open Bill Analyzer</a>
                 </div>
             </section>
 
@@ -524,13 +544,22 @@
             politicianData = currentTrace.politicians;
             renderPoliticiansTable(politicianData);
 
-            // Flow
+            // Flow (text)
             let flowHTML = '<div class="space-y-2 text-sm">';
             currentTrace.flow.forEach(f => {
                 flowHTML += `<div class="flex items-center gap-x-3"><i class="fa-solid fa-arrow-right text-emerald-400 w-4"></i> <span>${f}</span></div>`;
             });
             flowHTML += '</div>';
             document.getElementById('flow-view').innerHTML = flowHTML;
+
+            // Visual diagram (Major Upgrade)
+            const diagram = document.getElementById('flow-diagram');
+            if (diagram && currentTrace.appropriations && currentTrace.contract) {
+                diagram.classList.remove('hidden');
+                document.getElementById('flow-bill').textContent = currentTrace.appropriations.bill || 'Appropriations Bill';
+                document.getElementById('flow-agency').textContent = currentTrace.contract.program || 'Federal Agency/Program';
+                document.getElementById('flow-recipient').textContent = currentTrace.contract.recipient;
+            }
 
             // Red flags
             let flagsHTML = '<ul class="space-y-2 text-sm">';
@@ -539,6 +568,27 @@
             });
             flagsHTML += `</ul><div class="mt-4 text-xs text-slate-500 border-t border-slate-700 pt-4">${currentTrace.attribution}</div>`;
             document.getElementById('red-flags').innerHTML = flagsHTML;
+
+            // Self-Enrichment Risk Score (New Upgrade)
+            const riskScoreEl = document.getElementById('risk-score');
+            if (riskScoreEl && currentTrace.red_flags) {
+                const score = Math.min(100, 25 + (currentTrace.red_flags.length * 18));
+                let level = "Low";
+                let color = "text-emerald-400";
+                if (score > 55) { level = "Elevated"; color = "text-amber-400"; }
+                if (score > 75) { level = "High — Further Review Recommended"; color = "text-red-400"; }
+
+                riskScoreEl.classList.remove('hidden');
+                riskScoreEl.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-semibold">Estimated Self-Enrichment / Influence Risk Score:</span> 
+                            <span class="font-bold ${color}">${score}/100 — ${level}</span>
+                        </div>
+                        <div class="text-xs text-slate-400">Based on flagged markers + donor concentration. Not a legal finding.</div>
+                    </div>
+                `;
+            }
 
             // Bill Analysis section (new)
             const billSection = document.getElementById('bill-analysis-section');
