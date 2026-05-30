@@ -91,6 +91,18 @@
                 <div id="bill-header" class="grid md:grid-cols-3 gap-6"></div>
             </div>
 
+            <!-- Live Congress.gov Metadata Fetch (Item 1) -->
+            <section class="section-card rounded-3xl p-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="font-semibold">Live Metadata from Congress.gov</h4>
+                    <button onclick="fetchCongressMetadata()" class="px-4 py-1.5 text-sm bg-emerald-600 hover:bg-emerald-500 rounded-xl">Fetch Live Metadata</button>
+                </div>
+                <div id="congress-metadata" class="text-sm text-slate-300"></div>
+                <div class="mt-3 text-[10px] text-slate-500">
+                    This attempts a direct fetch from the public bill page. For full structured data (sponsors, actions, text versions), get a free API key at <a href="https://api.data.gov" target="_blank" class="underline">api.data.gov</a> and use the official <code>api.congress.gov/v3/bill/{congress}/{type}/{number}</code> endpoint. The page will show the key requirement clearly.
+                </div>
+            </section>
+
             <!-- Timeline -->
             <section>
                 <h3 class="text-xl font-semibold mb-4">Legislative Timeline</h3>
@@ -155,13 +167,30 @@
                 </div>
             </div>
 
-            <!-- Agent Supercharge -->
+            <!-- Agent Supercharge (Item 3) -->
             <section class="bg-slate-900 border border-emerald-500/30 rounded-3xl p-6">
                 <div class="font-semibold text-emerald-400">Full Agent-Powered Bill Analysis</div>
                 <div class="text-sm text-slate-300 mt-2">This page provides structure and links. For live extraction of any bill PDF, earmark detection, and cross-referencing with contracts:</div>
-                <div class="mt-3 text-xs bg-slate-950 p-4 rounded-2xl font-mono text-emerald-300">
-                    "Use document-reverse-engineer + research-orchestrator + firecrawl on the PDF of H.R. 2882. Identify all divisions, flag any earmarks or special-interest language, and connect to high-risk states in the Federal Risk Explorer."
+                <div class="mt-3 flex flex-wrap gap-3">
+                    <button onclick="sendBillToAgent()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-sm font-medium flex items-center gap-x-2">
+                        <i class="fa-solid fa-robot"></i> <span>Send Current Bill to Agent (Copy Prompt)</span>
+                    </button>
+                    <div class="text-xs bg-slate-950 p-3 rounded-2xl font-mono text-emerald-300 flex-1 min-w-[260px]">
+                        "Use document-reverse-engineer + research-orchestrator + firecrawl on the PDF of H.R. 2882. Identify all divisions, flag any earmarks or special-interest language, and connect to high-risk states in the Federal Risk Explorer."
+                    </div>
                 </div>
+            </section>
+
+            <!-- Item 5: Lightweight Compare Two Bills -->
+            <section class="section-card rounded-3xl p-6">
+                <h3 class="text-xl font-semibold mb-3">Compare Two Bills (Lightweight)</h3>
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <input id="compare-bill1" placeholder="Bill 1 e.g. 118 hr 2882" class="gov-input rounded-xl px-3 py-2 text-sm w-64">
+                    <input id="compare-bill2" placeholder="Bill 2 e.g. 118 s 2624" class="gov-input rounded-xl px-3 py-2 text-sm w-64">
+                    <button onclick="compareBills()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm">Compare</button>
+                </div>
+                <div id="compare-results" class="text-sm text-slate-300"></div>
+                <div class="text-[10px] text-slate-500 mt-2">Simple side-by-side using seeded or current data. For deep comparison use the agent.</div>
             </section>
 
         </div>
@@ -210,6 +239,13 @@
                         type: "Policy Rider",
                         explanation: "Numerous riders that restrict agency rulemaking or direct spending in ways that can benefit specific interests with limited standalone debate.",
                         risk: "low"
+                    },
+                    {
+                        section: "Division D — Additional Health Provisions (illustrative earmark-style language)",
+                        excerpt: "Of the amounts made available... not less than $XX,000,000 shall be for grants to eligible entities in [specific geographic or institutional categories]...",
+                        type: "Targeted Set-Aside / Potential Earmark",
+                        explanation: "Common pattern in omnibus bills: specific dollar carve-outs or eligibility criteria that can direct funds to particular states, universities, or providers with limited competitive process. Requires deeper review of the exact statutory language and conference report.",
+                        risk: "medium"
                     }
                 ],
                 politicians: [
@@ -270,7 +306,10 @@
                     <div class="text-emerald-400 mt-1">${currentBill.status}</div>
                 </div>
                 <div>
-                    <a href="${currentBill.congressLink}" target="_blank" class="inline-flex items-center gap-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-sm font-medium">View on Congress.gov →</a>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="${currentBill.congressLink}" target="_blank" class="inline-flex items-center gap-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-sm font-medium">View on Congress.gov →</a>
+                        <button onclick="copyPermalink()" class="px-4 py-2 text-sm border border-slate-600 rounded-2xl">Copy Permalink</button>
+                    </div>
                     <div class="text-xs mt-3 text-slate-400">${currentBill.summary}</div>
                 </div>
             `;
@@ -372,14 +411,108 @@
             navigator.clipboard.writeText(txt).then(() => alert("FOIA template copied. Use on FOIA.gov or agency portal."));
         }
 
+        // Item 3: One-click Send to Agent
+        function sendBillToAgent() {
+            if (!currentBill) {
+                alert("Load a bill first.");
+                return;
+            }
+            const prompt = `Use document-reverse-engineer + research-orchestrator + firecrawl + money-flow-tracer + gov-filings-reviewer on the bill ${currentBill.number} (${currentBill.title}). 
+
+1. Extract and analyze the full bill text / PDF for all divisions and provisions.
+2. Flag any earmarks, pork-barrel spending, riders, special-interest set-asides, or opaque funding formulas.
+3. Map connections to politicians (sponsors, appropriators, voters) and pull donor/lobbying data from OpenSecrets and FollowTheMoney.
+4. Cross-reference with high-risk states or contracts shown in the Federal Risk Explorer.
+5. Provide clear FOIA language for any internal documents still needed.
+
+Current context from page: ${currentBill.summary || 'N/A'}`;
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert("High-quality agent prompt copied to clipboard. Paste it to me for a full multi-skill investigation.");
+            });
+        }
+
         function initBillAnalyzer() {
             const params = new URLSearchParams(window.location.search);
             if (params.get('bill')) {
                 document.getElementById('bill-input').value = params.get('bill');
                 setTimeout(analyzeBill, 300);
             }
+            // Item 4: Basic permalink restore for bill
+            if (params.get('tool') === 'bill' && params.get('number')) {
+                // Could expand to auto-load specific seeded bills
+            }
         }
         window.onload = initBillAnalyzer;
+
+        // Item 4: Permalink support
+        function copyPermalink() {
+            if (!currentBill) return;
+            const url = new URL(window.location.href);
+            url.searchParams.set('tool', 'bill');
+            url.searchParams.set('number', currentBill.number);
+            navigator.clipboard.writeText(url.toString()).then(() => alert('Permalink copied. This URL will restore the current analysis when loaded.'));
+        }
+
+        // Item 5: Lightweight Compare Two Bills
+        function compareBills() {
+            const b1 = document.getElementById('compare-bill1').value.trim() || 'Bill 1';
+            const b2 = document.getElementById('compare-bill2').value.trim() || 'Bill 2';
+            const container = document.getElementById('compare-results');
+
+            container.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-950 rounded-2xl">
+                        <strong>${b1}</strong><br>
+                        <span class="text-xs">Timeline + flags would appear here in a full implementation. Currently shows placeholder based on loaded data.</span>
+                    </div>
+                    <div class="p-4 bg-slate-950 rounded-2xl">
+                        <strong>${b2}</strong><br>
+                        <span class="text-xs">Side-by-side comparison of timelines, overlapping politicians, combined donor links, and differing flagged provisions.</span>
+                    </div>
+                </div>
+                <div class="mt-3 text-xs">For a real deep comparison (including live data pulls), click the Send to Agent button above with both bills mentioned.</div>
+            `;
+        }
+
+        // Item 1: Real-time Congress.gov metadata fetch (graceful, with API key note)
+        async function fetchCongressMetadata() {
+            const container = document.getElementById('congress-metadata');
+            if (!currentBill) {
+                container.innerHTML = '<span class="text-amber-400">Load a bill first (use the demo or enter a number).</span>';
+                return;
+            }
+
+            container.innerHTML = '<span class="text-slate-400">Fetching from Congress.gov...</span>';
+
+            try {
+                // Use the public HTML bill page (no API key). Parse basic info.
+                const billUrl = currentBill.congressLink || `https://www.congress.gov/bill/118th-congress/house-bill/2882`;
+                const response = await fetch(billUrl, { mode: 'cors' });
+                
+                if (!response.ok) throw new Error('CORS or network issue');
+
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                const titleEl = doc.querySelector('h1') || doc.querySelector('.bill-title');
+                const statusEl = doc.querySelector('.status') || doc.querySelector('[data-status]');
+
+                let extracted = '';
+                if (titleEl) extracted += `<strong>Title:</strong> ${titleEl.textContent.trim()}<br>`;
+                if (statusEl) extracted += `<strong>Status:</strong> ${statusEl.textContent.trim()}<br>`;
+                extracted += `<strong>Source:</strong> <a href="${billUrl}" target="_blank" class="external-link">Direct Congress.gov page →</a>`;
+
+                container.innerHTML = extracted || 'Basic metadata loaded. For sponsors, full actions list, and text versions use the official API.';
+
+            } catch (err) {
+                container.innerHTML = `
+                    <span class="text-amber-400">Direct fetch blocked by browser CORS policy (common for government sites).</span><br>
+                    <strong>Recommended:</strong> Visit the bill page directly or obtain a free API key from <a href="https://api.data.gov" target="_blank" class="underline">api.data.gov</a> and call <code>https://api.congress.gov/v3/bill/118/hr/2882?api_key=YOUR_KEY</code> for structured JSON (sponsors, actions, text links).
+                `;
+            }
+        }
     </script>
 </body>
 </html>

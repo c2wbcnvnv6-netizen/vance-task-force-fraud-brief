@@ -159,6 +159,16 @@
                 <div class="mt-2 text-xs text-slate-500">Highlights are illustrative based on public bill structure. For complete text parsing and deeper analysis of any bill PDF, use the dedicated Bill Analyzer or ask the agent to run document-reverse-engineer + research-orchestrator.</div>
             </section>
 
+            <!-- Live Congress.gov Metadata (Item 1) -->
+            <section class="section-card rounded-3xl p-5">
+                <div class="flex items-center gap-x-3 mb-2">
+                    <button onclick="fetchTraceCongressMetadata()" class="px-3 py-1 text-xs bg-emerald-600 hover:bg-emerald-500 rounded-xl">Fetch Live Appropriations Bill Metadata</button>
+                    <span class="text-xs text-slate-400">Congress.gov</span>
+                </div>
+                <div id="trace-congress-meta" class="text-xs text-slate-300"></div>
+                <div class="text-[10px] text-slate-500 mt-1">Free API key recommended for structured data: api.data.gov (full details in Bill Analyzer).</div>
+            </section>
+
             <!-- Politicians & Financial Ties Table -->
             <section>
                 <div class="flex items-center justify-between mb-4">
@@ -177,8 +187,9 @@
                 </div>
 
                 <div class="section-card rounded-3xl overflow-hidden">
+                    <!-- Item 4: Mobile-friendly horizontal scroll for tables -->
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm" id="politicians-table">
+                        <table class="w-full text-sm min-w-[700px]" id="politicians-table">
                             <thead>
                                 <tr class="border-b border-slate-700 text-slate-400">
                                     <th class="text-left py-3 px-4">Name</th>
@@ -221,6 +232,7 @@
                             <i class="fa-solid fa-file-csv"></i> <span>CSV (All Links + Data)</span>
                         </button>
                         <button onclick="window.print()" class="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-2xl text-sm font-medium">Print / Save as PDF</button>
+                        <button onclick="copyTracePermalink()" class="px-4 py-2.5 text-sm border border-slate-600 rounded-2xl">Copy Permalink</button>
                     </div>
                     <div class="text-xs text-slate-500 mt-3">Exports contain all generated deep links and are self-contained for your records.</div>
                 </div>
@@ -238,7 +250,7 @@
                 </div>
             </div>
 
-            <!-- Agent Supercharge -->
+            <!-- Agent Supercharge (Item 3) -->
             <section class="bg-slate-900 border border-emerald-500/30 rounded-3xl p-6">
                 <div class="flex items-start gap-x-4">
                     <div>
@@ -246,8 +258,13 @@
                         <div class="text-sm text-slate-300 mt-1">This page generates excellent starting points and links. For a full, sourced, multi-source investigation (including real-time pulls from the three sites + SAM/EDGAR/earnings cross-checks), use the agent's specialized skills.</div>
                     </div>
                 </div>
-                <div class="mt-4 text-xs bg-slate-950 p-4 rounded-2xl font-mono text-emerald-300">
-                    Example command: "Use research-orchestrator + money-flow-tracer + gov-filings-reviewer to deeply trace the Centene / NY Medicaid contract from the 2024 LHHS appropriations, pulling donor data from OpenSecrets and FollowTheMoney and any family or lobbying ties."
+                <div class="mt-4 flex flex-wrap gap-3">
+                    <button onclick="sendTraceToAgent()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-sm font-medium flex items-center gap-x-2">
+                        <i class="fa-solid fa-robot"></i> <span>Send Current Trace to Agent (Copy Prompt)</span>
+                    </button>
+                    <div class="text-xs bg-slate-950 p-3 rounded-2xl font-mono text-emerald-300 flex-1 min-w-[260px]">
+                        Example: "Use research-orchestrator + money-flow-tracer + gov-filings-reviewer to deeply trace the Centene / NY Medicaid contract from the 2024 LHHS appropriations, pulling donor data from OpenSecrets and FollowTheMoney and any family or lobbying ties."
+                    </div>
                 </div>
             </section>
 
@@ -426,7 +443,8 @@
                     title: "Further Consolidated Appropriations Act, 2024 (P.L. 118-47)",
                     congressLink: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text",
                     flaggedProvisions: [
-                        { section: "Division D — Labor, Health and Human Services", excerpt: "For carrying out titles XI and XIX of the Social Security Act...", flagType: "Broad Formula Funding", explanation: "Large block grants to states for Medicaid managed care with limited new transparency on ownership or admin costs.", risk: "medium", link: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text" }
+                        { section: "Division D — Labor, Health and Human Services", excerpt: "For carrying out titles XI and XIX of the Social Security Act...", flagType: "Broad Formula Funding", explanation: "Large block grants to states for Medicaid managed care with limited new transparency on ownership or admin costs.", risk: "medium", link: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text" },
+                        { section: "Division D — Additional Provisions (illustrative)", excerpt: "Of the amounts made available... not less than $XX,000,000 shall be for grants to eligible entities in [specific categories]...", flagType: "Targeted Set-Aside", explanation: "Typical omnibus language that can direct funds narrowly; full review of the enrolled bill and joint explanatory statement recommended.", risk: "low", link: "https://www.congress.gov/bill/118th-congress/house-bill/2882/text" }
                     ]
                 }
             };
@@ -642,6 +660,63 @@
             navigator.clipboard.writeText(text + "\n\n(Attach to FOIA.gov or agency portal. Customize as needed.)").then(() => {
                 alert("FOIA template copied to clipboard. Paste into FOIA.gov or the agency portal.");
             });
+        }
+
+        // Item 3: One-click Send to Agent for traces
+        function sendTraceToAgent() {
+            if (!currentTrace) {
+                alert("Load a trace first.");
+                return;
+            }
+            const c = currentTrace.contract;
+            const prompt = `Use research-orchestrator + money-flow-tracer + gov-filings-reviewer + firecrawl on this contract trace:
+
+Recipient: ${c.recipient} (${c.state})
+Amount: $${(c.amount / 1e9).toFixed(2)}B
+Appropriations: ${currentTrace.appropriations.bill} - ${currentTrace.appropriations.title}
+
+1. Deeply trace the full money flow from the appropriations bill to the final recipient and any subcontractors.
+2. Pull donor, lobbying, and financial ties for all key politicians from OpenSecrets and FollowTheMoney.
+3. Identify any self-enrichment, family, or ownership red flags.
+4. Cross-reference with data gaps that would require FOIA.
+
+Generate a complete sourced report with direct links.`;
+
+            navigator.clipboard.writeText(prompt).then(() => {
+                alert("High-quality multi-skill prompt copied. Paste it to me for a full agent investigation.");
+            });
+        }
+
+        // Item 4: Permalink for traces
+        function copyTracePermalink() {
+            if (!currentTrace) return;
+            const url = new URL(window.location.href);
+            url.searchParams.set('tool', 'contract');
+            url.searchParams.set('state', currentTrace.contract.state || '');
+            url.searchParams.set('recipient', currentTrace.contract.recipient || '');
+            navigator.clipboard.writeText(url.toString()).then(() => alert('Permalink copied (includes current state + recipient). Reload the URL to restore.'));
+        }
+
+        // Item 1: Congress.gov fetch for the trace tool (appropriations bill)
+        async function fetchTraceCongressMetadata() {
+            const el = document.getElementById('trace-congress-meta');
+            if (!currentTrace || !currentTrace.appropriations) {
+                el.innerHTML = 'Load a trace first.';
+                return;
+            }
+            el.innerHTML = 'Fetching...';
+
+            const billUrl = currentTrace.appropriations.congress_link || 'https://www.congress.gov/bill/118th-congress/house-bill/2882';
+            try {
+                const res = await fetch(billUrl, { mode: 'cors' });
+                if (!res.ok) throw new Error('Blocked');
+                const html = await res.text();
+                const doc = new DOMParser().parseFromString(html, 'text/html');
+                const h1 = doc.querySelector('h1');
+                el.innerHTML = h1 ? `Live: ${h1.textContent.trim().substring(0,120)}... <a href="${billUrl}" target="_blank" class="external-link">View</a>` : 'Metadata loaded from public page.';
+            } catch (e) {
+                el.innerHTML = `Direct fetch limited by CORS. Get free key at api.data.gov and use api.congress.gov/v3 for full structured data (sponsors, actions, text versions).`;
+            }
         }
 
         // Make globally available for explorer buttons
