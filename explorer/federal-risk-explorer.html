@@ -442,6 +442,7 @@
 
         let map;
         let geoJSONData = null;           // fetched in parallel for upgrades
+        let currentLegend = null;         // track to avoid duplicate legends
         const DATA_LOAD_TIMEOUT_MS = 6500; // used inside loadRealDataForAgencies for the live attempt
 
         // ==================== DATA LOADING (Generalized for All Agencies) ====================
@@ -726,7 +727,7 @@
 
         // Start fetching the static (but large) US states GeoJSON in parallel with the slow USAspending call
         function startParallelGeoJSONFetch() {
-            fetch('https://raw.githubusercontent.com/PublicaMundi/DataSets/master/geojson/us-states.json')
+            fetch('https://raw.githubusercontent.com/mbostock/4090846/raw/us-states.json')
                 .then(res => res.json())
                 .then(json => {
                     geoJSONData = json;
@@ -816,7 +817,12 @@
                 renderFallbackCircles();
             }
 
-            // Legend
+            // Legend (remove previous to prevent duplicates on re-renders)
+            if (currentLegend) {
+                try { map.removeControl(currentLegend); } catch (e) {}
+                currentLegend = null;
+            }
+
             const legend = L.control({ position: 'bottomright' });
             legend.onAdd = function () {
                 const div = L.DomUtil.create('div', 'info legend');
@@ -828,6 +834,7 @@
                 return div;
             };
             legend.addTo(map);
+            currentLegend = legend;
         }
 
         function renderFallbackCircles() {
