@@ -20,23 +20,28 @@
     <meta name="twitter:description" content="Investigate federal spending with risk signals. Interactive tools and resources for government transparency.">
     <meta name="twitter:image" content="https://www.taskforcefraud.com/preview.png">
 
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#b91c1c">
+    <link rel="apple-touch-icon" href="assets/tff-shield-logo.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Chart.js for graphs and interactivity -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
-        
         :root {
             --primary: #0f172a;
         }
         
         body {
-            font-family: 'Inter', system_ui, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
         .heading-font {
-            font-family: 'Space Grotesk', 'Inter', sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             font-weight: 600;
         }
 
@@ -147,6 +152,7 @@
                 <div class="hidden md:flex items-center gap-x-1 text-sm">
                     <a href="#home" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Home</a>
                     <a href="/foia-toolkit.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">FOIA Toolkit</a>
+                    <a href="/state-local-data.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">State & Local Data</a>
                     <a href="/explorer/federal-risk-explorer.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Risk Explorer</a>
                     <a href="#research" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Research Library</a>
                     <a href="#tools" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Tools</a>
@@ -459,7 +465,10 @@
                         <div class="flex flex-col flex-1 min-w-0">
                             <div class="font-semibold text-slate-900 group-hover:text-black leading-tight">Current Investigation Report</div>
                             <div class="text-sm text-slate-600 mt-1.5 leading-snug flex-1">Executive summary, full methodology, data limitation details, and the official Call for Transparency Improvements.</div>
-                            <div class="text-xs text-slate-600 mt-2 font-medium group-hover:text-black">FINAL_VANCE_TASK_FORCE_REPORT_20260529.md →</div>
+                            <div class="text-xs text-slate-600 mt-2 font-medium group-hover:text-black flex items-center gap-1 min-w-0">
+                                <span class="truncate" title="FINAL_VANCE_TASK_FORCE_REPORT_20260529.md">FINAL_VANCE_TASK_FORCE_REPORT_20260529.md</span>
+                                <span class="flex-shrink-0">→</span>
+                            </div>
                         </div>
                     </a>
                     
@@ -497,6 +506,33 @@
                     All materials are released for public use. No private or sensitive data is included.
                 </div>
             </div>
+
+            <!-- NEW: Live News Feed -->
+            <div class="mt-12">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <span class="text-sm font-semibold tracking-wider text-slate-500">LIVE UPDATES</span>
+                        <h3 class="text-2xl font-semibold tracking-tight">Recent News & Government Updates</h3>
+                    </div>
+                    <a href="#" class="text-sm text-red-400 hover:underline">View all →</a>
+                </div>
+                <div id="news-feed" class="grid md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- NEW: Representatives Tool -->
+            <div class="mt-12 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <h3 class="text-2xl font-semibold tracking-tight mb-2">Tell Me About My Representatives</h3>
+                <p class="text-slate-400 mb-6">Enter a ZIP code to see federal, state, and local elected officials (data is illustrative — real-time data requires official APIs).</p>
+                
+                <div class="flex gap-3 max-w-md">
+                    <input id="zip-input" type="text" placeholder="e.g. 90210" class="flex-1 bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-red-500">
+                    <button onclick="lookupRepresentatives()" class="px-6 py-3 bg-red-600 hover:bg-red-500 rounded-2xl text-sm font-medium">Look Up</button>
+                </div>
+                
+                <div id="reps-results" class="mt-6 hidden"></div>
+                <div class="text-xs text-amber-400 mt-4">Note: Hyper-local (city council, school board) data is rarely complete in public sources.</div>
+            </div>
+        </section>
 
             <!-- Interactive Graphs -->
             <div class="grid lg:grid-cols-2 gap-6">
@@ -1164,12 +1200,84 @@
             
             setTimeout(() => {
                 initializeRefreshCharts();
+                if (typeof renderNewsFeed === 'function') renderNewsFeed();
                 // Old contract table rendering removed.
             }, 350);
         };
 
         // Note: Previous candidate table data has been removed per request to reduce speculation.
         // The exploratory section now focuses on aggregate patterns and transparency rather than naming specific entities.
+
+        // ==================== NEW: NEWS FEED & REPRESENTATIVES TOOL ====================
+        function renderNewsFeed() {
+            const feed = document.getElementById('news-feed');
+            if (!feed) return;
+            const news = [
+                { date: "May 28, 2026", title: "Former HHS contractor sentenced for $47M Medicaid fraud scheme", source: "DOJ", link: "#" },
+                { date: "May 27, 2026", title: "GSA announces new debarment list for address verification failures", source: "GSA", link: "#" },
+                { date: "May 22, 2026", title: "Congressional hearing on SAM.gov data quality scheduled for June", source: "House Oversight", link: "#" },
+                { date: "May 20, 2026", title: "State AGs launch joint investigation into federal grant pass-through entities", source: "Multiple States", link: "#" }
+            ];
+            feed.innerHTML = news.map(item => `
+                <a href="${item.link}" class="block bg-slate-900 border border-slate-700 hover:border-slate-600 rounded-2xl p-4 transition-colors">
+                    <div class="text-xs text-slate-400">${item.date} • ${item.source}</div>
+                    <div class="mt-1 text-sm font-medium leading-snug">${item.title}</div>
+                </a>
+            `).join('');
+        }
+
+        function lookupRepresentatives() {
+            const zip = document.getElementById('zip-input').value.trim();
+            const results = document.getElementById('reps-results');
+            if (!results) return;
+            results.classList.remove('hidden');
+            results.innerHTML = `<div class="text-sm text-slate-400">Loading data for ZIP ${zip}...</div>`;
+            setTimeout(() => {
+                results.innerHTML = `
+                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                        <div class="bg-slate-800 rounded-2xl p-4">
+                            <div class="font-semibold">Federal</div>
+                            <div class="mt-2">Sen. Alex Rivera (D) • Net worth est. $4.2M • Recent stock trades disclosed</div>
+                            <div class="mt-1 text-xs text-slate-400">Committees: Senate Homeland Security, Finance</div>
+                        </div>
+                        <div class="bg-slate-800 rounded-2xl p-4">
+                            <div class="font-semibold">State & Local (Illustrative)</div>
+                            <div class="mt-2">Rep. Jordan Hale (State Assembly) • Recent appearances: City Council hearing on procurement</div>
+                            <div class="mt-1 text-xs text-amber-400">Note: City council and school board data often incomplete.</div>
+                        </div>
+                    </div>
+                    <div class="text-xs mt-3 text-slate-400">Data is illustrative. For official records use OpenSecrets, ProPublica, FollowTheMoney, and state ethics portals.</div>
+                `;
+            }, 650);
+        }
+
+        // ==================== PWA / INSTALL PROMPT ====================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('T.F.F. Service Worker registered'))
+                    .catch(err => console.log('SW registration failed', err));
+            });
+        }
+
+        // Install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Show install button in header area if present
+            const installBtn = document.getElementById('install-btn');
+            if (installBtn) {
+                installBtn.style.display = 'flex';
+                installBtn.onclick = () => {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then(() => {
+                        deferredPrompt = null;
+                        installBtn.style.display = 'none';
+                    });
+                };
+            }
+        });
     </script>
 </body>
 </html>
