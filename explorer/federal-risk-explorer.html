@@ -169,7 +169,7 @@
                     <!-- Loading overlay - becomes non-blocking quickly; base map tiles are visible underneath -->
                     <div id="map-loading" class="absolute top-4 right-4 px-4 py-2 rounded-2xl bg-slate-900/95 border border-slate-700 flex items-center gap-x-3 z-[450] text-sm">
                         <div class="w-4 h-4 border-2 border-slate-600 border-t-red-400 rounded-full animate-spin flex-shrink-0"></div>
-                        <div class="text-slate-300">Loading live risk data…<span class="text-slate-500 text-xs ml-1">(map is interactive below)</span></div>
+                        <div class="text-slate-300">Attempting live data upgrade…<span class="text-slate-500 text-xs ml-1">(map below is already usable)</span></div>
                     </div>
                 </div>
                 <div class="text-xs text-slate-500 mt-3 px-1">
@@ -437,9 +437,8 @@
         };
 
         let map;
-        let geoJSONData = null;           // fetched in parallel
-        let dataLoadPromise = null;       // for coordination
-        const DATA_LOAD_TIMEOUT_MS = 6500; // after this we force fallback so user isn't stuck for 20s+
+        let geoJSONData = null;           // fetched in parallel for upgrades
+        const DATA_LOAD_TIMEOUT_MS = 6500; // used inside loadRealDataForAgencies for the live attempt
 
         // ==================== DATA LOADING (Generalized for All Agencies) ====================
         function getSelectedAgencies() {
@@ -1163,41 +1162,66 @@
 
             // Create the map immediately (defensive early init is the key fix)
             createMap();
-            showMapLoading();
 
-            // Kick off both the slow USAspending call AND the static GeoJSON in parallel
+            // Immediate visual feedback: render the fallback sample data + circles right now
+            // so the user *always* sees a populated interactive map within 1-2 seconds.
+            loadFallbackData();
+            // Use circles for the absolute fastest possible first paint (no waiting on GeoJSON)
+            // We will upgrade to real data + polygons asynchronously when they arrive.
+            refreshMapLayersNow();   // this will go to the circles else branch since geoJSONData is still null
+
+            // Also populate the table immediately with the same fallback data
+            populateTable();
+            updateTableStats();
+
+            // Start the "live upgrade" attempts in the background (these can take time)
             startParallelGeoJSONFetch();
             loadRealDataForAgencies();
 
-            // Nuclear safety net: no matter what (slow API, hanging fetch, JS edge case),
-            // after 9 seconds we force a usable map with fallback data + hide the blocking loader.
+            // The small badge only appears while we are attempting the live upgrade.
+            // Hide it quickly once the background attempts have had a chance, or after hard deadline.
+            showMapLoading();
+
+            // Background upgrade coordinator will hide the badge when real data or GeoJSON succeeds.
+            // Hard deadline safety net (in case both background fetches hang completely).
             setTimeout(() => {
                 try {
-                    if (!isDataLoaded || Object.keys(stateData || {}).length === 0) {
-                        loadFallbackData();
-                    }
-                    if (!geoJSONData) {
-                        geoJSONData = 'failed';
-                    }
-                    refreshMapLayersNow();
+                    // If we still only have the initial fallback and no better data arrived, just clean up the badge.
+                    // The map already has the sample circles from the immediate render above.
                     hideMapLoading();
 
                     const s = document.getElementById('data-status');
-                    if (s) s.textContent = 'Showing sample data view (live source is slow or unavailable)';
+                    if (s && !isDataLoaded) {
+                        s.textContent = 'Showing sample data view (live USAspending source is slow)';
+                    }
                 } catch (e) {
-                    // Last-ditch: at least hide the spinner so the page isn't stuck forever
                     hideMapLoading();
-                    console.error('Safety net failed to render map overlays', e);
+                    console.error('Safety cleanup failed', e);
                 }
-            }, 9000);
+            }, 8500);
         }
 
         function onAgencyChange() {
             setTimeout(() => {
+                // Show transient badge while we attempt live data for the new selection
                 showMapLoading();
+
                 const s = document.getElementById('data-status');
-                if (s) s.textContent = `Loading live data for new selection…`;
+                if (s) s.textContent = `Loading live data for selection…`;
+
+                // Re-render immediately with whatever we currently have (fallback or previous)
+                // so the map never goes blank during the switch.
+                refreshMapLayersNow();
+
+                // Then kick off the fresh data load in background (will upgrade when ready)
                 loadRealDataForAgencies();
+
+                // Per-interaction safety: make sure the badge doesn't stick around forever on this change
+                setTimeout(() => {
+                    hideMapLoading();
+                    const ss = document.getElementById('data-status');
+                    if (ss) ss.textContent = 'Showing current view (live update slow)';
+                }, 7500);
             }, 80);
         }
 
