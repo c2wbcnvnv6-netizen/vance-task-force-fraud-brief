@@ -37,38 +37,30 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  // Only cache same-origin navigation and basic asset requests.
+  // Completely ignore everything else to avoid interfering with CDNs or triggering CSP issues.
+  if (event.request.method !== 'GET') return;
 
-  // Only handle same-origin requests for caching.
-  // Let all cross-origin requests (CDNs, APIs, etc.) pass through normally.
-  // This prevents CSP blocks from causing SW errors and "Failed to convert value to Response".
+  const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) {
-    return; // Do not call event.respondWith — let the browser handle it
+    return; // Let browser handle all external requests (CDNs, APIs, etc.)
   }
 
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
-          return response;
-        }
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) return cachedResponse;
 
-        return fetch(event.request).then((fetchResponse) => {
-          // Optionally cache successful same-origin responses
-          if (fetchResponse && fetchResponse.status === 200) {
-            const responseToCache = fetchResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-          }
-          return fetchResponse;
-        });
-      })
-      .catch(() => {
-        // Offline fallback for navigation requests
+      return fetch(event.request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+        }
+        return networkResponse;
+      }).catch(() => {
         if (event.request.mode === 'navigate') {
           return caches.match('/index.html');
         }
-      })
+      });
+    })
   );
 });
