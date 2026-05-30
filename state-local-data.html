@@ -23,11 +23,29 @@
                     <img src="assets/tff-shield-logo.svg" alt="T.F.F. Shield" class="w-9 h-9">
                     <span class="font-semibold text-base tracking-tight text-white">Federal Risk Explorer</span>
                 </a>
+                <!-- Desktop Nav -->
                 <div class="hidden md:flex items-center gap-x-0.5 text-sm flex-nowrap overflow-x-auto">
                     <a href="index.html" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl whitespace-nowrap">Home</a>
                     <a href="foia-toolkit.html" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl whitespace-nowrap">FOIA Toolkit</a>
                     <a href="state-local-data.html" class="px-3 py-2 text-red-400 font-medium rounded-xl whitespace-nowrap">State &amp; Local Data</a>
                     <a href="explorer/federal-risk-explorer.html" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl whitespace-nowrap">Risk Explorer</a>
+                </div>
+
+                <!-- Mobile Hamburger -->
+                <button id="mobile-menu-btn" 
+                        class="md:hidden flex items-center justify-center w-10 h-10 text-slate-300 hover:text-white"
+                        aria-label="Open menu">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden bg-slate-900 border-t border-slate-800">
+                <div class="px-6 py-4 space-y-1 text-sm">
+                    <a href="index.html" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">Home</a>
+                    <a href="foia-toolkit.html" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">FOIA Toolkit</a>
+                    <a href="state-local-data.html" class="block px-4 py-3 text-red-400 font-medium hover:bg-slate-800 rounded-xl">State &amp; Local Data</a>
+                    <a href="explorer/federal-risk-explorer.html" class="block px-4 py-3 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl">Risk Explorer</a>
                 </div>
             </div>
         </div>
@@ -146,6 +164,33 @@
             document.getElementById('sample-language').innerHTML = state.language;
 
             panel.classList.remove('hidden');
+        }
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                const isHidden = mobileMenu.classList.contains('hidden');
+                mobileMenu.classList.toggle('hidden');
+                const icon = mobileMenuBtn.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-bars', !isHidden);
+                    icon.classList.toggle('fa-times', isHidden);
+                }
+            });
+
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                    const icon = mobileMenuBtn.querySelector('i');
+                    if (icon) {
+                        icon.classList.add('fa-bars');
+                        icon.classList.remove('fa-times');
+                    }
+                });
+            });
         }
     </script>
 </body>
