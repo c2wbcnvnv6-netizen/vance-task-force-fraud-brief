@@ -4,7 +4,7 @@
   "description": "This repository contains a self-contained, publicly viewable research brief.",
   "main": "sw.js",
   "scripts": {
-    "build:css": "tailwindcss -i ./src/input.css -o ./assets/css/output.css --minify",
+    "build:css": "npx tailwindcss -i ./src/input.css -o ./assets/css/output.css --minify",
     "build": "npm run build:css",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
