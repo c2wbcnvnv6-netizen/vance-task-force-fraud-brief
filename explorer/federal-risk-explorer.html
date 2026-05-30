@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Federal Risk Explorer | All Agencies</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Self-hosted Leaflet 1.9.4 (to avoid CSP blocks on unpkg) -->
+    <link rel="stylesheet" href="../assets/leaflet/leaflet.css" />
+    <script src="../assets/leaflet/leaflet.js"></script>
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- jsPDF for PDF exports (lightweight, no build step) -->
@@ -120,14 +121,17 @@
 
         <!-- Controls - taller, clearer, better vertical presence for Time Period + scrollable agencies -->
         <div class="grid md:grid-cols-12 gap-4 mb-6">
-            <!-- Time Period (now with more vertical weight) -->
-            <div class="md:col-span-3 bg-slate-900 border border-slate-700 rounded-3xl px-5 py-4 flex flex-col justify-center">
-                <div class="text-xs uppercase tracking-[1.5px] text-slate-500 mb-1">TIME PERIOD</div>
-                <div class="flex items-center gap-x-3">
-                    <div class="text-2xl font-semibold tracking-tight">FY 2024</div>
-                    <div class="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-800 border border-slate-600 text-slate-400">Oct 2023 – Sep 2024</div>
+            <!-- Time Period - clean visual selector (single period supported) -->
+            <div class="md:col-span-3 bg-slate-900 border border-slate-700 rounded-3xl px-5 py-4">
+                <div class="text-xs uppercase tracking-[1.5px] text-slate-500 mb-1.5">TIME PERIOD</div>
+                
+                <div class="inline-flex items-center bg-slate-950 border border-slate-600 rounded-2xl p-1 w-full">
+                    <div class="flex-1 text-center px-4 py-2 bg-slate-800 border border-red-500/60 text-white rounded-[14px] font-semibold text-sm tracking-tight">
+                        FY 2024
+                    </div>
                 </div>
-                <div class="text-xs text-slate-500 mt-1">Full fiscal year • Live USAspending pull</div>
+                
+                <div class="text-[10px] text-slate-400 mt-1.5 px-1">Oct 2023 – Sep 2024 • Only period with complete data</div>
             </div>
 
             <!-- Agencies (significantly taller for comfortable scrolling/selection) -->
@@ -165,7 +169,7 @@
             <!-- Map -->
             <div class="lg:col-span-7">
                 <div class="bg-slate-900 border border-slate-700 rounded-3xl p-4 map-container relative">
-                    <div id="map" class="w-full h-[620px] rounded-2xl bg-slate-950"></div>
+                    <div id="map" class="w-full h-[500px] md:h-[620px] rounded-2xl bg-slate-950" style="min-height:500px;"></div>
                     <!-- Loading overlay - becomes non-blocking quickly; base map tiles are visible underneath -->
                     <div id="map-loading" class="absolute top-4 right-4 px-4 py-2 rounded-2xl bg-slate-900/95 border border-slate-700 flex items-center gap-x-3 z-[450] text-sm">
                         <div class="w-4 h-4 border-2 border-slate-600 border-t-red-400 rounded-full animate-spin flex-shrink-0"></div>
@@ -582,60 +586,114 @@
             const mapContainer = document.getElementById('map');
             if (!mapContainer) {
                 console.error('Map container not found');
-                return;
+                showMapErrorFallback(mapContainer);
+                return false;
+            }
+
+            // Check if Leaflet loaded (self-hosted)
+            if (typeof L === 'undefined' || !L.map) {
+                console.error('Leaflet (L) is not defined - self-hosted files may have failed to load');
+                showMapErrorFallback(mapContainer);
+                return false;
             }
 
             // Destroy previous instance if any
             if (map) {
-                map.remove();
+                try { map.remove(); } catch(e) {}
                 map = null;
             }
 
-            // Ensure the container has real size before Leaflet measures it
-            mapContainer.style.minHeight = '620px';
+            // Explicit responsive height (mobile 500px min, desktop 600px+)
+            mapContainer.style.minHeight = '500px';
+            if (window.innerWidth >= 768) {
+                mapContainer.style.minHeight = '620px';
+            }
 
-            map = L.map('map', {
-                zoomControl: false,
-                attributionControl: true
-            }).setView([37.8, -96], 4);
+            try {
+                map = L.map('map', {
+                    zoomControl: false,
+                    attributionControl: true
+                }).setView([37.8, -96], 4);
 
-            // Dark-themed tiles that match the cyber-tech / slate-950 design
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; OpenStreetMap &amp; CartoDB',
-                className: 'map-tiles-dark',
-                maxZoom: 19
-            }).addTo(map);
+                // Dark-themed tiles (CartoDB - external but allowed in current CSP for tiles; self-hosting tiles is out of scope)
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap &amp; CartoDB',
+                    className: 'map-tiles-dark',
+                    maxZoom: 19
+                }).addTo(map);
 
-            // Immediate safety invalidate
-            requestAnimationFrame(() => {
-                if (map) map.invalidateSize();
-            });
+                // Immediate + multiple invalidates for layout (critical for grids)
+                requestAnimationFrame(() => { if (map) map.invalidateSize(); });
+                setTimeout(() => { if (map) map.invalidateSize(); }, 100);
+                setTimeout(() => { if (map) map.invalidateSize(); }, 350);
+                setTimeout(() => { if (map) map.invalidateSize(); }, 800);
 
-            // Multiple delayed invalidates + resize listener (the real fix for "blank map")
-            setupMapResizeHandlers();
+                // Robust resize + layout change handling
+                setupMapResizeHandlers();
 
-            // Do NOT hide the loading overlay here — we only hide it once the colored risk layers are actually painted
+                // Hide any previous error
+                hideMapErrorFallback();
+
+                return true;
+            } catch (err) {
+                console.error('Map initialization failed:', err);
+                showMapErrorFallback(mapContainer);
+                return false;
+            }
         }
 
-        function setupMapResizeHandlers() {
-            if (!map) return;
+        function showMapErrorFallback(container) {
+            if (!container) container = document.getElementById('map');
+            if (!container) return;
 
-            const doInvalidate = () => {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-full bg-slate-900 text-center p-6 rounded-2xl border border-red-900/50">
+                    <div class="text-red-400 text-4xl mb-3">⚠️</div>
+                    <div class="font-semibold text-lg text-slate-200 mb-2">Interactive map unavailable</div>
+                    <div class="text-sm text-slate-400 max-w-xs mb-4">
+                        The map library could not initialize (possibly blocked by browser extensions or network policy).
+                        The data table below remains fully functional.
+                    </div>
+                    <button onclick="retryMapInit()" 
+                            class="px-5 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-medium rounded-xl transition-colors">
+                        Retry Map
+                    </button>
+                    <div class="text-[10px] text-slate-500 mt-3">Self-hosted Leaflet • CSP compliant</div>
+                </div>
+            `;
+            // Still allow table interaction
+            hideMapLoading();
+        }
+
+        function hideMapErrorFallback() {
+            const container = document.getElementById('map');
+            if (container && container.querySelector('.bg-slate-900')) {
+                // Only reset if it was our fallback
                 if (map) {
-                    map.invalidateSize();
-                    // extra safety passes
-                    setTimeout(() => map && map.invalidateSize(), 180);
-                    setTimeout(() => map && map.invalidateSize(), 450);
+                    // re-init will handle
                 }
-            };
-
-            window.addEventListener('resize', doInvalidate, { passive: true });
-
-            // Extra insurance for layout settling in grids / sticky nav etc.
-            setTimeout(doInvalidate, 300);
-            setTimeout(doInvalidate, 800);
-            setTimeout(doInvalidate, 1400);
+            }
         }
+
+        function retryMapInit() {
+            const container = document.getElementById('map');
+            if (container) {
+                container.innerHTML = ''; // clear fallback
+                // Re-create
+                if (typeof createMap === 'function') {
+                    const success = createMap();
+                    if (success && typeof refreshMapLayersNow === 'function') {
+                        setTimeout(() => {
+                            if (typeof stateData !== 'undefined' && Object.keys(stateData).length > 0) {
+                                refreshMapLayersNow();
+                            }
+                        }, 200);
+                    }
+                }
+            }
+        }
+
+        // (setupMapResizeHandlers logic is now inside the enhanced createMap for single source of truth)
 
         function hideMapLoading() {
             const loader = document.getElementById('map-loading');
