@@ -1,0 +1,21 @@
+{
+  "name": "Task Force Fraud - Federal Risk Explorer",
+  "short_name": "T.F.F. Explorer",
+  "description": "Investigate federal spending with risk signals. Interactive tools, FOIA resources, and research for government transparency.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#b91c1c",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "assets/tff-shield-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+    // TODO: Replace with proper PNGs (192x192, 512x512) generated from the SVG for best PWA support on iOS/Android
+  ],
+  "categories": ["government", "education", "news"],
+  "lang": "en-US"
+}

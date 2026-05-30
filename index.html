@@ -28,7 +28,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="assets/css/output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Chart.js for graphs and interactivity -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -1237,24 +1237,26 @@
             const results = document.getElementById('reps-results');
             if (!results) return;
             results.classList.remove('hidden');
-            results.innerHTML = `<div class="text-sm text-slate-400">Loading data for ZIP ${zip}...</div>`;
+            results.innerHTML = `<div class="text-sm text-slate-400">Loading representatives for ZIP ${zip}...</div>`;
+
             setTimeout(() => {
+                // Enhanced illustrative data
                 results.innerHTML = `
-                    <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <div class="space-y-4 text-sm">
                         <div class="bg-slate-800 rounded-2xl p-4">
-                            <div class="font-semibold">Federal</div>
-                            <div class="mt-2">Sen. Alex Rivera (D) • Net worth est. $4.2M • Recent stock trades disclosed</div>
-                            <div class="mt-1 text-xs text-slate-400">Committees: Senate Homeland Security, Finance</div>
+                            <div class="font-semibold mb-1">Federal Representatives</div>
+                            <div>Sen. Jordan Hale (D-CA) — Net Worth: ~$4.8M • Recent stock activity: Sold TSLA calls (disclosed)</div>
+                            <div class="text-xs text-slate-400 mt-1">Committees: Senate Homeland Security, Judiciary • Public appearances: 12 in last 30 days</div>
                         </div>
                         <div class="bg-slate-800 rounded-2xl p-4">
-                            <div class="font-semibold">State & Local (Illustrative)</div>
-                            <div class="mt-2">Rep. Jordan Hale (State Assembly) • Recent appearances: City Council hearing on procurement</div>
-                            <div class="mt-1 text-xs text-amber-400">Note: City council and school board data often incomplete.</div>
+                            <div class="font-semibold mb-1">State & Local (Demo Data)</div>
+                            <div>Assemblymember Alex Rivera — Focus: Government oversight • Recent: Sponsored procurement reform bill</div>
+                            <div class="text-xs text-amber-400 mt-1">Note: True city/county data is fragmented. Check your local city clerk and county recorder for hyper-local officials.</div>
                         </div>
                     </div>
-                    <div class="text-xs mt-3 text-slate-400">Data is illustrative. For official records use OpenSecrets, ProPublica, FollowTheMoney, and state ethics portals.</div>
+                    <div class="text-xs mt-3 text-slate-400">This is illustrative data for demonstration. Real-time official data is available via ProPublica Congress API, OpenSecrets, FollowTheMoney, and state ethics commissions.</div>
                 `;
-            }, 650);
+            }, 700);
         }
 
         // ==================== PWA / INSTALL PROMPT ====================
