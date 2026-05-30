@@ -37,17 +37,35 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // Only handle same-origin requests for caching.
+  // Let all cross-origin requests (CDNs, APIs, etc.) pass through normally.
+  // This prevents CSP blocks from causing SW errors and "Failed to convert value to Response".
+  if (url.origin !== self.location.origin) {
+    return; // Do not call event.respondWith — let the browser handle it
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request).then((fetchResponse) => {
-          // Optionally cache new requests
+        if (response) {
+          return response;
+        }
+
+        return fetch(event.request).then((fetchResponse) => {
+          // Optionally cache successful same-origin responses
+          if (fetchResponse && fetchResponse.status === 200) {
+            const responseToCache = fetchResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseToCache);
+            });
+          }
           return fetchResponse;
         });
       })
       .catch(() => {
-        // Offline fallback - could return a custom offline page
+        // Offline fallback for navigation requests
         if (event.request.mode === 'navigate') {
           return caches.match('/index.html');
         }
