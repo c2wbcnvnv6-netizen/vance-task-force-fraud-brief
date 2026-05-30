@@ -44,12 +44,21 @@ See `QUICK_DEPLOY.md` for:
 
 ## Files
 - `index.html` — The complete interactive research brief
+- `RED_FLAG_TAXONOMY.md` — Structured red flag taxonomy + observability matrix (new, using regulatory-redflag-detector / verification-layer patterns)
+- `FINAL_VANCE_TASK_FORCE_REPORT_20260529.md` — Comprehensive final investigation report
+- `FINAL_FRESH_DATA_TOP20_REPORT_20260529.md` — Top survivors after aggressive filtering on fresh May 29 data
+- `FOIA_Transparency_Request.md` — Ready-to-use FOIA template
 - `HOW_TO_VIEW_THE_BRIEF.txt` — Local viewing instructions
+
+## Recent Improvements (June 2026)
+- Added `RED_FLAG_TAXONOMY.md` — a structured, sourced taxonomy of the specific red flags described in the claim, with public observability ratings, a clear data limitation matrix, and illustrative (non-claimed) vendor examples from the fresh GSA data pull. Produced following patterns from regulatory-redflag-detector, verification-layer, and tracing-visualizer.
+- Integrated the taxonomy into the live site with a scannable table, prominent links, and a new Verification & Source Confidence layer.
+- Strengthened non-speculative framing and actionability throughout.
 
 ## Source & Methodology
 All information is sourced from primary government documents (White House, GSA), contemporaneous reporting (Daily Caller, Fox News), and public records. See the "Methodology & Limitations" section inside the brief.
 
-Compiled May 2026 using Firecrawl tools for web research.
+Compiled May 2026 using Firecrawl tools for web research. Enhanced with specialized intelligence analysis skills for red flag systematization and verification.
 
 ## License
 This research brief is provided for informational purposes. Feel free to share the deployed link.

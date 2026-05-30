@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- pdf.js for client-side PDF parsing (WN2) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
         body { font-family: 'Inter', system_ui, sans-serif; }
@@ -189,6 +191,7 @@
                     <button onclick="sendBillToAgent()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-2xl text-sm font-medium flex items-center gap-x-2">
                         <i class="fa-solid fa-robot"></i> <span>Send Current Bill to Agent (Copy Prompt)</span>
                     </button>
+                    <button onclick="saveCurrentInvestigation()" class="px-5 py-2 bg-slate-700 hover:bg-slate-600 rounded-2xl text-sm font-medium">Save This Investigation</button>
                     <a href="explorer/federal-risk-explorer.html" class="px-4 py-2 text-sm border border-slate-600 rounded-2xl hover:bg-slate-800">Back to Multi-Agency Explorer</a>
                     <a href="contract-trace.html" class="px-4 py-2 text-sm border border-slate-600 rounded-2xl hover:bg-slate-800">Open Contract Trace Tool</a>
                 </div>
@@ -467,6 +470,68 @@ Current context from page: ${currentBill.summary || 'N/A'}`;
             navigator.clipboard.writeText(url.toString()).then(() => alert('Permalink copied. This URL will restore the current analysis when loaded.'));
         }
 
+        // WN3: Saved Investigations (localStorage + export)
+        function saveCurrentInvestigation() {
+            if (!currentBill) return alert("Analyze something first.");
+            let saved = JSON.parse(localStorage.getItem('savedInvestigations') || '[]');
+            const investigation = {
+                id: Date.now(),
+                type: 'bill',
+                title: currentBill.title,
+                data: currentBill,
+                savedAt: new Date().toISOString()
+            };
+            saved.unshift(investigation);
+            localStorage.setItem('savedInvestigations', JSON.stringify(saved.slice(0, 20)));
+
+            // WN1: Optional cloud sync via Edge Function stub
+            fetch('/api/save-investigation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(investigation)
+            }).then(r => r.json()).then(res => {
+                console.log('Cloud sync response (stub):', res);
+            }).catch(() => {});
+
+            alert("Investigation saved locally. Cloud sync attempted (Vercel Edge stub).");
+        }
+
+        function showSavedInvestigations() {
+            const saved = JSON.parse(localStorage.getItem('savedInvestigations') || '[]');
+            if (saved.length === 0) return alert("No saved investigations yet.");
+
+            let html = '<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onclick="this.remove()"><div class="bg-slate-900 max-w-2xl w-full mx-4 rounded-3xl p-6 max-h-[80vh] overflow-auto" onclick="event.stopImmediatePropagation()">';
+            html += '<div class="flex justify-between mb-4"><h3 class="text-xl font-semibold">Saved Investigations</h3><button onclick="this.closest(\'.fixed\').remove()" class="text-slate-400">Close</button></div>';
+            
+            saved.forEach(item => {
+                html += `<div class="p-4 border border-slate-700 rounded-2xl mb-3"><strong>${item.title}</strong> <span class="text-xs text-slate-400">(${item.type} • ${new Date(item.savedAt).toLocaleDateString()})</span><br>`;
+                html += `<button onclick="loadSavedInvestigation(${item.id}); this.closest('.fixed').remove()" class="mt-2 text-sm px-3 py-1 bg-emerald-600 rounded-xl">Load</button></div>`;
+            });
+            html += '</div></div>';
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
+
+        function loadSavedInvestigation(id) {
+            const saved = JSON.parse(localStorage.getItem('savedInvestigations') || '[]');
+            const item = saved.find(s => s.id === id);
+            if (item && item.type === 'bill') {
+                currentBill = item.data;
+                renderBillAnalysis();
+            }
+        }
+
+        // Add button to header area for saved list
+        setTimeout(() => {
+            const header = document.querySelector('#results');
+            if (header) {
+                const btn = document.createElement('button');
+                btn.className = 'fixed bottom-6 right-6 px-4 py-2 bg-slate-800 border border-slate-600 rounded-2xl text-sm z-40';
+                btn.textContent = 'Load Saved Investigations';
+                btn.onclick = showSavedInvestigations;
+                document.body.appendChild(btn);
+            }
+        }, 2000);
+
         // Major Upgrade: PDF / Text file upload support
         function handleBillFileUpload(event) {
             const file = event.target.files[0];
@@ -476,34 +541,68 @@ Current context from page: ${currentBill.summary || 'N/A'}`;
             statusEl.classList.remove('hidden');
             statusEl.textContent = `Processing ${file.name}...`;
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const content = e.target.result;
-                statusEl.textContent = `Loaded ${file.name} (${Math.round(file.size/1024)} KB). Analyzing...`;
-
-                // Create a synthetic bill analysis from the uploaded content
-                currentBill = {
-                    number: file.name.replace(/\.[^/.]+$/, ""),
-                    congress: "User Upload",
-                    title: `Uploaded Document: ${file.name}`,
-                    status: "Local Analysis",
-                    congressLink: "#",
-                    summary: "Analysis performed on user-uploaded file. Full clause-by-clause review recommended via agent.",
-                    timeline: [
-                        {date: "Uploaded", action: "Local file analysis", link: "#"}
-                    ],
-                    flagged: extractFlagsFromText(content),
-                    politicians: [
-                        {name: "Key Sponsor / Appropriator", role: "See full text", vote: "See bill", donors: "Use OpenSecrets link below", flags: [], links: {opensecrets: "https://www.opensecrets.org/search", followthemoney: "https://www.followthemoney.org", ballotpedia: "https://ballotpedia.org"}}
-                    ],
-                    explorerStates: ["NY", "CA", "TX"],
-                    attribution: "Analysis based on user-uploaded content. Verify against official sources."
+            if (file.type === 'application/pdf') {
+                // Real client-side PDF parsing using pdf.js (WN2)
+                const fileReader = new FileReader();
+                fileReader.onload = async function() {
+                    const typedarray = new Uint8Array(this.result);
+                    try {
+                        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                        let fullText = '';
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const page = await pdf.getPage(i);
+                            const textContent = await page.getTextContent();
+                            fullText += textContent.items.map(item => item.str).join(' ') + '\n\n';
+                        }
+                        statusEl.textContent = `Extracted ${pdf.numPages} pages from ${file.name}. Analyzing clauses...`;
+                        
+                        currentBill = {
+                            number: file.name.replace(/\.[^/.]+$/, ""),
+                            congress: "User Upload",
+                            title: `Uploaded PDF: ${file.name}`,
+                            status: "Local PDF Analysis (pdf.js)",
+                            congressLink: "#",
+                            summary: "Full text extracted client-side. Advanced AI clause analysis available via agent.",
+                            timeline: [{date: "Uploaded", action: "PDF text extraction + local analysis", link: "#"}],
+                            flagged: extractFlagsFromText(fullText),
+                            politicians: [
+                                {name: "Key Sponsor / Appropriator", role: "See full text", vote: "See bill", donors: "Use OpenSecrets link below", flags: [], links: {opensecrets: "https://www.opensecrets.org/search", followthemoney: "https://www.followthemoney.org", ballotpedia: "https://ballotpedia.org"}}
+                            ],
+                            explorerStates: ["NY", "CA", "TX"],
+                            attribution: "Text extracted via pdf.js. For deeper semantic analysis use document-reverse-engineer skill."
+                        };
+                        renderBillAnalysis();
+                        statusEl.textContent = `PDF parsed successfully (${pdf.numPages} pages).`;
+                    } catch (err) {
+                        statusEl.textContent = 'PDF parsing failed. Falling back to text mode or agent.';
+                        console.error(err);
+                    }
                 };
-
-                renderBillAnalysis();
-                statusEl.textContent = `Analysis complete for ${file.name}.`;
-            };
-            reader.readAsText(file);
+                fileReader.readAsArrayBuffer(file);
+            } else {
+                // Text file fallback
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    statusEl.textContent = `Loaded ${file.name}. Analyzing...`;
+                    currentBill = {
+                        number: file.name.replace(/\.[^/.]+$/, ""),
+                        congress: "User Upload",
+                        title: `Uploaded Document: ${file.name}`,
+                        status: "Local Analysis",
+                        congressLink: "#",
+                        summary: "Analysis performed on user-uploaded file.",
+                        timeline: [{date: "Uploaded", action: "Local file analysis", link: "#"}],
+                        flagged: extractFlagsFromText(content),
+                        politicians: [{name: "Key Sponsor", role: "See text", vote: "N/A", donors: "Search external sites", flags: [], links: {opensecrets:"https://www.opensecrets.org/search", followthemoney:"https://www.followthemoney.org", ballotpedia:"https://ballotpedia.org"}}],
+                        explorerStates: ["NY","CA","TX"],
+                        attribution: "Based on uploaded content."
+                    };
+                    renderBillAnalysis();
+                    statusEl.textContent = `Analysis complete.`;
+                };
+                reader.readAsText(file);
+            }
         }
 
         function extractFlagsFromText(text) {

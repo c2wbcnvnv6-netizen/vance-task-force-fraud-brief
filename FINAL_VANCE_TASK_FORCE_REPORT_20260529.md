@@ -76,7 +76,8 @@ These steps would enable independent oversight without compromising ongoing inve
 
 ## Deliverables Produced
 
-- `public-task-force-brief/index.html` — Live public brief updated with the exact Final Investigation Outcome section.
+- `public-task-force-brief/index.html` — Live public brief (enhanced June 2026 with interactive elements, verification notes, and red flag taxonomy integration).
+- `public-task-force-brief/RED_FLAG_TAXONOMY.md` — Structured red flag taxonomy + observability matrix (new). Extracts the specific risk indicators from the claim, rates public testability, and includes illustrative post-filter vendor examples. Follows regulatory-redflag-detector and verification-layer standards.
 - `public-task-force-brief/FINAL_VANCE_TASK_FORCE_REPORT_20260529.md` — This comprehensive final report.
 - `public-task-force-brief/FOIA_Transparency_Request.md` — Ready-to-use FOIA template (see companion file).
 - Supporting protocol artifacts remain in `vance_task_force_protocol/data/` (final filtered CSVs and prior reports).

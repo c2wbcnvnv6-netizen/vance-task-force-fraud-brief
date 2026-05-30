@@ -207,7 +207,7 @@
                 <div class="text-xs text-slate-500 mt-2">Click any external link to jump directly into FollowTheMoney, OpenSecrets, or Ballotpedia with the name pre-filled. Data is attributed and for quick reference only.</div>
             </section>
 
-            <!-- Relationship Flow (Major Upgrade - Visual Diagram) -->
+            <!-- Relationship Flow (Major Upgrade - Visual Diagram + Graph) -->
             <section>
                 <h3 class="text-xl font-semibold mb-4">Money &amp; Influence Flow</h3>
                 <div id="flow-view" class="section-card rounded-3xl p-6"></div>
@@ -230,6 +230,13 @@
                         </div>
                     </div>
                     <div class="text-[10px] text-center text-slate-500 mt-3">Simplified view. Full beneficial ownership and subcontracting often requires FOIA or state records.</div>
+                </div>
+
+                <!-- WN5: Interactive Relationship Graph -->
+                <div id="relationship-graph" class="section-card rounded-3xl p-6 mt-4 hidden">
+                    <h4 class="font-semibold mb-3 text-sm">Politician &amp; Entity Relationship Graph</h4>
+                    <svg id="graph-svg" width="100%" height="220" class="bg-slate-950 rounded-xl"></svg>
+                    <div class="text-[10px] text-slate-500 mt-2">Nodes = Politicians / Entities. Edges = Influence or funding connections. Click nodes for details (demo data).</div>
                 </div>
             </section>
 
@@ -561,6 +568,9 @@
                 document.getElementById('flow-recipient').textContent = currentTrace.contract.recipient;
             }
 
+            // WN5: Draw simple SVG relationship graph
+            drawRelationshipGraph(currentTrace);
+
             // Red flags
             let flagsHTML = '<ul class="space-y-2 text-sm">';
             currentTrace.red_flags.forEach(f => {
@@ -734,6 +744,68 @@ Generate a complete sourced report with direct links.`;
 
             navigator.clipboard.writeText(prompt).then(() => {
                 alert("High-quality multi-skill prompt copied. Paste it to me for a full agent investigation.");
+            });
+        }
+
+        // WN5: Simple SVG Relationship Graph (pure JS, no external deps)
+        function drawRelationshipGraph(trace) {
+            const svg = document.getElementById('graph-svg');
+            const container = document.getElementById('relationship-graph');
+            if (!svg || !container || !trace || !trace.politicians) return;
+
+            container.classList.remove('hidden');
+            svg.innerHTML = '';
+
+            const politicians = trace.politicians.slice(0, 5); // Limit for demo
+            const width = 800;
+            const height = 200;
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+            // Simple force-like layout
+            const nodes = politicians.map((p, i) => ({
+                id: i,
+                label: p.name.split(' ').slice(-1)[0], // Last name
+                x: 80 + (i % 3) * 240,
+                y: 50 + Math.floor(i / 3) * 80,
+                type: 'politician'
+            }));
+
+            // Add central recipient node
+            nodes.push({id: 99, label: trace.contract.recipient.split(' ')[0], x: 400, y: 100, type: 'recipient'});
+
+            // Draw edges
+            nodes.forEach((node, idx) => {
+                if (node.type === 'politician') {
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", node.x);
+                    line.setAttribute("y1", node.y);
+                    line.setAttribute("x2", 400);
+                    line.setAttribute("y2", 100);
+                    line.setAttribute("stroke", "#475569");
+                    line.setAttribute("stroke-width", "1.5");
+                    svg.appendChild(line);
+                }
+            });
+
+            // Draw nodes
+            nodes.forEach(node => {
+                const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                circle.setAttribute("cx", node.x);
+                circle.setAttribute("cy", node.y);
+                circle.setAttribute("r", node.type === 'recipient' ? 28 : 22);
+                circle.setAttribute("fill", node.type === 'recipient' ? "#b91c1c" : "#0f172a");
+                circle.setAttribute("stroke", "#64748b");
+                circle.setAttribute("stroke-width", "2");
+                svg.appendChild(circle);
+
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", node.x);
+                text.setAttribute("y", node.y + 5);
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("fill", "white");
+                text.setAttribute("font-size", "11");
+                text.textContent = node.label.substring(0, 12);
+                svg.appendChild(text);
             });
         }
 
