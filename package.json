@@ -1,0 +1,28 @@
+{
+  "name": "public-task-force-brief",
+  "version": "1.0.0",
+  "description": "This repository contains a self-contained, publicly viewable research brief.",
+  "main": "sw.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./assets/css/output.css --minify",
+    "build": "npm run build:css",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/c2wbcnvnv6-netizen/vance-task-force-fraud-brief.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/c2wbcnvnv6-netizen/vance-task-force-fraud-brief/issues"
+  },
+  "homepage": "https://github.com/c2wbcnvnv6-netizen/vance-task-force-fraud-brief#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0"
+  }
+}
