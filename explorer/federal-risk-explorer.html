@@ -461,10 +461,8 @@
 
             if (statusEl) statusEl.textContent = `Loading live FY2024 data from USAspending.gov (often slow)…`;
 
-            // Start the GeoJSON fetch in parallel right now (this is the key UX improvement)
-            if (!geoJSONData) {
-                startParallelGeoJSONFetch();
-            }
+            // GeoJSON fetch disabled on this path to prevent console 404 spam.
+            // The map uses reliable self-hosted circles + labels instead.
 
             const body = {
                 scope: "recipient_location",
@@ -1272,8 +1270,10 @@
             populateTable();
             updateTableStats();
 
-            // Start the "live upgrade" attempts in the background (these can take time)
-            startParallelGeoJSONFetch();
+            // Start the live data attempt in background.
+            // GeoJSON disabled (external sources consistently 404 and create console noise).
+            // Circles + labels are the reliable, self-hosted default and look good.
+            // loadRealDataForAgencies() will still attempt live USAspending data.
             loadRealDataForAgencies();
 
             // The small badge only appears while we are attempting the live upgrade.
