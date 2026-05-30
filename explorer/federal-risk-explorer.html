@@ -185,6 +185,89 @@
             This explorer uses real federal award data. Risk signals are derived from publicly reported fields 
             (location data, award characteristics, recipient profiles). They are indicators for further review, not conclusions.
         </div>
+
+        <!-- Data Table Section -->
+        <section class="mt-12">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-2xl font-semibold">State-Level Data Table</h3>
+                    <p class="text-slate-400 text-sm">Searchable and filterable view of all data shown on the map</p>
+                </div>
+                <button onclick="exportTableData()" 
+                        class="px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-xl text-sm flex items-center gap-x-2">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Export CSV</span>
+                </button>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6">
+                <div class="flex flex-wrap gap-3 mb-4">
+                    <input type="text" id="table-search" placeholder="Search state or recipient..." 
+                           onkeyup="filterTable()" 
+                           class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-sm w-64 focus:outline-none focus:border-emerald-500">
+                    
+                    <select id="risk-filter" onchange="filterTable()" class="bg-slate-800 border border-slate-600 rounded-xl px-4 py-2 text-sm">
+                        <option value="">All Risk Levels</option>
+                        <option value="high">High Risk</option>
+                        <option value="medium">Medium Risk</option>
+                        <option value="low">Lower Risk</option>
+                    </select>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table id="data-table" class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-700 text-slate-400">
+                                <th class="text-left py-3 pr-4 cursor-pointer" onclick="sortTable(0)">State</th>
+                                <th class="text-right py-3 pr-4 cursor-pointer" onclick="sortTable(1)">Total HHS Awards</th>
+                                <th class="text-right py-3 pr-4 cursor-pointer" onclick="sortTable(2)">Per Capita</th>
+                                <th class="text-left py-3 pr-4">Risk Level</th>
+                                <th class="text-left py-3">Notable Signals</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800 text-slate-200">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Submit a Tip Form -->
+        <section id="submit-tip" class="mt-12 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+            <div class="max-w-2xl">
+                <h3 class="text-3xl font-semibold tracking-tight">Submit a Tip about Suspected Fraud</h3>
+                <p class="mt-3 text-slate-400">If you have information about potential waste, fraud, or abuse in federal healthcare spending, share it here. All submissions are confidential.</p>
+            </div>
+
+            <form id="tip-form" class="mt-8 grid md:grid-cols-2 gap-6" onsubmit="submitTip(event)">
+                <div class="md:col-span-2">
+                    <label class="block text-sm text-slate-400 mb-2">Description of suspected fraud *</label>
+                    <textarea required rows="5" class="w-full bg-slate-800 border border-slate-600 rounded-2xl p-4 text-sm" placeholder="Please describe what you observed..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">State or Agency Involved</label>
+                    <input type="text" class="w-full bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3 text-sm" placeholder="e.g., California, CMS, or specific provider">
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-2">Supporting Details (optional)</label>
+                    <input type="text" class="w-full bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3 text-sm" placeholder="Contract numbers, dates, names (if known)">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm text-slate-400 mb-2">Your Contact (optional — for follow-up only)</label>
+                    <input type="email" class="w-full bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3 text-sm" placeholder="email@example.com">
+                    <p class="text-xs text-slate-500 mt-2">We will never share your information. This is for verification purposes only.</p>
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" 
+                            class="bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-8 py-3 rounded-2xl transition-all">
+                        Submit Tip (Confidential)
+                    </button>
+                    <p class="text-xs text-slate-500 mt-3">Tips are reviewed by researchers. We cannot provide legal advice or guarantee action on every submission.</p>
+                </div>
+            </form>
+        </section>
+
     </div>
 
     <script>

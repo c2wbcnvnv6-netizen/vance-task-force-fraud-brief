@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Public Research Brief: $6.3 Billion JD Vance White House Task Force Fraud Claim</title>
-    <meta name="description" content="Detailed investigation into the origin and amplification of the claim that the JD Vance-led White House Task Force uncovered $6.3 billion in suspected fraudulent government contracts involving 392 entities and 895 contracts. Full sources and timeline.">
+    <title>Federal Risk Explorer | Government Transparency & Anti-Fraud Hub</title>
+    <meta name="description" content="Investigate federal spending with risk signals. Interactive tools, FOIA resources, and research to empower public oversight of government contracts and healthcare spending.">
     
-    <!-- Open Graph / Social Sharing - Designed for maximum curiosity + credibility -->
-    <meta property="og:type" content="article">
-    <meta property="og:title" content="The \$6.3 Billion List the Government Never Released">
-    <meta property="og:description" content="Current research checkpoint on the $6.3B JD Vance Task Force fraud claim. No list released yet. Key data limitation identified + recommendations for SAM.gov and USASpending transparency.
-    <meta property="og:url" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief">
-    <meta property="og:site_name" content="Task Force Fraud Research">
-    <meta property="og:image" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief/preview.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Federal Risk Explorer | Knowledge is Power">
+    <meta property="og:description" content="A public service hub for investigating federal spending, with interactive risk tools, FOIA resources, and research briefs.">
+    <meta property="og:url" content="https://www.taskforcefraud.com">
+    <meta property="og:site_name" content="Federal Risk Explorer">
+    <meta property="og:image" content="https://www.taskforcefraud.com/preview.png">
     
-    <!-- Twitter Card -->
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="The \$6.3 Billion List the Government Never Released">
-    <meta name="twitter:description" content="Research checkpoint on the $6.3B JD Vance Task Force claim. No list released. Data limitation found + transparency recommendations. Current status as of May 2026.">
-    <meta name="twitter:image" content="https://c2wbcnvnv6-netizen.github.io/vance-task-force-fraud-brief/preview.png">
+    <meta name="twitter:title" content="Federal Risk Explorer | Knowledge is Power">
+    <meta name="twitter:description" content="Investigate federal spending with risk signals. Interactive tools and resources for government transparency.">
+    <meta name="twitter:image" content="https://www.taskforcefraud.com/preview.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -138,31 +136,37 @@
     </div>
 
     <!-- Top Navigation -->
-    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <nav class="bg-slate-950 border-b border-slate-800 sticky top-0 z-50">
         <div class="max-w-screen-xl mx-auto px-6">
             <div class="flex items-center justify-between h-16">
                 <div class="flex items-center gap-x-3">
-                    <div class="w-9 h-9 bg-slate-900 text-white rounded-xl flex items-center justify-center">
-                        <i class="fa-solid fa-balance-scale text-lg"></i>
+                    <div class="w-9 h-9 bg-emerald-500 text-white rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
                     </div>
                     <div>
-                        <span class="font-semibold text-xl tracking-tight">Task Force Fraud Research</span>
+                        <span class="font-semibold text-xl tracking-tight text-white">Federal Risk Explorer</span>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-x-2 text-sm">
-                    <a href="#summary" class="px-4 py-2 hover:bg-slate-100 rounded-xl text-slate-600 hover:text-slate-900 transition-colors">Summary</a>
-                    <a href="#timeline" class="px-4 py-2 hover:bg-slate-100 rounded-xl text-slate-600 hover:text-slate-900 transition-colors">Timeline</a>
-                    <a href="#findings" class="px-4 py-2 hover:bg-slate-100 rounded-xl text-slate-600 hover:text-slate-900 transition-colors">Findings</a>
-                    <a href="#sources" class="px-4 py-2 hover:bg-slate-100 rounded-xl text-slate-600 hover:text-slate-900 transition-colors">Sources</a>
-                    <a href="/explorer/federal-risk-explorer.html" 
-                       class="px-4 py-2 hover:bg-amber-100 hover:text-amber-900 rounded-xl text-amber-600 font-medium transition-colors">
-                        Risk Explorer
-                    </a>
+                <div class="hidden md:flex items-center gap-x-1 text-sm">
+                    <a href="#home" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Home</a>
+                    <a href="/foia-toolkit.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">FOIA Toolkit</a>
+                    <a href="/explorer/federal-risk-explorer.html" class="px-4 py-2 text-emerald-400 hover:text-emerald-300 font-medium rounded-xl transition-colors">Risk Explorer</a>
+                    <a href="#research" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Research Library</a>
+                    <a href="#tools" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Tools</a>
+                    <a href="#submit-tip" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Submit a Tip</a>
+                    <a href="#about" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">About</a>
+                </div>
+
+                <div class="flex items-center gap-x-3">
+                    <div class="relative hidden md:block w-64">
+                        <input type="text" id="site-search" placeholder="Search research, tools, or data..." 
+                               class="w-full bg-slate-900 border border-slate-700 text-white placeholder-slate-500 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-emerald-500">
+                    </div>
                     <button onclick="window.print()" 
-                            class="ml-2 flex items-center gap-x-2 px-4 py-2 bg-slate-900 hover:bg-black text-white text-sm font-medium rounded-2xl transition-colors">
+                            class="hidden md:flex items-center gap-x-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium rounded-2xl transition-colors border border-slate-700">
                         <i class="fa-solid fa-print mr-1.5"></i>
-                        <span>Print / PDF</span>
+                        <span>Print</span>
                     </button>
                 </div>
             </div>
@@ -170,82 +174,137 @@
     </nav>
 
     <!-- Hero Header -->
-    <div class="gov-header text-white">
-        <div class="max-w-screen-xl mx-auto px-6 pt-12 pb-10">
-            <div class="max-w-3xl">
-                <div class="inline-flex items-center gap-x-2 bg-white/10 backdrop-blur-md px-4 py-1 rounded-3xl text-sm mb-4 border border-white/20">
+    <header id="home" class="bg-slate-950 text-white">
+        <div class="max-w-screen-xl mx-auto px-6 pt-16 pb-12">
+            <div class="max-w-4xl">
+                <div class="inline-flex items-center gap-x-2 bg-emerald-500/10 text-emerald-400 px-4 py-1 rounded-full text-sm mb-6 border border-emerald-500/20">
                     <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                    <span class="font-medium">Research Checkpoint • May 29, 2026</span>
+                    <span class="font-medium">Public Service Tool • Government Transparency</span>
                 </div>
                 
-                <h1 class="text-5xl font-semibold tracking-tighter leading-none mb-4">
-                    Tracing the $6.3 Billion<br>JD Vance White House Task Force<br>Contract Fraud Claim
+                <h1 class="text-6xl md:text-7xl font-semibold tracking-tighter leading-none mb-4">
+                    Knowledge is Power.
                 </h1>
                 
-                <p class="text-xl text-slate-300 max-w-2xl">
-                    Origin, amplification, entity identification, and corporate disclosure analysis of the claim that the White House Task Force uncovered $6.3 billion in suspected fraudulent government contracts involving 392 entities and 895 contracts.
+                <p class="text-2xl md:text-3xl text-slate-300 max-w-3xl">
+                    Investigate federal spending. Spot risk. Take action.
                 </p>
                 
-                <div class="mt-6 flex items-center gap-x-4 text-sm">
-                    <div class="flex items-center gap-x-2">
-                        <i class="fa-solid fa-calendar text-emerald-400"></i>
-                        <span>Original: May 2026 • <strong class="text-emerald-400">Refreshed June 2026</strong></span>
-                    </div>
-                    <div class="h-3 w-px bg-white/30"></div>
-                    <div>
-                        <span class="text-slate-400">Tools:</span> Full Research Toolkit (Orchestrator + Hardened SAM/Playwright + Transcripts + X API)
-                    </div>
-                </div>
-
-                <!-- Explorer Teaser -->
-                <div class="mt-6">
+                <div class="mt-8 flex flex-wrap gap-4">
                     <a href="/explorer/federal-risk-explorer.html" 
-                       class="inline-flex items-center gap-x-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold px-6 py-3 rounded-2xl text-sm transition-all active:scale-[0.985]">
-                        <span>Launch Federal Risk Explorer</span>
-                        <span class="text-lg">→</span>
+                       class="inline-flex items-center justify-center gap-x-3 bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-8 py-4 rounded-2xl text-lg transition-all active:scale-[0.985]">
+                        Explore the Risk Map
                     </a>
-                    <div class="text-xs text-slate-400 mt-2">Interactive map • HHS spending • Risk signals (Beta)</div>
+                    <a href="#submit-tip" 
+                       class="inline-flex items-center justify-center gap-x-3 bg-slate-800 hover:bg-slate-700 text-white font-medium px-8 py-4 rounded-2xl text-lg border border-slate-700 transition-all">
+                        Submit a Tip
+                    </a>
                 </div>
+                
+                <div class="mt-6 text-sm text-slate-400">
+                    Powered by USAspending.gov data • Focused on HHS &amp; Medicare/Medicaid integrity
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Quick Stats / Value Prop -->
+    <div class="bg-slate-900 border-b border-slate-800 py-6">
+        <div class="max-w-screen-xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div>
+                <div class="text-3xl font-semibold text-emerald-400">Real Data</div>
+                <div class="text-slate-400 text-sm mt-1">Direct from USAspending.gov</div>
+            </div>
+            <div>
+                <div class="text-3xl font-semibold text-emerald-400">Risk Signals</div>
+                <div class="text-slate-400 text-sm mt-1">Derived from public records</div>
+            </div>
+            <div>
+                <div class="text-3xl font-semibold text-emerald-400">FOIA Tools</div>
+                <div class="text-slate-400 text-sm mt-1">Ready-to-use templates</div>
+            </div>
+            <div>
+                <div class="text-3xl font-semibold text-emerald-400">Public Access</div>
+                <div class="text-slate-400 text-sm mt-1">No account required</div>
             </div>
         </div>
     </div>
 
-    <!-- Key Stats -->
-    <div class="max-w-screen-xl mx-auto px-6 -mt-6 relative z-10">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                <div class="text-slate-500 text-sm font-medium tracking-wider">CLAIMED VALUE</div>
-                <div class="mt-2 flex items-baseline">
-                    <span class="metric text-slate-900">$6.3</span>
-                    <span class="text-3xl font-semibold text-slate-400 ml-1">B</span>
+    <!-- Featured Sections -->
+    <div class="max-w-screen-xl mx-auto px-6 pt-12 pb-8 space-y-16">
+
+        <!-- Federal Risk Explorer Highlight -->
+        <section>
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <span class="text-emerald-400 text-sm font-semibold tracking-wider">POWERFUL TOOL</span>
+                    <h2 class="text-4xl font-semibold tracking-tight">Federal Risk Explorer</h2>
                 </div>
-                <div class="text-emerald-600 text-sm mt-1 font-medium">Suspected fraudulent contracts</div>
+                <a href="/explorer/federal-risk-explorer.html" class="hidden md:block text-emerald-400 hover:text-emerald-300 font-medium">Launch full explorer →</a>
             </div>
             
-            <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                <div class="text-slate-500 text-sm font-medium tracking-wider">ENTITIES FLAGGED</div>
-                <div class="mt-2">
-                    <span class="metric text-slate-900">392</span>
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <p class="text-xl text-slate-300">
+                            Interactive map of HHS spending with risk signals. 
+                            Search, filter, and explore federal healthcare dollars by state.
+                        </p>
+                        <ul class="mt-6 space-y-2 text-slate-400">
+                            <li class="flex items-center gap-x-2">• Real USAspending data (HHS focus)</li>
+                            <li class="flex items-center gap-x-2">• Risk indicators &amp; concentration signals</li>
+                            <li class="flex items-center gap-x-2">• Direct links to detailed award data</li>
+                        </ul>
+                        <a href="/explorer/federal-risk-explorer.html" 
+                           class="mt-8 inline-flex items-center bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-6 py-3 rounded-2xl">
+                            Open Risk Explorer
+                        </a>
+                    </div>
+                    <div class="bg-slate-800 border border-slate-600 rounded-2xl p-6 text-center">
+                        <div class="text-6xl font-bold text-emerald-400 mb-2">50+</div>
+                        <div class="text-slate-400">States &amp; territories analyzed</div>
+                        <div class="mt-4 text-sm text-slate-500">Medicaid &amp; Medicare spending patterns with risk overlays</div>
+                    </div>
                 </div>
-                <div class="text-emerald-600 text-sm mt-1 font-medium">Businesses / vendors</div>
             </div>
-            
-            <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                <div class="text-slate-500 text-sm font-medium tracking-wider">CONTRACTS INVOLVED</div>
-                <div class="mt-2">
-                    <span class="metric text-slate-900">895</span>
+        </section>
+
+        <!-- Quick FOIA Starter -->
+        <section id="foia-starter">
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <div class="grid md:grid-cols-5 gap-8 items-center">
+                    <div class="md:col-span-3">
+                        <span class="text-emerald-400 text-sm font-semibold">START HERE</span>
+                        <h3 class="text-3xl font-semibold tracking-tight mt-2">Need information from the government?</h3>
+                        <p class="mt-4 text-slate-300">Use our simple FOIA starter to request federal spending records, contract details, or agency communications.</p>
+                    </div>
+                    <div class="md:col-span-2">
+                        <a href="/foia-toolkit.html" 
+                           class="block w-full text-center bg-white text-slate-950 font-semibold px-8 py-4 rounded-2xl hover:bg-slate-100 transition-all">
+                            Start FOIA Request
+                        </a>
+                        <p class="text-center text-xs text-slate-500 mt-3">Free templates • No account required</p>
+                    </div>
                 </div>
-                <div class="text-emerald-600 text-sm mt-1 font-medium">Individual contracts</div>
             </div>
-            
-            <div class="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                <div class="text-slate-500 text-sm font-medium tracking-wider">PUBLIC ENTITIES NAMED</div>
-                <div class="mt-2">
-                    <span class="metric text-red-600">0</span>
-                </div>
-                <div class="text-slate-500 text-sm mt-1 font-medium">No list released • Toolkit refresh confirms</div>
+        </section>
+
+        <!-- Research Library + Tools Teaser -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <span class="text-emerald-400 text-sm font-semibold">RESEARCH</span>
+                <h3 class="text-3xl font-semibold tracking-tight mt-2">Research Library</h3>
+                <p class="mt-3 text-slate-400">In-depth briefs on the 2026 anti-fraud task force findings, data limitations, and transparency recommendations.</p>
+                <a href="#research" class="inline-block mt-6 text-emerald-400 hover:text-emerald-300 font-medium">Browse research briefs →</a>
+            </div>
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-8">
+                <span class="text-emerald-400 text-sm font-semibold">TOOLS</span>
+                <h3 class="text-3xl font-semibold tracking-tight mt-2">Investigation Toolkit</h3>
+                <p class="mt-3 text-slate-400">Document analysis, recipient tracing, and integration points for deeper government data research.</p>
+                <a href="#tools" class="inline-block mt-6 text-emerald-400 hover:text-emerald-300 font-medium">Explore tools →</a>
             </div>
         </div>
+
     </div>
 
     <div class="max-w-screen-xl mx-auto px-6 pt-10 pb-16 space-y-16">
