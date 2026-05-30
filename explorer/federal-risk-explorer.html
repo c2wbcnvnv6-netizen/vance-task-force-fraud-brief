@@ -336,7 +336,7 @@
                 <div class="md:col-span-2">
                     <label class="block text-sm text-slate-400 mb-2">Your Contact (optional — for follow-up only)</label>
                     <input type="email" class="w-full bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3 text-sm" placeholder="email@example.com">
-                    <p class="text-xs text-slate-500 mt-2">We will never share your information. This is for verification purposes only.</p>
+                    <p class="text-xs text-slate-500 mt-2">We will never share your information. This is for verification purposes only. See our <a href="privacy-policy.html" class="underline">Privacy Policy</a> for details on data handling.</p>
                 </div>
                 <div class="md:col-span-2">
                     <button type="submit" 
@@ -890,11 +890,31 @@
         }
 
         // ==================== TIP FORM (functional demo) ====================
+        let lastTipSubmit = 0;
         function submitTip(e) {
+            e.preventDefault();
+            const now = Date.now();
+            if (now - lastTipSubmit < 10000) { // Basic 10s rate limit
+                alert("Please wait a moment before submitting another tip.");
+                return;
+            }
+            lastTipSubmit = now;
             e.preventDefault();
             const form = e.currentTarget || e.target;
             const btns = form.querySelectorAll('button[type="submit"]');
             const orig = btns.length ? btns[0].textContent : '';
+
+            // Basic client-side sanitization (WN security review)
+            const inputs = form.querySelectorAll('input, textarea');
+            inputs.forEach(input => {
+                if (input.value) {
+                    // Strip script tags, on* handlers, and limit length
+                    input.value = input.value
+                        .replace(/<script[^>]*>.*?<\/script>/gi, '')
+                        .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+                        .slice(0, 5000); // Data minimization
+                }
+            });
 
             if (btns.length) btns[0].textContent = 'Submitting...';
             setTimeout(() => {

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Federal Risk Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
+        body { font-family: 'Inter', system_ui, sans-serif; }
+        .heading-font { font-family: 'Space Grotesk', 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center gap-x-3">
+                    <div class="w-9 h-9 bg-emerald-500 text-white rounded-xl flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved text-lg"></i>
+                    </div>
+                    <span class="font-semibold text-xl tracking-tight">Federal Risk Explorer</span>
+                </a>
+                <a href="index.html" class="text-sm text-slate-300 hover:text-white">Back to Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-3xl mx-auto px-6 py-12">
+        <h1 class="text-4xl font-semibold tracking-tight">Privacy Policy</h1>
+        <p class="text-slate-400 mt-2">Last updated: June 2026</p>
+
+        <div class="prose prose-invert mt-8 text-slate-300">
+            <h2 class="text-xl font-semibold mt-8">Overview</h2>
+            <p>The Federal Risk Explorer is a public service tool designed to help users investigate federal spending, access FOIA resources, and submit tips about potential fraud. We are committed to minimizing data collection and protecting visitor privacy.</p>
+
+            <h2 class="text-xl font-semibold mt-8">What Data We Collect</h2>
+            <ul class="list-disc pl-5 space-y-2">
+                <li><strong>Tip Submissions:</strong> When you submit a tip via the form on the Federal Risk Explorer, we collect:
+                    <ul class="list-disc pl-5 mt-1">
+                        <li>Description of suspected fraud (required)</li>
+                        <li>State or agency involved (optional)</li>
+                        <li>Supporting details (optional)</li>
+                        <li>Email address (optional, for follow-up only)</li>
+                    </ul>
+                </li>
+                <li><strong>Generated FOIA Requests:</strong> The FOIA Toolkit generates request text locally in your browser. No data is sent to us unless you choose to copy and submit it yourself to a government agency.</li>
+                <li><strong>Usage Data:</strong> We do not use cookies for tracking, analytics, or advertising. No personal data is collected for analytics purposes.</li>
+                <li><strong>Technical Data:</strong> Standard web server logs (IP address, browser type) may be collected temporarily by our hosting provider (Vercel) for security and performance, but we do not retain or use this data for profiling.</li>
+            </ul>
+
+            <h2 class="text-xl font-semibold mt-8">How We Use Data</h2>
+            <p>Tip submissions are reviewed manually by researchers. We use submitted information solely to evaluate potential fraud cases. Optional contact information is used only if we need to follow up with the submitter. We never sell, share, or use visitor data for marketing.</p>
+
+            <h2 class="text-xl font-semibold mt-8">Data Storage and Security</h2>
+            <p>Tip data is not stored in any public database. It is handled through a simulated client-side process in the current static site implementation. In future versions with backend support, data will be stored securely with appropriate access controls. We recommend using the optional contact field only if you are comfortable providing it.</p>
+
+            <h2 class="text-xl font-semibold mt-8">Third-Party Services</h2>
+            <p>The site uses:
+                <ul class="list-disc pl-5 mt-1">
+                    <li>USAspending.gov API (public data only)</li>
+                    <li>CDNs for fonts, icons, and libraries (no personal data shared)</li>
+                    <li>Vercel for hosting (standard infrastructure logs only)</li>
+                </ul>
+            </p>
+            <p>We link to external sites (OpenSecrets, FollowTheMoney, Ballotpedia, Congress.gov, etc.). Their privacy policies apply when you visit them.</p>
+
+            <h2 class="text-xl font-semibold mt-8">Your Choices</h2>
+            <p>You can submit tips anonymously by leaving the contact field blank. All tool usage (bill analysis, contract tracing, FOIA generation) happens entirely in your browser with no data transmitted to us.</p>
+
+            <h2 class="text-xl font-semibold mt-8">Contact</h2>
+            <p>For questions about this policy or to request deletion of a submitted tip, contact us through the tip form or via the public channels listed on the site. Reference your tip ID if possible.</p>
+
+            <p class="text-xs text-slate-400 mt-8">This is a public research tool. We collect the minimum information necessary to support legitimate fraud reporting and transparency work.</p>
+        </div>
+    </div>
+
+    <footer class="border-t border-slate-800 py-6 text-xs text-slate-500 text-center">
+        Public service tool. Data minimization is a core principle.
+    </footer>
+</body>
+</html>
