@@ -693,7 +693,26 @@
             }
         }
 
-        // (setupMapResizeHandlers logic is now inside the enhanced createMap for single source of truth)
+        function setupMapResizeHandlers() {
+            if (!map) return;
+
+            const doInvalidate = () => {
+                if (map) {
+                    try {
+                        map.invalidateSize();
+                        setTimeout(() => { if (map) map.invalidateSize(); }, 180);
+                        setTimeout(() => { if (map) map.invalidateSize(); }, 450);
+                    } catch (e) {}
+                }
+            };
+
+            window.addEventListener('resize', doInvalidate, { passive: true });
+
+            // Extra calls for sticky nav, grid layout settling, etc.
+            setTimeout(doInvalidate, 300);
+            setTimeout(doInvalidate, 800);
+            setTimeout(doInvalidate, 1400);
+        }
 
         function hideMapLoading() {
             const loader = document.getElementById('map-loading');
