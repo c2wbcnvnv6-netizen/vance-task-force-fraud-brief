@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State & Local Data | Task Force Fraud</title>
+    <meta name="description" content="Open records laws, portals, and sample request language for state, county, and city-level government data across the U.S.">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#b91c1c">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100">
+    <!-- Nav -->
+    <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
+        <div class="max-w-screen-xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <a href="index.html" class="flex items-center gap-x-3">
+                    <img src="assets/tff-shield-logo.svg" alt="T.F.F. Shield" class="w-9 h-9">
+                    <span class="font-semibold text-base tracking-tight text-white">Federal Risk Explorer</span>
+                </a>
+                <div class="hidden md:flex items-center gap-x-0.5 text-sm flex-nowrap overflow-x-auto">
+                    <a href="index.html" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl whitespace-nowrap">Home</a>
+                    <a href="foia-toolkit.html" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl whitespace-nowrap">FOIA Toolkit</a>
+                    <a href="state-local-data.html" class="px-3 py-2 text-red-400 font-medium rounded-xl whitespace-nowrap">State &amp; Local Data</a>
+                    <a href="explorer/federal-risk-explorer.html" class="px-3 py-2 text-slate-300 hover:text-white rounded-xl whitespace-nowrap">Risk Explorer</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-screen-xl mx-auto px-6 py-12">
+        <div class="max-w-3xl">
+            <h1 class="text-5xl font-semibold tracking-tighter">State & Local Data</h1>
+            <p class="mt-3 text-xl text-slate-400">Open records guidance for city, county, and state-level government information.</p>
+            <div class="mt-2 text-sm text-amber-400">Hyper-local data is often the hardest to access publicly.</div>
+        </div>
+
+        <!-- State Selector -->
+        <div class="mt-10">
+            <label class="block text-sm font-medium text-slate-400 mb-2">Select a State</label>
+            <select id="state-select" class="bg-slate-900 border border-slate-700 text-white rounded-2xl px-4 py-3 w-full max-w-md focus:outline-none focus:border-red-500" onchange="showStateData()">
+                <option value="">Choose a state...</option>
+                <option value="CA">California</option>
+                <option value="NY">New York</option>
+                <option value="TX">Texas</option>
+                <option value="FL">Florida</option>
+                <option value="IL">Illinois</option>
+                <option value="PA">Pennsylvania</option>
+                <option value="OH">Ohio</option>
+            </select>
+        </div>
+
+        <!-- State Info Panel -->
+        <div id="state-panel" class="hidden mt-8 bg-slate-900 border border-slate-700 rounded-3xl p-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div id="state-name" class="text-3xl font-semibold"></div>
+                    <div id="state-law" class="text-red-400 mt-1"></div>
+                </div>
+                <a id="state-portal" href="#" target="_blank" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-2xl text-sm flex items-center gap-x-2">
+                    <span>Official Portal</span> <i class="fa-solid fa-external-link-alt"></i>
+                </a>
+            </div>
+
+            <div class="mt-6 grid md:grid-cols-2 gap-6">
+                <div>
+                    <div class="text-xs uppercase tracking-wider text-slate-400 mb-2">Key Portals & Databases</div>
+                    <div id="portals" class="text-sm text-slate-300 space-y-1"></div>
+                </div>
+                <div>
+                    <div class="text-xs uppercase tracking-wider text-slate-400 mb-2">Sample Request Language</div>
+                    <div id="sample-language" class="bg-slate-950 border border-slate-700 rounded-2xl p-4 text-sm text-slate-300 font-mono"></div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-xs text-slate-400 border-t border-slate-700 pt-4">
+                <strong>Limitations:</strong> Many counties and cities do not have mature online portals. 
+                Physical records requests or in-person visits are often still required for the most granular local data.
+            </div>
+        </div>
+
+        <div class="mt-10 text-sm text-slate-400">
+            This guidance is for public records requests. It is not legal advice.
+        </div>
+    </div>
+
+    <script>
+        const stateData = {
+            "CA": {
+                name: "California",
+                law: "California Public Records Act (CPRA)",
+                portal: "https://www.cpra.ca.gov",
+                portals: ["CA Public Records Portal", "Secretary of State Business Search", "OpenGov CA"],
+                language: "Pursuant to the California Public Records Act, I request copies of all records relating to..."
+            },
+            "NY": {
+                name: "New York",
+                law: "Freedom of Information Law (FOIL)",
+                portal: "https://www.dos.ny.gov/foil/",
+                portals: ["NY Open Data", "FOIL Request System", "NYC Open Data"],
+                language: "Under New York State's Freedom of Information Law, I request access to..."
+            },
+            "TX": {
+                name: "Texas",
+                law: "Texas Public Information Act",
+                portal: "https://www.texasattorneygeneral.gov/open-government",
+                portals: ["Texas Open Data Portal", "Comptroller Data", "TX SOS Business Search"],
+                language: "Pursuant to the Texas Public Information Act, I request the following information..."
+            },
+            "FL": {
+                name: "Florida",
+                law: "Florida Sunshine Law",
+                portal: "https://www.myfloridalegal.com/open-government",
+                portals: ["Florida Open Data", "Department of State Records"],
+                language: "Under Florida's Sunshine Law and Public Records Act, I request..."
+            },
+            "IL": {
+                name: "Illinois",
+                law: "Freedom of Information Act (FOIA)",
+                portal: "https://www.illinois.gov/foia/",
+                portals: ["IL Open Data", "Secretary of State Records"],
+                language: "Pursuant to the Illinois Freedom of Information Act, I request..."
+            }
+        };
+
+        function showStateData() {
+            const select = document.getElementById('state-select');
+            const panel = document.getElementById('state-panel');
+            const state = stateData[select.value];
+
+            if (!state) {
+                panel.classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('state-name').textContent = state.name;
+            document.getElementById('state-law').textContent = state.law;
+            document.getElementById('state-portal').href = state.portal;
+
+            document.getElementById('portals').innerHTML = state.portals.map(p => `<div>• ${p}</div>`).join('');
+            document.getElementById('sample-language').innerHTML = state.language;
+
+            panel.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
