@@ -1,4 +1,5 @@
 {
+  "buildCommand": "echo 'no build needed (using CDN)'",
   "headers": [
     {
       "source": "/(.*)",
