@@ -524,14 +524,26 @@
 
         // ==================== MAP ====================
         function initMapWithRealData() {
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) {
+                console.error('Map container not found');
+                return;
+            }
+
+            // Remove any previous map instance
+            if (map) {
+                map.remove();
+                map = null;
+            }
+
             map = L.map('map', { zoomControl: false, attributionControl: false }).setView([37.8, -96], 4);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { className: 'map-tiles' }).addTo(map);
 
-            // Fix for map not rendering properly after layout changes
+            // Robust resize fix
             setTimeout(() => {
                 if (map) map.invalidateSize();
-            }, 150);
+            }, 200);
 
             fetch('https://raw.githubusercontent.com/PublicaMundi/DataSets/master/geojson/us-states.json')
                 .then(res => res.json())
@@ -936,7 +948,7 @@
         function submitTip(e) {
             e.preventDefault();
             const now = Date.now();
-            if (now - lastTipSubmit < 10000) { // Basic 10s rate limit
+            if (now - lastTipSubmit < 10000) {
                 alert("Please wait a moment before submitting another tip.");
                 return;
             }
@@ -951,50 +963,27 @@
                 return;
             }
 
-            // If anonymous, clear optional fields client-side (data minimization)
             if (anonMode) {
                 const email = document.getElementById('contact-email');
                 if (email) email.value = '';
             }
 
-            const btns = form.querySelectorAll('button[type="submit"]');
-            const orig = btns.length ? btns[0].textContent : '';
-
-            if (btns.length) btns[0].textContent = 'Submitting...';
-            setTimeout(() => {
-                const thanks = document.createElement('div');
-                thanks.className = 'mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-2xl text-sm';
-                thanks.innerHTML = `Thank you. Your tip has been recorded for review. Reference: T-${Date.now().toString(36).toUpperCase()}. We cannot confirm receipt or provide case updates.`;
-                form.parentNode.insertBefore(thanks, form.nextSibling);
-                form.reset();
-                if (btns.length) btns[0].textContent = orig || 'Submit Tip (Confidential)';
-                setTimeout(() => thanks.remove(), 12000);
-            }, 650);
-        }
-
-            // If anonymous, clear optional fields client-side (data minimization)
-            if (anonMode) {
-                const email = document.getElementById('contact-email');
-                if (email) email.value = '';
-            }
-            e.preventDefault();
-            const form = e.currentTarget || e.target;
-            const btns = form.querySelectorAll('button[type="submit"]');
-            const orig = btns.length ? btns[0].textContent : '';
-
-            // Basic client-side sanitization (WN security review)
+            // Basic sanitization
             const inputs = form.querySelectorAll('input, textarea');
             inputs.forEach(input => {
                 if (input.value) {
-                    // Strip script tags, on* handlers, and limit length
                     input.value = input.value
                         .replace(/<script[^>]*>.*?<\/script>/gi, '')
                         .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
-                        .slice(0, 5000); // Data minimization
+                        .slice(0, 5000);
                 }
             });
 
+            const btns = form.querySelectorAll('button[type="submit"]');
+            const orig = btns.length ? btns[0].textContent : '';
+
             if (btns.length) btns[0].textContent = 'Submitting...';
+
             setTimeout(() => {
                 const thanks = document.createElement('div');
                 thanks.className = 'mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-2xl text-sm';
