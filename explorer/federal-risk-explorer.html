@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- jsPDF for PDF exports (lightweight, no build step) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
@@ -51,18 +53,25 @@
         }
 
         .state-abbr-label {
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(148, 163, 184, 0.4);
+            background: rgba(15, 23, 42, 0.92);
+            border: 1px solid rgba(148, 163, 184, 0.45);
             border-radius: 4px;
             color: #f1f5f9;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
             pointer-events: none;
+            letter-spacing: 0.5px;
+        }
+
+        /* Make sure Leaflet container never collapses in the grid */
+        #map {
+            min-height: 620px;
+            background: #0f172a;
         }
     </style>
 </head>
@@ -109,46 +118,61 @@
             </div>
         </div>
 
-        <!-- Controls -->
-        <div class="flex flex-wrap gap-3 mb-6">
-            <div class="bg-slate-900 border border-slate-700 rounded-2xl px-5 py-3 flex items-center gap-x-4">
-                <div>
-                    <div class="text-xs uppercase tracking-wider text-slate-500">Time Period</div>
-                    <div class="font-semibold">FY 2024</div>
+        <!-- Controls - taller, clearer, better vertical presence for Time Period + scrollable agencies -->
+        <div class="grid md:grid-cols-12 gap-4 mb-6">
+            <!-- Time Period (now with more vertical weight) -->
+            <div class="md:col-span-3 bg-slate-900 border border-slate-700 rounded-3xl px-5 py-4 flex flex-col justify-center">
+                <div class="text-xs uppercase tracking-[1.5px] text-slate-500 mb-1">TIME PERIOD</div>
+                <div class="flex items-center gap-x-3">
+                    <div class="text-2xl font-semibold tracking-tight">FY 2024</div>
+                    <div class="text-[10px] px-2.5 py-0.5 rounded-full bg-slate-800 border border-slate-600 text-slate-400">Oct 2023 – Sep 2024</div>
                 </div>
-                <div class="h-8 w-px bg-slate-700"></div>
-                <div>
-                    <div class="text-xs uppercase tracking-wider text-slate-500">Agencies</div>
-                    <select id="agency-selector" multiple class="bg-slate-800 border border-slate-600 rounded-xl px-2 py-1 text-sm text-white" style="min-width: 220px; height: 60px;" onchange="onAgencyChange()">
-                        <option value="ALL" selected>All Agencies</option>
-                        <option value="Department of Defense">Defense (DOD)</option>
-                        <option value="Department of Health and Human Services">Health &amp; Human Services (HHS)</option>
-                        <option value="Department of Agriculture">Agriculture (USDA)</option>
-                        <option value="Department of Transportation">Transportation (DOT)</option>
-                        <option value="Department of State">State (DOS)</option>
-                        <option value="Department of Homeland Security">Homeland Security (DHS)</option>
-                        <option value="Department of Veterans Affairs">Veterans Affairs (VA)</option>
-                        <option value="Department of the Treasury">Treasury</option>
-                        <option value="Department of the Interior">Interior</option>
-                        <option value="Department of Energy">Energy (DOE)</option>
-                        <option value="Department of Justice">Justice (DOJ)</option>
-                    </select>
-                </div>
+                <div class="text-xs text-slate-500 mt-1">Full fiscal year • Live USAspending pull</div>
             </div>
 
-            <div class="flex-1"></div>
+            <!-- Agencies (significantly taller for comfortable scrolling/selection) -->
+            <div class="md:col-span-7 bg-slate-900 border border-slate-700 rounded-3xl px-5 py-4">
+                <div class="flex items-center justify-between mb-1.5">
+                    <div class="text-xs uppercase tracking-[1.5px] text-slate-500">AGENCIES (multi-select)</div>
+                    <div class="text-xs text-slate-500">Hold ⌘/Ctrl to select multiple</div>
+                </div>
+                <select id="agency-selector" multiple class="w-full bg-slate-950 border border-slate-600 rounded-2xl px-3 py-2 text-sm text-white focus:border-red-500 focus:outline-none" 
+                        style="height: 132px; min-width: 100%;" onchange="onAgencyChange()">
+                    <option value="ALL" selected>All Agencies</option>
+                    <option value="Department of Defense">Defense (DOD)</option>
+                    <option value="Department of Health and Human Services">Health &amp; Human Services (HHS)</option>
+                    <option value="Department of Agriculture">Agriculture (USDA)</option>
+                    <option value="Department of Transportation">Transportation (DOT)</option>
+                    <option value="Department of State">State (DOS)</option>
+                    <option value="Department of Homeland Security">Homeland Security (DHS)</option>
+                    <option value="Department of Veterans Affairs">Veterans Affairs (VA)</option>
+                    <option value="Department of the Treasury">Treasury</option>
+                    <option value="Department of the Interior">Interior</option>
+                    <option value="Department of Energy">Energy (DOE)</option>
+                    <option value="Department of Justice">Justice (DOJ)</option>
+                </select>
+            </div>
 
-            <button onclick="resetMap()" 
-                    class="px-5 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-2xl text-sm font-medium transition-colors">
-                Reset View
-            </button>
+            <div class="md:col-span-2 flex md:items-end md:justify-end">
+                <button onclick="resetMap()" 
+                        class="w-full md:w-auto px-6 py-3 bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-2xl text-sm font-medium transition-colors h-fit">
+                    <i class="fa-solid fa-undo mr-2"></i> Reset View
+                </button>
+            </div>
         </div>
 
         <div class="grid lg:grid-cols-12 gap-6">
             <!-- Map -->
             <div class="lg:col-span-7">
-                <div class="bg-slate-900 border border-slate-700 rounded-3xl p-4 map-container">
-                    <div id="map" class="w-full h-[620px] rounded-2xl"></div>
+                <div class="bg-slate-900 border border-slate-700 rounded-3xl p-4 map-container relative">
+                    <div id="map" class="w-full h-[620px] rounded-2xl bg-slate-950"></div>
+                    <!-- Loading overlay (hidden by JS once map is ready) -->
+                    <div id="map-loading" class="absolute inset-4 rounded-2xl bg-slate-900/90 flex items-center justify-center z-[400]">
+                        <div class="text-center">
+                            <div class="w-8 h-8 mx-auto mb-3 border-2 border-slate-600 border-t-red-400 rounded-full animate-spin"></div>
+                            <div class="text-sm text-slate-400">Loading map &amp; FY2024 data…</div>
+                        </div>
+                    </div>
                 </div>
                 <div class="text-xs text-slate-500 mt-3 px-1">
                     Color intensity reflects total award obligations for selected agencies. Click any state for details.
@@ -481,8 +505,12 @@
                 isDataLoaded = true;
                 if (statusEl) statusEl.textContent = `Live FY2024 • ${label} • ${Object.keys(stateData).length} states/territories`;
 
-                if (map) { map.remove(); map = null; }
-                initMapWithRealData();
+                // Map is now created early; just refresh layers with fresh data
+                refreshMapLayers();
+                // Extra safety invalidates after data settles in complex layout
+                setTimeout(() => { if (map) map.invalidateSize(); }, 350);
+                setTimeout(() => { if (map) map.invalidateSize(); }, 900);
+
                 populateTable();
                 updateTableStats();
 
@@ -490,7 +518,9 @@
                 console.error('Failed to load real data:', error);
                 if (statusEl) statusEl.textContent = 'Using sample data (API unavailable)';
                 loadFallbackData();
-                initMapWithRealData();
+                refreshMapLayers();
+                setTimeout(() => { if (map) map.invalidateSize(); }, 350);
+                setTimeout(() => { if (map) map.invalidateSize(); }, 900);
                 populateTable();
                 updateTableStats();
             }
@@ -522,36 +552,96 @@
             isDataLoaded = true;
         }
 
-        // ==================== MAP ====================
-        function initMapWithRealData() {
+        // ==================== MAP (robust defensive initialization) ====================
+        function createMap() {
             const mapContainer = document.getElementById('map');
             if (!mapContainer) {
                 console.error('Map container not found');
                 return;
             }
 
-            // Remove any previous map instance
+            // Destroy previous instance if any
             if (map) {
                 map.remove();
                 map = null;
             }
 
-            map = L.map('map', { zoomControl: false, attributionControl: false }).setView([37.8, -96], 4);
+            // Ensure the container has real size before Leaflet measures it
+            mapContainer.style.minHeight = '620px';
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { className: 'map-tiles' }).addTo(map);
+            map = L.map('map', {
+                zoomControl: false,
+                attributionControl: true
+            }).setView([37.8, -96], 4);
 
-            // Robust resize fix
-            setTimeout(() => {
+            // Dark-themed tiles that match the cyber-tech / slate-950 design
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; OpenStreetMap &amp; CartoDB',
+                className: 'map-tiles-dark',
+                maxZoom: 19
+            }).addTo(map);
+
+            // Immediate safety invalidate
+            requestAnimationFrame(() => {
                 if (map) map.invalidateSize();
-            }, 200);
+            });
 
+            // Multiple delayed invalidates + resize listener (the real fix for "blank map")
+            setupMapResizeHandlers();
+
+            // Hide loading overlay after first paint
+            setTimeout(hideMapLoading, 650);
+        }
+
+        function setupMapResizeHandlers() {
+            if (!map) return;
+
+            const doInvalidate = () => {
+                if (map) {
+                    map.invalidateSize();
+                    // extra safety passes
+                    setTimeout(() => map && map.invalidateSize(), 180);
+                    setTimeout(() => map && map.invalidateSize(), 450);
+                }
+            };
+
+            window.addEventListener('resize', doInvalidate, { passive: true });
+
+            // Extra insurance for layout settling in grids / sticky nav etc.
+            setTimeout(doInvalidate, 300);
+            setTimeout(doInvalidate, 800);
+            setTimeout(doInvalidate, 1400);
+        }
+
+        function hideMapLoading() {
+            const loader = document.getElementById('map-loading');
+            if (loader) loader.style.display = 'none';
+        }
+
+        function showMapLoading() {
+            const loader = document.getElementById('map-loading');
+            if (loader) loader.style.display = 'flex';
+        }
+
+        function refreshMapLayers() {
+            if (!map) {
+                createMap();
+            }
+
+            // Clear previous layers (except base tile)
+            map.eachLayer((layer) => {
+                if (layer instanceof L.GeoJSON || layer instanceof L.Circle || layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            const nameToCode = {};
+            Object.keys(stateData).forEach(code => { nameToCode[stateData[code].name] = code; });
+
+            // Try live GeoJSON first
             fetch('https://raw.githubusercontent.com/PublicaMundi/DataSets/master/geojson/us-states.json')
                 .then(res => res.json())
                 .then(geojson => {
-                    // Build fast lookup from our data
-                    const nameToCode = {};
-                    Object.keys(stateData).forEach(code => { nameToCode[stateData[code].name] = code; });
-
                     const filteredFeatures = geojson.features.filter(f => {
                         const nm = f.properties?.name;
                         const st = f.properties?.STATE || f.properties?.state;
@@ -578,7 +668,7 @@
                         }
                     }).addTo(map);
 
-                    // Abbreviation labels for states we have data for
+                    // State abbreviation labels
                     Object.keys(stateData).forEach(code => {
                         const center = stateCenters[code];
                         const abbr = stateAbbreviations[code];
@@ -592,34 +682,38 @@
                             L.marker(center, { icon: labelIcon, interactive: false }).addTo(map);
                         }
                     });
+
+                    hideMapLoading();
                 })
                 .catch(err => {
-                    console.warn("GeoJSON load failed, using circles", err);
+                    console.warn("GeoJSON load failed, falling back to circles", err);
                     renderFallbackCircles();
+                    hideMapLoading();
                 });
 
-            // Legend
-            const legend = L.control({position: 'bottomright'});
+            // Legend (re-add each refresh)
+            const legend = L.control({ position: 'bottomright' });
             legend.onAdd = function () {
                 const div = L.DomUtil.create('div', 'info legend');
-                div.style.cssText = 'background:rgba(15,23,42,0.9);padding:8px 12px;border-radius:8px;font-size:12px;color:#cbd5e1';
-                div.innerHTML = `<strong>HHS Spending (Risk Proxy)</strong><br>
-                    <i style="background:#ef4444;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> High (per capita)<br>
-                    <i style="background:#f59e0b;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> Medium<br>
-                    <i style="background:#14b8a6;width:12px;height:12px;display:inline-block;margin-right:6px;border-radius:2px"></i> Lower`;
+                div.style.cssText = 'background:rgba(15,23,42,0.92);padding:8px 11px;border-radius:8px;font-size:11px;color:#cbd5e1;border:1px solid #334155';
+                div.innerHTML = `<strong style="font-size:11px">Risk by per-capita spend</strong><br>
+                    <i style="background:#ef4444;width:11px;height:11px;display:inline-block;margin-right:5px;border-radius:2px;vertical-align:-1px"></i> High &nbsp;
+                    <i style="background:#f59e0b;width:11px;height:11px;display:inline-block;margin-right:5px;border-radius:2px;vertical-align:-1px"></i> Medium &nbsp;
+                    <i style="background:#14b8a6;width:11px;height:11px;display:inline-block;margin-right:5px;border-radius:2px;vertical-align:-1px"></i> Lower`;
                 return div;
             };
             legend.addTo(map);
         }
 
         function renderFallbackCircles() {
+            if (!map) return;
             Object.keys(stateData).forEach(code => {
                 const d = stateData[code];
                 const riskColor = d.risk === 'high' ? '#ef4444' : d.risk === 'medium' ? '#f59e0b' : '#14b8a6';
                 const center = stateCenters[code];
                 if (!center) return;
                 const circle = L.circle(center, {
-                    color: riskColor, fillColor: riskColor, fillOpacity: 0.4,
+                    color: riskColor, fillColor: riskColor, fillOpacity: 0.45,
                     radius: Math.max(Math.sqrt(d.amount) / 220000, 80000), weight: 1.5
                 }).addTo(map);
                 circle.on('click', () => showStatePanel(code));
@@ -1018,14 +1112,20 @@
                 }
             }
 
+            // Create the map immediately (defensive early init is the key fix)
+            createMap();
+            showMapLoading();
+
+            // Then load data (which will refresh layers when ready)
             loadRealDataForAgencies();
         }
 
         function onAgencyChange() {
             // Debounce slightly for multi-select
             setTimeout(() => {
+                showMapLoading();
                 loadRealDataForAgencies();
-            }, 50);
+            }, 80);
         }
 
         window.onload = init;
