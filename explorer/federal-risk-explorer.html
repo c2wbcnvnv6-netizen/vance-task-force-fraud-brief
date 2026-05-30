@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Federal Risk Explorer | HHS Focus</title>
+    <title>Federal Risk Explorer | All Agencies</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -71,18 +71,16 @@
     <nav class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6">
             <div class="flex items-center justify-between h-16">
-                <a href="index.html" class="flex items-center gap-x-3">
-                    <div class="w-8 h-8 bg-[#b91c1c] text-white rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i class="fa-solid fa-shield-halved text-base"></i>
-                    </div>
+                <a href="../index.html" class="flex items-center gap-x-3">
+                    <img src="../assets/tff-shield-logo.svg" alt="T.F.F. Shield" class="w-9 h-9">
                     <span class="font-semibold text-base tracking-tight text-white leading-none">Federal Risk Explorer</span>
                 </a>
                 <div class="hidden md:flex items-center gap-x-1 text-sm">
-                    <a href="index.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Home</a>
-                    <a href="foia-toolkit.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">FOIA Toolkit</a>
-                    <a href="explorer/federal-risk-explorer.html" class="px-4 py-2 text-emerald-400 font-medium rounded-xl">Risk Explorer</a>
-                    <a href="contract-trace.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Contract Trace</a>
-                    <a href="bill-analyzer.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Bill Analyzer</a>
+                    <a href="../index.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Home</a>
+                    <a href="../foia-toolkit.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">FOIA Toolkit</a>
+                    <a href="federal-risk-explorer.html" class="px-4 py-2 text-emerald-400 font-medium rounded-xl">Risk Explorer</a>
+                    <a href="../contract-trace.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Contract Trace</a>
+                    <a href="../bill-analyzer.html" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl">Bill Analyzer</a>
                 </div>
             </div>
         </div>
@@ -529,6 +527,11 @@
             map = L.map('map', { zoomControl: false, attributionControl: false }).setView([37.8, -96], 4);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { className: 'map-tiles' }).addTo(map);
+
+            // Fix for map not rendering properly after layout changes
+            setTimeout(() => {
+                if (map) map.invalidateSize();
+            }, 150);
 
             fetch('https://raw.githubusercontent.com/PublicaMundi/DataSets/master/geojson/us-states.json')
                 .then(res => res.json())

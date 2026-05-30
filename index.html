@@ -139,12 +139,10 @@
     <nav class="bg-slate-950 border-b border-slate-800 sticky top-0 z-50">
         <div class="max-w-screen-xl mx-auto px-6">
             <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-x-3">
-                    <div class="w-8 h-8 bg-[#b91c1c] text-white rounded-xl flex items-center justify-center flex-shrink-0">
-                        <i class="fa-solid fa-shield-halved text-base"></i>
-                    </div>
+                <a href="index.html" class="flex items-center gap-x-3">
+                    <img src="assets/tff-shield-logo.svg" alt="T.F.F. Shield" class="w-9 h-9">
                     <span class="font-semibold text-base tracking-tight text-white leading-none">Federal Risk Explorer</span>
-                </div>
+                </a>
                 
                 <div class="hidden md:flex items-center gap-x-1 text-sm">
                     <a href="#home" class="px-4 py-2 text-slate-300 hover:text-white rounded-xl transition-colors">Home</a>
@@ -377,43 +375,49 @@
                         <h4 class="font-semibold text-lg">Deliverables at This Checkpoint</h4>
                         <p class="text-sm text-slate-600">Current materials and tools from this phase of research</p>
                     </div>
-                    <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-medium rounded-2xl">Current snapshot</span>
+                    <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-medium rounded-2xl">Current snapshot</span>
                 </div>
                 
                 <div class="grid md:grid-cols-3 gap-4">
+                    <!-- Card 1 -->
                     <a href="FINAL_VANCE_TASK_FORCE_REPORT_20260529.md" 
-                       class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
-                        <div class="w-10 h-10 flex-shrink-0 bg-slate-900 text-white rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-file-lines text-lg"></i>
+                       class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all h-full">
+                        <div class="w-9 h-9 flex-shrink-0 bg-slate-900 text-white rounded-xl flex items-center justify-center mt-0.5">
+                            <i class="fa-solid fa-file-lines text-base"></i>
                         </div>
-                        <div>
-                            <div class="font-semibold text-slate-900 group-hover:text-black">Current Investigation Report</div>
-                            <div class="text-sm text-slate-600">Executive summary, full methodology, data limitation details, and the official Call for Transparency Improvements.</div>
-                            <div class="text-xs text-emerald-600 mt-1 font-medium">FINAL_VANCE_TASK_FORCE_REPORT_20260529.md →</div>
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="font-semibold text-slate-900 group-hover:text-black leading-tight">Current Investigation Report</div>
+                            <div class="text-sm text-slate-600 mt-1.5 leading-snug flex-1">Executive summary, full methodology, data limitation details, and the official Call for Transparency Improvements.</div>
+                            <div class="text-xs text-slate-600 mt-2 font-medium group-hover:text-black">FINAL_VANCE_TASK_FORCE_REPORT_20260529.md →</div>
                         </div>
                     </a>
                     
+                    <!-- Card 2 -->
                     <a href="RED_FLAG_TAXONOMY.md" 
-                       class="group flex items-start gap-4 p-4 rounded-2xl border border-amber-200 hover:border-amber-300 hover:bg-amber-50 transition-all">
-                        <div class="w-10 h-10 flex-shrink-0 bg-amber-600 text-white rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-list-check text-lg"></i>
+                       class="group flex items-start gap-4 p-4 rounded-2xl border border-amber-200 hover:border-amber-300 hover:bg-amber-50 transition-all h-full">
+                        <div class="w-9 h-9 flex-shrink-0 bg-amber-600 text-white rounded-xl flex items-center justify-center mt-0.5">
+                            <i class="fa-solid fa-list-check text-base"></i>
                         </div>
-                        <div>
-                            <div class="font-semibold text-slate-900 group-hover:text-black">Red Flag Taxonomy &amp; Observability Matrix <span class="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded">NEW</span></div>
-                            <div class="text-sm text-slate-600">Structured extraction of the specific risk indicators cited in the claim, with public observability ratings and verification notes. Produced following regulatory-redflag-detector + verification-layer standards.</div>
-                            <div class="text-xs text-amber-600 mt-1 font-medium">RED_FLAG_TAXONOMY.md →</div>
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="font-semibold text-slate-900 group-hover:text-black leading-tight flex items-center gap-x-1.5">
+                                Red Flag Taxonomy &amp; Observability Matrix 
+                                <span class="text-[10px] px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded font-medium">NEW</span>
+                            </div>
+                            <div class="text-sm text-slate-600 mt-1.5 leading-snug flex-1">Structured extraction of the specific risk indicators cited in the claim, with public observability ratings and verification notes.</div>
+                            <div class="text-xs text-amber-600 mt-2 font-medium group-hover:text-amber-700">RED_FLAG_TAXONOMY.md →</div>
                         </div>
                     </a>
                     
+                    <!-- Card 3 -->
                     <a href="FOIA_Transparency_Request.md" 
-                       class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
-                        <div class="w-10 h-10 flex-shrink-0 bg-slate-900 text-white rounded-xl flex items-center justify-center">
-                            <i class="fa-solid fa-file-contract text-lg"></i>
+                       class="group flex items-start gap-4 p-4 rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all h-full">
+                        <div class="w-9 h-9 flex-shrink-0 bg-slate-900 text-white rounded-xl flex items-center justify-center mt-0.5">
+                            <i class="fa-solid fa-file-contract text-base"></i>
                         </div>
-                        <div>
-                            <div class="font-semibold text-slate-900 group-hover:text-black">FOIA Request Template</div>
-                            <div class="text-sm text-slate-600">Ready-to-submit template requesting aggregated risk indicators and improved public data fields from GSA / OMB.</div>
-                            <div class="text-xs text-emerald-600 mt-1 font-medium">FOIA_Transparency_Request.md →</div>
+                        <div class="flex flex-col flex-1 min-w-0">
+                            <div class="font-semibold text-slate-900 group-hover:text-black leading-tight">FOIA Request Template</div>
+                            <div class="text-sm text-slate-600 mt-1.5 leading-snug flex-1">Ready-to-submit template requesting aggregated risk indicators and improved public data fields from GSA / OMB.</div>
+                            <div class="text-xs text-slate-600 mt-2 font-medium group-hover:text-black">FOIA_Transparency_Request.md →</div>
                         </div>
                     </a>
                 </div>
@@ -984,7 +988,9 @@
                         datasets: [{
                             label: 'Amplification Volume',
                             data: [85, 62, 38, 22, 15],
-                            backgroundColor: '#0f172a',
+                            backgroundColor: '#b91c1c',
+                            borderColor: '#ef4444',
+                            borderWidth: 1,
                             borderRadius: 4
                         }]
                     },
