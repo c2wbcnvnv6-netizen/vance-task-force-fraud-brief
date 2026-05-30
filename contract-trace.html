@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- D3.js for richer graphs (WN5) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600&amp;display=swap');
         
@@ -233,10 +235,14 @@
                     <div class="text-[10px] text-center text-slate-500 mt-3">Simplified view. Full beneficial ownership and subcontracting often requires FOIA or state records.</div>
                 </div>
 
-                <!-- WN5: Interactive Relationship Graph -->
+                <!-- WN5: Interactive Relationship Graph (SVG + D3 option) -->
                 <div id="relationship-graph" class="section-card rounded-3xl p-6 mt-4 hidden">
-                    <h4 class="font-semibold mb-3 text-sm">Politician &amp; Entity Relationship Graph</h4>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-semibold text-sm">Politician &amp; Entity Relationship Graph</h4>
+                        <button onclick="renderD3Graph()" class="text-xs px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded-lg">Use Rich D3 Force Graph</button>
+                    </div>
                     <svg id="graph-svg" width="100%" height="220" class="bg-slate-950 rounded-xl"></svg>
+                    <div id="d3-container" class="hidden w-full h-[220px] bg-slate-950 rounded-xl"></div>
                     <div class="text-[10px] text-slate-500 mt-2">Nodes = Politicians / Entities. Edges = Influence or funding connections. Click nodes for details (demo data).</div>
                 </div>
             </section>
@@ -807,6 +813,64 @@ Generate a complete sourced report with direct links.`;
                 text.setAttribute("font-size", "11");
                 text.textContent = node.label.substring(0, 12);
                 svg.appendChild(text);
+            });
+        }
+
+        // WN5: Richer D3 force-directed graph (optional enhancement)
+        function renderD3Graph() {
+            const svgEl = document.getElementById('graph-svg');
+            const d3Container = document.getElementById('d3-container');
+            if (!window.d3 || !currentTrace) return alert("D3 not loaded or no trace data.");
+
+            svgEl.classList.add('hidden');
+            d3Container.classList.remove('hidden');
+            d3Container.innerHTML = '';
+
+            const width = 800;
+            const height = 220;
+
+            const svg = d3.select(d3Container).append("svg")
+                .attr("width", "100%")
+                .attr("height", height)
+                .attr("viewBox", `0 0 ${width} ${height}`);
+
+            const nodes = currentTrace.politicians.slice(0,6).map((p,i) => ({id: i, name: p.name, group: 1}));
+            nodes.push({id: 99, name: currentTrace.contract.recipient, group: 2});
+
+            const links = nodes.filter(n => n.id !== 99).map(n => ({source: n.id, target: 99}));
+
+            const simulation = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links).id(d => d.id).distance(80))
+                .force("charge", d3.forceManyBody().strength(-200))
+                .force("center", d3.forceCenter(width/2, height/2));
+
+            const link = svg.append("g").selectAll("line").data(links).enter().append("line")
+                .attr("stroke", "#475569").attr("stroke-width", 1.5);
+
+            const node = svg.append("g").selectAll("circle").data(nodes).enter().append("circle")
+                .attr("r", d => d.group === 2 ? 18 : 14)
+                .attr("fill", d => d.group === 2 ? "#b91c1c" : "#0f172a")
+                .attr("stroke", "#64748b").attr("stroke-width", 2)
+                .call(d3.drag().on("start", dragstarted).on("drag", dragged).on("end", dragended));
+
+            const labels = svg.append("g").selectAll("text").data(nodes).enter().append("text")
+                .text(d => d.name.split(" ").pop().substring(0,10))
+                .attr("fill", "white").attr("font-size", 10).attr("text-anchor", "middle");
+
+            simulation.on("tick", () => {
+                link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+                node.attr("cx", d => d.x).attr("cy", d => d.y);
+                labels.attr("x", d => d.x).attr("y", d => d.y + 4);
+            });
+
+            function dragstarted(event, d) { if (!event.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; }
+            function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
+            function dragended(event, d) { if (!event.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; }
+
+            // Click to expand details
+            node.on("click", (event, d) => {
+                alert(`Node: ${d.name}\n\n(Expand with more data from external sites in full version)`);
             });
         }
 

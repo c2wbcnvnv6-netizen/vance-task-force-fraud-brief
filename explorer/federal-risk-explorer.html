@@ -334,11 +334,19 @@
                     <input type="text" class="w-full bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3 text-sm" placeholder="Contract numbers, dates, names (if known)">
                 </div>
                 <div class="md:col-span-2">
+                    <div class="flex items-center gap-x-2 mb-2">
+                        <input type="checkbox" id="anonymous-mode" class="accent-emerald-500" onchange="toggleAnonymousMode()">
+                        <label for="anonymous-mode" class="text-sm text-slate-400">Submit anonymously (strip optional fields)</label>
+                    </div>
                     <label class="block text-sm text-slate-400 mb-2">Your Contact (optional — for follow-up only)</label>
-                    <input type="email" class="w-full bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3 text-sm" placeholder="email@example.com">
+                    <input type="email" id="contact-email" class="w-full bg-slate-800 border border-slate-600 rounded-2xl px-4 py-3 text-sm" placeholder="email@example.com">
                     <p class="text-xs text-slate-500 mt-2">We will never share your information. This is for verification purposes only. See our <a href="privacy-policy.html" class="underline">Privacy Policy</a> for details on data handling.</p>
                 </div>
                 <div class="md:col-span-2">
+                    <div class="flex items-center gap-x-2 mb-3">
+                        <input type="checkbox" id="not-robot" required class="accent-emerald-500">
+                        <label for="not-robot" class="text-sm text-slate-400">I am not a robot (basic abuse protection)</label>
+                    </div>
                     <button type="submit" 
                             class="bg-emerald-500 hover:bg-emerald-400 text-white font-semibold px-8 py-3 rounded-2xl transition-all">
                         Submit Tip (Confidential)
@@ -891,6 +899,16 @@
 
         // ==================== TIP FORM (functional demo) ====================
         let lastTipSubmit = 0;
+
+        function toggleAnonymousMode() {
+            const emailInput = document.getElementById('contact-email');
+            const anon = document.getElementById('anonymous-mode').checked;
+            if (emailInput) {
+                emailInput.disabled = anon;
+                if (anon) emailInput.value = '';
+            }
+        }
+
         function submitTip(e) {
             e.preventDefault();
             const now = Date.now();
@@ -899,6 +917,42 @@
                 return;
             }
             lastTipSubmit = now;
+
+            const form = e.currentTarget || e.target;
+            const anonMode = document.getElementById('anonymous-mode')?.checked;
+            const notRobot = document.getElementById('not-robot')?.checked;
+
+            if (!notRobot) {
+                alert("Please confirm you are not a robot.");
+                return;
+            }
+
+            // If anonymous, clear optional fields client-side (data minimization)
+            if (anonMode) {
+                const email = document.getElementById('contact-email');
+                if (email) email.value = '';
+            }
+
+            const btns = form.querySelectorAll('button[type="submit"]');
+            const orig = btns.length ? btns[0].textContent : '';
+
+            if (btns.length) btns[0].textContent = 'Submitting...';
+            setTimeout(() => {
+                const thanks = document.createElement('div');
+                thanks.className = 'mt-4 p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-2xl text-sm';
+                thanks.innerHTML = `Thank you. Your tip has been recorded for review. Reference: T-${Date.now().toString(36).toUpperCase()}. We cannot confirm receipt or provide case updates.`;
+                form.parentNode.insertBefore(thanks, form.nextSibling);
+                form.reset();
+                if (btns.length) btns[0].textContent = orig || 'Submit Tip (Confidential)';
+                setTimeout(() => thanks.remove(), 12000);
+            }, 650);
+        }
+
+            // If anonymous, clear optional fields client-side (data minimization)
+            if (anonMode) {
+                const email = document.getElementById('contact-email');
+                if (email) email.value = '';
+            }
             e.preventDefault();
             const form = e.currentTarget || e.target;
             const btns = form.querySelectorAll('button[type="submit"]');
